@@ -1,0 +1,163 @@
+#+title: Biostatistics III in R: exercises
+
+#+AUTHOR: Mark Clements
+#+OPTIONS: toc:t
+#+PROPERTY: header-args: :tangle q1b.R
+#+include: "header.org"
+
+* Laboratory exercise 1b
+
+ - Suggested solutions by :: Annika Tillander, 2014-01-30 
+ - Edited by :: Andreas Karlsson, 2015-02-27, 2016-03-01; Mark Clements, 2017-08-01
+
+
+#+begin_src R :session *R* :exports code :results none
+setwd("~/repos/BiostatIII/R")
+#+end_src
+
+
+You may have to install the required packages the first time you use
+them. You can install a package by
+=install.packages("package_of_interest")= for each package you
+require.
+
+#+begin_src R :session *R* :exports code :results none
+library(foreign)  # for reading data set from Stata
+library(dplyr)    # for data manipulation
+library(KMsurv)   # for life-tables
+library(survival) # for Surv and survfit
+
+## Get the data for exercise 1
+colon_sample <- read.dta("http://biostat3.net/download/colon_sample.dta")
+
+## Create 0/1 outcome variable
+colon <-colon_sample %>%
+    mutate(death_cancer = ifelse( status == "Dead: cancer", 1, 0))
+#+end_src
+
+Number of events and number lost summarised by year.
+
+#+begin_src R :session *R* :exports code :results none
+colonByYear <- colon %>%
+    mutate(year = floor(surv_yy)) %>%     # floor to whole years
+    group_by(year) %>%                    # summarise within each year
+    summarise(nevent = sum(death_cancer), # number of events
+              nlost = n() - nevent)       # number lost to follow-up
+#+end_src
+
+
+Following are the life table estimates. Note that in the lectures,
+when we estimated all-cause survival, there were 8 deaths in the first
+interval. One of these died of a cause other than cancer so in the
+cause-specific survival analysis we see that there are 7 ‘deaths’ and
+1 censoring (in lifetab we used the term ‘nlost’ for number lost to
+follow-up) in the first interval.
+
+#+begin_src R :session *R* :exports both :results output
+temp<-with(colonByYear,                           # using the colonByYear data
+     lifetab(tis = c(year, NA), # should be one element longer for the intervals
+             ninit = nrow(colon),           # number of individuals at the start
+             nlost = nlost,                 # number lost for each interval
+             nevent = nevent)) %>%          # number of events for each interval
+     print(digits=2)
+#+end_src
+
+#+RESULTS:
+#+begin_example
+     nsubs nlost nrisk nevent surv   pdf hazard se.surv se.pdf se.hazard
+0-1     35     1  34.5      7 1.00 0.203   0.23   0.000  0.068     0.085
+1-2     27     3  25.5      1 0.80 0.031   0.04   0.068  0.031     0.040
+2-3     23     4  21.0      5 0.77 0.182   0.27   0.073  0.073     0.120
+3-4     14     1  13.5      2 0.58 0.086   0.16   0.090  0.058     0.113
+4-6     11     1  10.5      0 0.50 0.000   0.00   0.095    NaN       NaN
+6-7     10     3   8.5      0 0.50 0.000   0.00   0.095    NaN       NaN
+7-8      7     1   6.5      0 0.50 0.000   0.00   0.095    NaN       NaN
+8-9      6     4   4.0      1 0.50 0.124   0.29   0.095  0.110     0.283
+9-NA     1     1   0.5      0 0.37    NA     NA   0.129     NA        NA
+#+end_example
+
+
+We could also use the following utility function to do this more easily. It takes a =Surv=  object
+and a =data= object possibly with some break-points.
+
+# Should we put this into a package? Should everything be put into a package??
+# 
+
+#+begin_src R :session *R* :exports both :results output
+  lifetab2 <- function(surv, data=NULL, breaks=NULL) {
+      y <- eval(substitute(surv),data,parent.frame())
+      time <- y[,1]
+      event <- y[,2]
+      if (is.null(breaks))
+          breaks <- c(sort(unique(time)),Inf)
+      cut_time <- cut(time,breaks,include.lowest=TRUE,right=FALSE)
+      NA2zero <- function(x) {if (any(is.na(x))) x[is.na(x)] <- 0; x}
+      nevent <- NA2zero(tapply(event,cut_time,sum))
+      nlost <- NA2zero(tapply(event,cut_time,length)) - nevent
+      KMsurv::lifetab(tis = breaks,    # should be one element longer for the intervals
+               ninit = nrow(data),           # number of individuals at the start
+               nlost = nlost,                 # number lost for each interval
+               nevent = nevent)           # number of events for each interval
+  }
+  ## lifetab2(Surv(surv_yy,death_cancer), colon, breaks=0:10) %>% print(digits=2)
+  lifetab2(Surv(floor(surv_yy),death_cancer), colon) %>% print(digits=2)
+#+end_src
+
+#+RESULTS:
+#+begin_example
+      nsubs nlost nrisk nevent surv   pdf hazard se.surv se.pdf se.hazard
+0-1      35     1  34.5      7 1.00 0.203   0.23   0.000  0.068     0.085
+1-2      27     3  25.5      1 0.80 0.031   0.04   0.068  0.031     0.040
+2-3      23     4  21.0      5 0.77 0.182   0.27   0.073  0.073     0.120
+3-4      14     1  13.5      2 0.58 0.086   0.16   0.090  0.058     0.113
+4-6      11     1  10.5      0 0.50 0.000   0.00   0.095    NaN       NaN
+6-7      10     3   8.5      0 0.50 0.000   0.00   0.095    NaN       NaN
+7-8       7     1   6.5      0 0.50 0.000   0.00   0.095    NaN       NaN
+8-9       6     4   4.0      1 0.50 0.124   0.29   0.095  0.110     0.283
+9-Inf     1     1   0.5      0 0.37    NA     NA   0.129     NA        NA
+#+end_example
+
+
+Following is a table of Kaplan-Meier estimates. It is not clear from
+the table, if the person censored at time 2 was at risk when the other
+person dies at time 2. Following the table is a graph of the survival
+function.
+
+#+begin_src R :session *R* :exports both :results output
+  mfit <- survfit(Surv(surv_mm, death_cancer) ~ 1, data = colon) # make Kaplan-Meier estimates
+  print(summary(mfit))                                                  # print Kaplan-Meier table
+#+end_src
+
+#+RESULTS:
+#+begin_example
+Call: survfit(formula = Surv(surv_mm, death_cancer) ~ 1, data = colon)
+
+ time n.risk n.event survival std.err lower 95% CI upper 95% CI
+    2     35       1    0.971  0.0282        0.918        1.000
+    3     33       1    0.942  0.0398        0.867        1.000
+    5     32       1    0.913  0.0482        0.823        1.000
+    7     31       1    0.883  0.0549        0.782        0.998
+    8     30       1    0.854  0.0605        0.743        0.981
+    9     29       1    0.824  0.0652        0.706        0.962
+   11     28       1    0.795  0.0692        0.670        0.943
+   22     24       1    0.762  0.0738        0.630        0.921
+   27     22       1    0.727  0.0781        0.589        0.898
+   28     20       1    0.691  0.0823        0.547        0.872
+   32     19       2    0.618  0.0882        0.467        0.818
+   33     16       1    0.579  0.0908        0.426        0.788
+   43     13       1    0.535  0.0941        0.379        0.755
+   46     12       1    0.490  0.0962        0.334        0.720
+  102      4       1    0.368  0.1284        0.185        0.729
+#+end_example
+
+
+#+begin_src R :session *R* :exports both :results output graphics :file figure/plot-1b.png :width 640
+  plot(mfit,                                                     # plot Kaplan-Meier curve
+       ylab="S(t)",
+       xlab="Time since diagnosis in months",
+       main = "Kaplan−Meier estimates of cause−specific survival")
+#+end_src
+
+#+RESULTS:
+[[file:figure/plot-1b.png]]
+
