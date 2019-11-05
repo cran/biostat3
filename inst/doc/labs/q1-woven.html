@@ -1,0 +1,160 @@
+---
+title: "Biostatistics III in R"
+author:
+- Code by Annika Tillander, Andreas Karlsson and Mark Clements
+output:
+  prettydoc::html_pretty: default
+  html_vignette: default
+  html_document:
+    theme: null
+---
+
+# Exercise 1: Life tables and Kaplan-Meier estimates of survival #
+
+## (a) Hand calculation: Life table and Kaplan-Meier estimates of survival ##
+
+Using hand calculation (i.e., using a spreadsheet program or pen,
+    paper, and a calculator) estimate the cause-specific survivor
+    function for the sample of 35 patients diagnosed with colon
+    carcinoma (see the table below) using both the Kaplan-Meier method
+    (up to at least 30 months) and the actuarial method (at least the
+    first 5 annual intervals).
+
+In the lectures we estimated the observed survivor function
+    (i.e. all deaths were considered to be events) using the
+    Kaplan-Meier and actuarial methods; your task is to estimate the
+    cause-specific survivor function (only deaths due to colon carcinoma
+    are considered events) using the same data. The next page includes
+    some hints to help you get started.
+
+
+
+
+```r
+library(biostat3)
+```
+
+
+```r
+print(biostat3::colon_sample)
+```
+
+```
+##       sex age     stage mmdx yydx surv_mm surv_yy       status                subsite
+## 1    Male  72 Localised    2 1989       2    0.01  Dead: other Descending and sigmoid
+## 2  Female  82   Distant   12 1991       2    0.01 Dead: cancer Descending and sigmoid
+## 3    Male  73   Distant   11 1993       3    0.01 Dead: cancer Descending and sigmoid
+## 4    Male  63   Distant    6 1988       5    0.01 Dead: cancer             Transverse
+## 5    Male  67 Localised    5 1989       7    0.01 Dead: cancer             Transverse
+## 6    Male  74  Regional    7 1992       8    0.01 Dead: cancer   Coecum and ascending
+## 7  Female  56   Distant    1 1986       9    0.01 Dead: cancer             Transverse
+## 8  Female  52   Distant    5 1986      11    0.01 Dead: cancer   Coecum and ascending
+## 9    Male  64 Localised   11 1994      13    1.00        Alive Descending and sigmoid
+## 10 Female  70 Localised   10 1994      14    1.00        Alive Descending and sigmoid
+## 11 Female  83 Localised    7 1990      19    1.00  Dead: other Descending and sigmoid
+## 12   Male  64   Distant    8 1989      22    1.00 Dead: cancer Descending and sigmoid
+## 13 Female  79 Localised   11 1993      25    2.00        Alive Descending and sigmoid
+## 14 Female  70   Distant    6 1988      27    2.00 Dead: cancer   Coecum and ascending
+## 15   Male  70  Regional    9 1993      27    2.00        Alive   Coecum and ascending
+## 16 Female  68   Distant    9 1991      28    2.00 Dead: cancer Descending and sigmoid
+## 17   Male  58 Localised   11 1990      32    2.00 Dead: cancer Descending and sigmoid
+## 18   Male  54   Distant    4 1990      32    2.00 Dead: cancer   Coecum and ascending
+## 19 Female  86 Localised    4 1993      32    2.00        Alive Descending and sigmoid
+## 20   Male  31 Localised    1 1990      33    2.00 Dead: cancer   Coecum and ascending
+## 21 Female  75 Localised    1 1993      35    2.00        Alive Descending and sigmoid
+## 22 Female  85 Localised   11 1992      37    3.00        Alive   Coecum and ascending
+## 23 Female  68   Distant    7 1986      43    3.00 Dead: cancer Descending and sigmoid
+## 24   Male  54  Regional    6 1985      46    3.00 Dead: cancer             Transverse
+## 25   Male  80 Localised    6 1991      54    4.00        Alive   Coecum and ascending
+## 26 Female  52 Localised    7 1989      77    6.00        Alive             Transverse
+## 27   Male  52 Localised    6 1989      78    6.00        Alive Descending and sigmoid
+## 28   Male  65 Localised    1 1989      83    6.00        Alive Descending and sigmoid
+## 29   Male  60 Localised   11 1988      85    7.00        Alive             Transverse
+## 30 Female  71 Localised   11 1987      97    8.00        Alive Descending and sigmoid
+## 31   Male  58 Localised    8 1987     100    8.00        Alive Descending and sigmoid
+## 32 Female  80 Localised    5 1987     102    8.00 Dead: cancer Descending and sigmoid
+## 33   Male  66 Localised    1 1986     103    8.00  Dead: other   Coecum and ascending
+## 34   Male  67 Localised    3 1987     105    8.00        Alive   Coecum and ascending
+## 35 Female  56   Distant   12 1986     108    9.00        Alive             Transverse
+```
+
+### Actuarial approach ###
+
+We suggest you start with the actuarial approach. Your task is to
+	construct a life table with the following structure.
+
+
+
+| time  | $l$ | $d$ | $w$ | $l'$ | $p$ | $S(t)$ |
+|-------|-----|-----|-----|------|-----|--------|
+| [0-1) | 35  |     |     |      |     |        |
+| [1-2) |     |     |     |      |     |        |
+| [2-3) |     |     |     |      |     |        |
+| [3-4) |     |     |     |      |     |        |
+| [4-5) |     |     |     |      |     |        |
+| [5-6) |     |     |     |      |     |        |
+
+
+We have already entered $l_1$ (number of people alive at the start
+    of interval 1). The next step is to add the number who experienced
+    the event ($d$) and the number censored ($w$) during the first year.
+    From $l$, $d$, and $w$ you will then be able to calculate $l'$
+    (effective number at risk), followed by $p$ (conditional probability
+    of surviving the interval) and finally $S(t)$, the cumulative
+    probability of surviving from time zero until the end of
+    the interval.
+
+    
+### Kaplan-Meier approach ###
+
+To estimate survival using the Kaplan-Meier approach you will find
+    it easiest to add a line to the table at each and every time there
+    is an event or censoring. We should use time in months. The first
+    time at which there is an event or censoring is time equal to
+    2 months. The trick is what to do when there are both events and
+    censorings at the same time.
+
+| time | # at risk | $d$ | $w$ | $p$ | $S(t)$ |
+|------|-----------|-----|-----|-----|--------|
+| 2    | 35        |     |     |     |        |
+|      |           |     |     |     |        |
+|      |           |     |     |     |        |
+|      |           |     |     |     |        |
+|      |           |     |     |     |        |
+|      |           |     |     |     |        |
+
+
+
+## (b) Using R to validate the hand calculations done in part 1 (a) ##
+
+We will now use R to reproduce the same analyses
+    done by hand calculation in section 1.1 although you can do this part
+    without having done the hand calculations, since this question also
+    serves as an introduction to survival analysis using R. Our aim
+    is to estimate the cause-specific survivor function for the sample
+    of 35 patients diagnosed with colon carcinoma using both the
+    Kaplan-Meier method and the actuarial method. In the lectures we
+    estimated the all-cause survivor function (i.e. all deaths were
+    considered to be events) using the Kaplan-Meier and actuarial
+    methods whereas we will now estimate the cause-specific survivor
+    function (only deaths due to colon carcinoma are considered events).
+
+
+Life tables are available using the `lifetab` function from the `KMsurv` package on CRAN. We have written a small wrapper `lifetab2` which allows for a `Surv` object and a dataset. The following command will give the actuarial estimates:
+	
+
+```r
+print(lifetab2(Surv(floor(surv_yy), status == "Dead: cancer")~1, colon_sample, breaks=0:10), digits=2)
+```
+
+A listing of the Kaplan-Meier estimates and a graph are obtained as follows
+
+
+```r
+mfit <- survfit(Surv(surv_mm, status == "Dead: cancer") ~ 1, data = colon_sample) # make Kaplan-Meier estimates
+summary(mfit)                                                  # print Kaplan-Meier table
+plot(mfit,                                                     # plot Kaplan-Meier curve
+     ylab="S(t)",
+     xlab="Time since diagnosis in months",
+     main = "Kaplan−Meier estimates of cause−specific survival")
+```
