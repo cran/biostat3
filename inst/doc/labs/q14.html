@@ -127,89 +127,20 @@ d &lt;-<span class="st"> </span><span class="kw">local</span>({
     <span class="kw">data.frame</span>(y,x,u,delta)
 })
 <span class="kw">head</span>(d)</code></pre></div>
-<pre><code>##          y x          u delta
-## 1 1.809348 1 -2.0774167 FALSE
-## 2 1.251765 1  3.3740868  TRUE
-## 3 2.078184 1  0.5236054 FALSE
-## 4 3.528797 1 -5.9034201 FALSE
-## 5 6.659236 0 -4.9328152 FALSE
-## 6 5.366579 0 -0.3293542 FALSE</code></pre>
 <div id="a-fitting-models-with-both-x-and-u" class="section level2">
 <h2>(a) Fitting models with both <span class="math inline">\(X\)</span> and <span class="math inline">\(U\)</span></h2>
-<p>For constant hazards, we can fit (i) Poisson regression, (ii) Cox regression and (iii) flexible parametric survival models. With both covariates, these models are expected to estimate the parameters for <span class="math inline">\(X\)</span> and <span class="math inline">\(U\)</span>, with values close to 1:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(fit1 &lt;-<span class="st"> </span><span class="kw">glm</span>(delta<span class="op">~</span>x<span class="op">+</span>u<span class="op">+</span><span class="kw">offset</span>(<span class="kw">log</span>(y)),<span class="dt">data=</span>d,<span class="dt">family=</span>poisson))</code></pre></div>
-<pre><code>## 
-## Call:
-## glm(formula = delta ~ x + u + offset(log(y)), family = poisson, 
-##     data = d)
-## 
-## Deviance Residuals: 
-##     Min       1Q   Median       3Q      Max  
-## -2.9137  -0.3774  -0.1355  -0.0274   3.9389  
-## 
-## Coefficients:
-##             Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept) -4.97595    0.05344  -93.11   &lt;2e-16 ***
-## x            0.96027    0.04372   21.96   &lt;2e-16 ***
-## u            0.99087    0.01091   90.78   &lt;2e-16 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## (Dispersion parameter for poisson family taken to be 1)
-## 
-##     Null deviance: 14687.0  on 9999  degrees of freedom
-## Residual deviance:  5811.2  on 9997  degrees of freedom
-## AIC: 10257
-## 
-## Number of Fisher Scoring iterations: 7</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(fit2 &lt;-<span class="st"> </span><span class="kw">coxph</span>(<span class="kw">Surv</span>(y,delta)<span class="op">~</span>x<span class="op">+</span>u,<span class="dt">data=</span>d))</code></pre></div>
-<pre><code>## Call:
-## coxph(formula = Surv(y, delta) ~ x + u, data = d)
-## 
-##   n= 10000, number of events= 2220 
-## 
-##      coef exp(coef) se(coef)     z Pr(&gt;|z|)    
-## x 0.96227   2.61764  0.04490 21.43   &lt;2e-16 ***
-## u 0.99034   2.69215  0.01461 67.81   &lt;2e-16 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-##   exp(coef) exp(-coef) lower .95 upper .95
-## x     2.618     0.3820     2.397     2.858
-## u     2.692     0.3714     2.616     2.770
-## 
-## Concordance= 0.922  (se = 0.002 )
-## Likelihood ratio test= 7448  on 2 df,   p=&lt;2e-16
-## Wald test            = 4629  on 2 df,   p=&lt;2e-16
-## Score (logrank) test = 5611  on 2 df,   p=&lt;2e-16</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(fit3 &lt;-<span class="st"> </span><span class="kw">stpm2</span>(<span class="kw">Surv</span>(y,delta)<span class="op">~</span>x<span class="op">+</span>u,<span class="dt">data=</span>d,<span class="dt">df=</span><span class="dv">4</span>))</code></pre></div>
-<pre><code>## Maximum likelihood estimation
-## 
-## Call:
-## stpm2(formula = Surv(y, delta) ~ x + u, data = d, df = 4)
-## 
-## Coefficients:
-##                        Estimate Std. Error z value     Pr(z)    
-## (Intercept)          -14.565979   0.516080 -28.224 &lt; 2.2e-16 ***
-## x                      0.960750   0.044878  21.408 &lt; 2.2e-16 ***
-## u                      0.990848   0.014600  67.865 &lt; 2.2e-16 ***
-## nsx(log(y), df = 4)1   9.424531   0.494145  19.072 &lt; 2.2e-16 ***
-## nsx(log(y), df = 4)2   8.786272   0.328904  26.714 &lt; 2.2e-16 ***
-## nsx(log(y), df = 4)3  16.534497   1.013388  16.316 &lt; 2.2e-16 ***
-## nsx(log(y), df = 4)4   8.562140   0.206188  41.526 &lt; 2.2e-16 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## -2 log L: 8520.997</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## summary table for the coefficients for X
+<p>For constant hazards, we can fit (i) Poisson regression, (ii) Cox regression and (iii) flexible parametric survival models.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(fit1 &lt;-<span class="st"> </span><span class="kw">glm</span>(delta<span class="op">~</span>x<span class="op">+</span>u<span class="op">+</span><span class="kw">offset</span>(<span class="kw">log</span>(y)),<span class="dt">data=</span>d,<span class="dt">family=</span>poisson))
+
+<span class="kw">summary</span>(fit2 &lt;-<span class="st"> </span><span class="kw">coxph</span>(<span class="kw">Surv</span>(y,delta)<span class="op">~</span>x<span class="op">+</span>u,<span class="dt">data=</span>d))
+
+<span class="kw">summary</span>(fit3 &lt;-<span class="st"> </span><span class="kw">stpm2</span>(<span class="kw">Surv</span>(y,delta)<span class="op">~</span>x<span class="op">+</span>u,<span class="dt">data=</span>d,<span class="dt">df=</span><span class="dv">4</span>))
+
+## summary table for the coefficients for X
 <span class="kw">rbind</span>(<span class="dt">Poisson=</span><span class="kw">coef</span>(<span class="kw">summary</span>(fit1))[<span class="st">&quot;x&quot;</span>,<span class="kw">c</span>(<span class="st">&quot;Estimate&quot;</span>,<span class="st">&quot;Std. Error&quot;</span>)],
       <span class="dt">Cox=</span><span class="kw">coef</span>(<span class="kw">summary</span>(fit2))[<span class="st">&quot;x&quot;</span>,<span class="kw">c</span>(<span class="st">&quot;coef&quot;</span>,<span class="st">&quot;se(coef)&quot;</span>)],
       <span class="dt">Stpm2=</span><span class="kw">coef</span>(<span class="kw">summary</span>(fit3))[<span class="st">&quot;x&quot;</span>,<span class="kw">c</span>(<span class="st">&quot;Estimate&quot;</span>,<span class="st">&quot;Std. Error&quot;</span>)])</code></pre></div>
-<pre><code>##          Estimate Std. Error
-## Poisson 0.9602659 0.04372345
-## Cox     0.9622728 0.04490412
-## Stpm2   0.9607498 0.04487831</code></pre>
-<p>If we fit a time-varying hazard ratio for <span class="math inline">\(X\)</span>, we see that the hazard ratio looks reasonably constant.</p>
+<p>It may be useful to investigate whether the hazard ratio for <span class="math inline">\(X\)</span> is time-varying hazard ratio and the form for survival.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fit &lt;-<span class="st"> </span><span class="kw">stpm2</span>(<span class="kw">Surv</span>(y,delta)<span class="op">~</span>x<span class="op">+</span>u,<span class="dt">data=</span>d,<span class="dt">df=</span><span class="dv">4</span>, <span class="dt">tvc=</span><span class="kw">list</span>(<span class="dt">x=</span><span class="dv">2</span>))
 <span class="kw">plot</span>(fit, <span class="dt">type=</span><span class="st">&quot;hr&quot;</span>, <span class="dt">newdata=</span><span class="kw">data.frame</span>(<span class="dt">x=</span><span class="dv">0</span>,<span class="dt">u=</span><span class="dv">0</span>), <span class="dt">var=</span><span class="st">&quot;x&quot;</span>, <span class="dt">ylim=</span><span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">4</span>))</code></pre></div>
 <p><img src="data:image/png;base64,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" /><!-- --></p>
@@ -231,83 +162,24 @@ d &lt;-<span class="st"> </span><span class="kw">local</span>({
 <div id="b-fitting-models-with-only-x" class="section level2">
 <h2>(b) Fitting models with only <span class="math inline">\(X\)</span></h2>
 <p>We now model by excluding the variable <span class="math inline">\(U\)</span>. This variable could be excluded when it is not measured or perhaps when the variable is not considered to be a confounding variable -- from the causal diagram, the two variables <span class="math inline">\(X\)</span> and <span class="math inline">\(U\)</span> are not correlated and are only connected through the time variable <span class="math inline">\(T\)</span>.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(fit1 &lt;-<span class="st"> </span><span class="kw">glm</span>(delta<span class="op">~</span>x<span class="op">+</span><span class="kw">offset</span>(<span class="kw">log</span>(y)),<span class="dt">data=</span>d,<span class="dt">family=</span>poisson))</code></pre></div>
-<pre><code>## 
-## Call:
-## glm(formula = delta ~ x + offset(log(y)), family = poisson, data = d)
-## 
-## Deviance Residuals: 
-##     Min       1Q   Median       3Q      Max  
-## -1.1690  -0.8129  -0.5805  -0.1687   4.8126  
-## 
-## Coefficients:
-##             Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept) -3.19636    0.03377  -94.66   &lt;2e-16 ***
-## x            0.51289    0.04341   11.81   &lt;2e-16 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## (Dispersion parameter for poisson family taken to be 1)
-## 
-##     Null deviance: 14687  on 9999  degrees of freedom
-## Residual deviance: 14544  on 9998  degrees of freedom
-## AIC: 18988
-## 
-## Number of Fisher Scoring iterations: 7</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(fit2 &lt;-<span class="st"> </span><span class="kw">coxph</span>(<span class="kw">Surv</span>(y,delta)<span class="op">~</span>x,<span class="dt">data=</span>d))</code></pre></div>
-<pre><code>## Call:
-## coxph(formula = Surv(y, delta) ~ x, data = d)
-## 
-##   n= 10000, number of events= 2220 
-## 
-##      coef exp(coef) se(coef)     z Pr(&gt;|z|)    
-## x 0.48511   1.62436  0.04342 11.17   &lt;2e-16 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-##   exp(coef) exp(-coef) lower .95 upper .95
-## x     1.624     0.6156     1.492     1.769
-## 
-## Concordance= 0.565  (se = 0.005 )
-## Likelihood ratio test= 127.9  on 1 df,   p=&lt;2e-16
-## Wald test            = 124.8  on 1 df,   p=&lt;2e-16
-## Score (logrank) test = 127.3  on 1 df,   p=&lt;2e-16</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(fit3 &lt;-<span class="st"> </span><span class="kw">stpm2</span>(<span class="kw">Surv</span>(y,delta)<span class="op">~</span>x,<span class="dt">data=</span>d,<span class="dt">df=</span><span class="dv">4</span>))</code></pre></div>
-<pre><code>## Maximum likelihood estimation
-## 
-## Call:
-## stpm2(formula = Surv(y, delta) ~ x, data = d, df = 4)
-## 
-## Coefficients:
-##                       Estimate Std. Error z value     Pr(z)    
-## (Intercept)          -9.883577   0.473287 -20.883 &lt; 2.2e-16 ***
-## x                     0.485236   0.043423  11.175 &lt; 2.2e-16 ***
-## nsx(log(y), df = 4)1  7.458585   0.467805  15.944 &lt; 2.2e-16 ***
-## nsx(log(y), df = 4)2  6.323162   0.310307  20.377 &lt; 2.2e-16 ***
-## nsx(log(y), df = 4)3 13.212493   0.930871  14.194 &lt; 2.2e-16 ***
-## nsx(log(y), df = 4)4  5.541993   0.192043  28.858 &lt; 2.2e-16 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## -2 log L: 15844.98</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(fit1 &lt;-<span class="st"> </span><span class="kw">glm</span>(delta<span class="op">~</span>x<span class="op">+</span><span class="kw">offset</span>(<span class="kw">log</span>(y)),<span class="dt">data=</span>d,<span class="dt">family=</span>poisson))
+
+<span class="kw">summary</span>(fit2 &lt;-<span class="st"> </span><span class="kw">coxph</span>(<span class="kw">Surv</span>(y,delta)<span class="op">~</span>x,<span class="dt">data=</span>d))
+
+<span class="kw">summary</span>(fit3 &lt;-<span class="st"> </span><span class="kw">stpm2</span>(<span class="kw">Surv</span>(y,delta)<span class="op">~</span>x,<span class="dt">data=</span>d,<span class="dt">df=</span><span class="dv">4</span>))</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## summary table for the coefficients for X
 <span class="kw">rbind</span>(<span class="dt">Poisson=</span><span class="kw">coef</span>(<span class="kw">summary</span>(fit1))[<span class="st">&quot;x&quot;</span>,<span class="kw">c</span>(<span class="st">&quot;Estimate&quot;</span>,<span class="st">&quot;Std. Error&quot;</span>)],
       <span class="dt">Cox=</span><span class="kw">coef</span>(<span class="kw">summary</span>(fit2))[<span class="st">&quot;x&quot;</span>,<span class="kw">c</span>(<span class="st">&quot;coef&quot;</span>,<span class="st">&quot;se(coef)&quot;</span>)],
       <span class="dt">Stpm2=</span><span class="kw">coef</span>(<span class="kw">summary</span>(fit3))[<span class="st">&quot;x&quot;</span>,<span class="kw">c</span>(<span class="st">&quot;Estimate&quot;</span>,<span class="st">&quot;Std. Error&quot;</span>)])</code></pre></div>
-<pre><code>##          Estimate Std. Error
-## Poisson 0.5128869 0.04341441
-## Cox     0.4851147 0.04342341
-## Stpm2   0.4852363 0.04342328</code></pre>
-<p>We clearly see that the estimate for <span class="math inline">\(X\)</span> is different in the models without <span class="math inline">\(U\)</span>. If we now allow the the hazard ratio to vary by time:</p>
+<p>Again, we suggest investigating whether the hazard ratio for <span class="math inline">\(X\)</span> is time-varying.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fit &lt;-<span class="st"> </span><span class="kw">stpm2</span>(<span class="kw">Surv</span>(y,delta)<span class="op">~</span>x,<span class="dt">data=</span>d,<span class="dt">df=</span><span class="dv">4</span>, <span class="dt">tvc=</span><span class="kw">list</span>(<span class="dt">x=</span><span class="dv">2</span>))
 <span class="kw">plot</span>(fit, <span class="dt">type=</span><span class="st">&quot;hr&quot;</span>, <span class="dt">newdata=</span><span class="kw">data.frame</span>(<span class="dt">x=</span><span class="dv">0</span>), <span class="dt">var=</span><span class="st">&quot;x&quot;</span>, <span class="dt">ylim=</span><span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">4</span>))</code></pre></div>
 <p><img src="data:image/png;base64,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" /><!-- --></p>
-<p>We see that the hazard ratio is clearly time-varying, starting at an initial value at time = 0 of close to exp(1), but then declining rapidly. As discussed in class, this is an example of <em>unmeasured heterogeneity</em>, which is a normal <em>random effect</em> or, in this context, a log-normal <em>frailty</em>. Initially, there is no selection in the at-risk population, and the estimated marginal hazard ratio from the model without <span class="math inline">\(U\)</span> is similar to the conditional hazrd ratio from the model that adjusts for <span class="math inline">\(U\)</span>. However, at later times, the at-risk population has been selected for those with a smaller frailty (because they were less likely to have had the event), and for a log-normal frailty the marginal hazard ratio is attenuated towards 1.</p>
-<p>Let us stress that <em><span class="math inline">\(U\)</span> is not a confounder</em>. The issue is that fitting proportional hazards models with unmodelled heterogeneity for variables that are not confounders can lead to time-varying hazard ratios -- and marginal estimates that do not have a causal interpretation.</p>
+<p>What do you see from the time-varing hazard ratio? Is <span class="math inline">\(U\)</span> a potential confounder for <span class="math inline">\(X\)</span>?</p>
 </div>
 <div id="c-rarer-outcomes" class="section level2">
 <h2>(c) Rarer outcomes</h2>
-<p>We now simulate for rarer outcomes by changing the censoring distribution.</p>
+<p>We now simulate for rarer outcomes by changing the censoring distribution:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">set.seed</span>(<span class="dv">12345</span>)
 d &lt;-<span class="st"> </span><span class="kw">local</span>({
     n &lt;-<span class="st"> </span><span class="fl">1e4</span><span class="op">*</span><span class="dv">10</span> <span class="co"># CHANGED N</span>
@@ -332,7 +204,7 @@ d &lt;-<span class="st"> </span><span class="kw">local</span>({
 ## Poisson 1.081150  0.1212037
 ## Cox     1.081513  0.1212136
 ## Stpm2   1.081399  0.1212136</code></pre>
-<p>For rarer outcomes, the marginal estimates that do not model for <span class="math inline">\(U\)</span> are closer to the conditional estimates that have modelled for <span class="math inline">\(U\)</span>.</p>
+<p>What do you observe?</p>
 </div>
 <div id="d-less-heterogeneity" class="section level2">
 <h2>(d) Less heterogeneity</h2>
@@ -361,24 +233,11 @@ d &lt;-<span class="st"> </span><span class="kw">local</span>( {
 ## Poisson 0.9498227 0.07583196
 ## Cox     0.9444216 0.07584759
 ## Stpm2   0.9441747 0.07584672</code></pre>
-<p>The marginal estimates are now much closer to the conditional estimates. For little or no heterogeneity, the marginal and conditional estimates would be very similar.</p>
+<p>What do you observe?</p>
 </div>
 <div id="e-accelerated-failure-time-models" class="section level2">
 <h2>(e) Accelerated failure time models</h2>
-<p>We re-run the baseline simulations:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">set.seed</span>(<span class="dv">12345</span>)
-d &lt;-<span class="st"> </span><span class="kw">local</span>({
-    n &lt;-<span class="st"> </span><span class="fl">1e4</span>
-    x &lt;-<span class="st"> </span><span class="kw">rbinom</span>(n, <span class="dv">1</span>, <span class="fl">0.5</span>)
-    u &lt;-<span class="st"> </span><span class="kw">rnorm</span>(n, <span class="dv">0</span>, <span class="dv">3</span>)
-    t &lt;-<span class="st"> </span><span class="kw">rexp</span>(n, <span class="kw">exp</span>(<span class="op">-</span><span class="dv">5</span><span class="op">+</span>x<span class="op">+</span>u))
-    c &lt;-<span class="st"> </span><span class="kw">runif</span>(n, <span class="dv">0</span>, <span class="dv">10</span>)
-    y &lt;-<span class="st"> </span><span class="kw">pmin</span>(t, c)
-    delta &lt;-<span class="st"> </span>(t <span class="op">&lt;</span><span class="st"> </span>c)
-    <span class="kw">data.frame</span>(y,x,u,delta)
-})
-<span class="kw">head</span>(d)</code></pre></div>
-<p>The accelerated failure time models have the form <span class="math inline">\(S(t|x,u)=S_0(t/\exp( \beta_1 x + \beta_2 u))\)</span>, where the function <span class="math inline">\(S_0(t)\)</span> is expressed in terms of splines. For an exponential distribution, the hazard ratio is equal to the inverse of the ratio of the means --- so we expect values of <span class="math inline">\(-1\)</span> for <span class="math inline">\(x\)</span> and <span class="math inline">\(u\)</span>.</p>
+<p>As an alternative model class, we can fit <em>accelerated failure time models</em> with a smooth baseline survival function. We can use the <em>rstpm2::aft</em> function, which uses splines to model baseline survival. Using the baseline simulation, fit and interpret smooth accelerated failure time models:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fit &lt;-<span class="st"> </span><span class="kw">aft</span>(<span class="kw">Surv</span>(y,delta)<span class="op">~</span>x<span class="op">+</span>u,<span class="dt">data=</span>d,<span class="dt">df=</span><span class="dv">4</span>)</code></pre></div>
 <pre><code>## Warning in aft(Surv(y, delta) ~ x + u, data = d, df = 4): Some event times &lt; 1e-4:
 ## consider transforming time to avoid problems with finite differences</code></pre>
@@ -390,17 +249,17 @@ d &lt;-<span class="st"> </span><span class="kw">local</span>({
 ##     vecpar = TRUE, gr = gradient, control = control)
 ## 
 ## Coefficients:
-##                                        Estimate Std. Error  z value     Pr(z)    
-## x                                     -0.962349   0.044097 -21.8234 &lt; 2.2e-16 ***
-## u                                     -0.991045   0.012669 -78.2250 &lt; 2.2e-16 ***
-## nsx(logtstar, df, intercept = TRUE)1  -3.540395   1.262373  -2.8046  0.005039 ** 
-## nsx(logtstar, df, intercept = TRUE)2   1.849290   1.122320   1.6477  0.099406 .  
-## nsx(logtstar, df, intercept = TRUE)3 -20.890846   3.220527  -6.4868 8.769e-11 ***
-## nsx(logtstar, df, intercept = TRUE)4   8.705476   2.087574   4.1701 3.044e-05 ***
+##                                        Estimate Std. Error  z value  Pr(z)    
+## x                                     -1.036408   0.087590 -11.8325 &lt;2e-16 ***
+## u                                     -0.993895   0.048414 -20.5290 &lt;2e-16 ***
+## nsx(logtstar, df, intercept = TRUE)1  -3.424957   0.362342  -9.4523 &lt;2e-16 ***
+## nsx(logtstar, df, intercept = TRUE)2   0.285671   0.263517   1.0841 0.2783    
+## nsx(logtstar, df, intercept = TRUE)3 -14.160096   0.770293 -18.3828 &lt;2e-16 ***
+## nsx(logtstar, df, intercept = TRUE)4   4.529773   0.488247   9.2776 &lt;2e-16 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## -2 log L: 8520.726</code></pre>
+## -2 log L: 7681.266</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fit &lt;-<span class="st"> </span><span class="kw">aft</span>(<span class="kw">Surv</span>(y,delta)<span class="op">~</span>x,<span class="dt">data=</span>d,<span class="dt">df=</span><span class="dv">4</span>)</code></pre></div>
 <pre><code>## Warning in aft(Surv(y, delta) ~ x, data = d, df = 4): Some event times &lt; 1e-4: consider
 ## transforming time to avoid problems with finite differences</code></pre>
@@ -412,17 +271,16 @@ d &lt;-<span class="st"> </span><span class="kw">local</span>({
 ##     vecpar = TRUE, gr = gradient, control = control)
 ## 
 ## Coefficients:
-##                                        Estimate Std. Error z value     Pr(z)    
-## x                                     -1.036672   0.091059 -11.385 &lt; 2.2e-16 ***
-## nsx(logtstar, df, intercept = TRUE)1  -1.712953   0.202523  -8.458 &lt; 2.2e-16 ***
-## nsx(logtstar, df, intercept = TRUE)2   1.744329   0.158296  11.019 &lt; 2.2e-16 ***
-## nsx(logtstar, df, intercept = TRUE)3 -12.163768   0.465536 -26.128 &lt; 2.2e-16 ***
-## nsx(logtstar, df, intercept = TRUE)4   5.648566   0.296196  19.070 &lt; 2.2e-16 ***
+##                                       Estimate Std. Error  z value   Pr(z)    
+## x                                     -1.09475    0.09434 -11.6043 &lt; 2e-16 ***
+## nsx(logtstar, df, intercept = TRUE)1  -3.07693    0.30333 -10.1438 &lt; 2e-16 ***
+## nsx(logtstar, df, intercept = TRUE)2   0.57728    0.22640   2.5498 0.01078 *  
+## nsx(logtstar, df, intercept = TRUE)3 -13.49037    0.66035 -20.4290 &lt; 2e-16 ***
+## nsx(logtstar, df, intercept = TRUE)4   4.65714    0.41950  11.1018 &lt; 2e-16 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## -2 log L: 15835.68</code></pre>
-<p>We see that the model with both <span class="math inline">\(x\)</span> and <span class="math inline">\(u\)</span> estimates values are very close to <span class="math inline">\(-1\)</span> --- which is as expected. Importantly, the model with only <span class="math inline">\(x\)</span> also estimates a value close to <span class="math inline">\(-1\)</span>, which shows that the acclerated failure time models are robust to omitted covariates. The standard error for <span class="math inline">\(x\)</span> was smaller in the model with both <span class="math inline">\(x\)</span> and <span class="math inline">\(u\)</span> compared with that for the model with only <span class="math inline">\(x\)</span>.</p>
+## -2 log L: 8334.838</code></pre>
 </div>
 </div>
 </section>
