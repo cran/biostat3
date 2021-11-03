@@ -21,7 +21,7 @@ library(biostat3) # for Surv and survfit
 ## so it already measures time since entry
 poisson13a <- glm( chd ~ hieng + offset( log( y ) ), family=poisson, data=diet)
 summary(poisson13a)
-eform(poisson13a)
+biostat3::eform(poisson13a)
 
 cox13a <- coxph(Surv(y, chd) ~ hieng, data=diet)
 summary(cox13a)

@@ -81,7 +81,7 @@ summary(poisson9e <- glm( death_cancer ~ fu + year8594 + sex + agegrp + offset( 
                          family = poisson,
                          data = melanoma.spl ))
 
-eform(poisson9e)
+biostat3::eform(poisson9e)
 summary(coxfit9e)
 
 ## @knitr 9.f
@@ -115,7 +115,7 @@ poisson9f <- glm( death_cancer ~ fu + year8594 + sex + agegrp + offset( log(pt) 
                  data = melanoma.spl3 )
 
 ## IRR
-coef9f <- eform(poisson9f)
+coef9f <- biostat3::eform(poisson9f)
 ## We are not interested in nuisance parameters fu1, fu2, etc
 npar <- nrow(coef9f)
 pars <- (npar-4):npar
@@ -140,7 +140,7 @@ poisson9g <- glm( death_cancer ~ ns(mid,df=3) + year8594 + sex + agegrp + offset
                  family = poisson,
                  data = melanoma.spl4 )
 summary(poisson9g)
-eform(poisson9g)
+biostat3::eform(poisson9g)
 
 ## quick approach: use the effects package
 library(effects)

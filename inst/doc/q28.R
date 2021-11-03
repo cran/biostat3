@@ -30,7 +30,7 @@ melanoma0 <- biostat3::melanoma %>% filter(stage=="Localised") %>%
 ## (a) Flexible parametric model with df=4
 fpma <- stpm2(Surv(time,event) ~ year8594, data=melanoma0, df=4)
 summary(fpma)
-eform(fpma)["year8594Diagnosed 85-94",]
+biostat3::eform(fpma)["year8594Diagnosed 85-94",]
 
 ## @knitr a_cox
 cox <- coxph(Surv(time, event) ~ year8594,
@@ -106,7 +106,7 @@ legend("topright", legend=paste0("df=",1:6), lty=1:6)
 fpmf <- stpm2(Surv(time, event) ~ sex + year8594 + agegrp,
               data=melanoma0, df=4)
 summary(fpmf)
-eform(fpmf)[2:6,]
+biostat3::eform(fpmf)[2:6,]
 
 ## To test the overall effect of age with LR test
 fpmf2 <- stpm2(Surv(time,event) ~ sex + year8594, data=melanoma0, df=4)

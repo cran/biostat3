@@ -44,7 +44,7 @@ legend("topleft", legend=c('hieng=="low" (bshazard)','hieng=="high" (bshazard)',
 diet <- mutate(diet, y1k = y / 1000)
 poisson8b <- glm( chd ~ hieng + offset( log( y1k ) ), family=poisson, data=diet)
 summary(poisson8b)
-eform(poisson8b)
+biostat3::eform(poisson8b)
 
 
 ## @knitr 8c_ir
@@ -57,7 +57,7 @@ diet <- mutate(diet, jobNumber = unclass(job) - 1)
 
 poisson8c <- glm( chd ~ hieng + jobNumber + bmi + offset( log( y1k ) ), family=poisson, data=diet)
 summary(poisson8c)
-eform(poisson8c)
+biostat3::eform(poisson8c)
 
 ##########################################################
 
@@ -94,7 +94,7 @@ poisson8d <- glm( chd ~ hieng + agespan + offset( log( risk_time) ),
                  data=diet.spl.dob)
 
 summary(poisson8d)
-eform(poisson8d)
+biostat3::eform(poisson8d)
 
 ## @knitr 8d_model2
 poisson8d <- glm( chd ~ hieng + agespan + jobNumber + bmi + offset( log( risk_time) ),
@@ -102,7 +102,7 @@ poisson8d <- glm( chd ~ hieng + agespan + jobNumber + bmi + offset( log( risk_ti
                  data=diet.spl.dob)
 
 summary(poisson8d)
-eform(poisson8d)
+biostat3::eform(poisson8d)
 
 ## @knitr 8.e.i
 time.cuts <- c(0, 5, 10, 15, 22)
@@ -123,7 +123,7 @@ poisson8e1 <- glm( chd ~ fu + hieng + offset( log( risk_time) ),
                  data=diet.spl.t_entry )
 
 summary(poisson8e1)
-eform(poisson8e1)
+biostat3::eform(poisson8e1)
 
 ## @knitr 8.e.ii
 poisson8e2 <- glm( chd ~ fu + hieng + job + bmi + offset( log( risk_time) ),
@@ -131,6 +131,6 @@ poisson8e2 <- glm( chd ~ fu + hieng + job + bmi + offset( log( risk_time) ),
                  data=diet.spl.t_entry )
 
 summary(poisson8e2)
-eform(poisson8e2)
+biostat3::eform(poisson8e2)
 
 

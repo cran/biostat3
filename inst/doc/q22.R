@@ -15,7 +15,7 @@
 ## @knitr loadDependencies
 library(biostat3) # for Surv and survfit
 library(dplyr)    # for data manipulation
-
+library(rstpm2)
 
 ## @knitr loadPreprocess
 
@@ -37,7 +37,7 @@ survRate(Surv(age_entry, att_age, fail) ~ sex, data=brv)
 
 poisson22b <- glm( fail ~ sex + offset( log( t_at_risk) ), family=poisson, data=brv)
 summary( poisson22b )
-eform(poisson22b)
+biostat3::eform(poisson22b)
 
 select(brv, sex, age_entry) %>%
     group_by(sex) %>%
@@ -65,18 +65,18 @@ brvSplit %>% select(couple, id, sex, doe, dosp, dox, fail, y_before_sp_dth, y_af
 ## @knitr 22.d
 poisson22d <- glm( fail ~ brv + offset( log(t_sp_at_risk) ), family=poisson, data=brvSplit)
 summary(poisson22d)
-eform(poisson22d)
+biostat3::eform(poisson22d)
 
 ## @knitr 22.e
 ## Poisson regression for sex==1
 poisson22e1 <- glm( fail ~ brv + offset( log(t_sp_at_risk) ), family=poisson, data=filter(brvSplit, sex==1))
 summary(poisson22e1)
-eform(poisson22e1)
+biostat3::eform(poisson22e1)
 
 ## Poisson regression for sex==2
 poisson22e2 <- glm( fail ~ brv + offset( log(t_sp_at_risk) ), family=poisson, data=filter(brvSplit, sex==2))
 summary(poisson22e2)
-eform(poisson22e2)
+biostat3::eform(poisson22e2)
 
 ## Poisson regression, interaction with sex
 brvSplit2 <- mutate(brvSplit,
@@ -84,7 +84,7 @@ brvSplit2 <- mutate(brvSplit,
                     brv = as.factor(brv))
 poisson22e3 <- glm( fail ~ sex + brv:sex + offset( log(t_sp_at_risk) ), family=poisson, data=brvSplit2)
 summary(poisson22e3)
-eform(poisson22e3)
+biostat3::eform(poisson22e3)
 
 ## @knitr 22.f
 ## Translate time scale from years from spouse death to ages
@@ -105,16 +105,16 @@ survRate(Surv(t_at_risk, fail) ~ age, data=brvSplit4)
 
 poisson22f1 <- glm( fail ~ brv + age + offset( log(t_at_risk) ), family=poisson, data=brvSplit4)
 summary(poisson22f1)
-eform(poisson22f1)
+biostat3::eform(poisson22f1)
 
 poisson22f2 <- glm( fail ~ brv +age + sex + offset( log(t_at_risk) ), family=poisson, data=brvSplit4)
 summary(poisson22f2)
-eform(poisson22f2)
+biostat3::eform(poisson22f2)
 
 ## @knitr 22.g
 poisson22g <- glm( fail ~ age + sex + brv:sex + offset( log(t_at_risk) ), family=poisson, data=brvSplit4)
 summary(poisson22g)
-eform(poisson22g)
+biostat3::eform(poisson22g)
 
 ## @knitr 22.i
 summary(coxph(Surv(age_start, age_end, fail) ~ brv,

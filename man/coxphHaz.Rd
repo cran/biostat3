@@ -4,6 +4,8 @@
 \alias{plot.coxphHaz}
 \alias{plot.coxphHazList}
 \alias{lines.coxphHazList}
+\alias{as.data.frame.coxphHaz}
+\alias{as.data.frame.coxphHazList}
 \title{
 Smoothed hazard estimates for \code{coxph}
 }
@@ -18,6 +20,8 @@ to, ...)
 \method{plot}{coxphHazList}(x, xlab="Time", ylab="Hazard", type="l",
                   col=1:length(x), lty=1, legend.args=list(), ...)
 \method{lines}{coxphHazList}(x, ...)
+\method{as.data.frame}{coxphHaz}(x, row.names=NULL, optional=FALSE, level=0.95, ...)
+\method{as.data.frame}{coxphHazList}(x, row.names=NULL, optional=FALSE, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -60,6 +64,21 @@ graphics argument
   \item{type}{
 graphics argument
 }
+  \item{level}{
+level for confidence intervals (default=0.95)
+}
+  \item{row.names}{
+    \code{NULL} or a character vector giving the row names for the
+          data frame.  Missing values are not allowed.
+}
+  \item{optional}{
+logical. If \code{TRUE}, setting row names and converting column
+          names (to syntactic names: see \code{make.names}) is optional.
+          Note that all of R's \code{base} package \code{as.data.frame()} methods
+          use \code{optional} only for column names treatment, basically
+          with the meaning of \code{data.frame(*, check.names = !optional)}.
+          See also the \code{make.names} argument of the \code{matrix} method.
+}
   \item{legend.args}{
     a list of options that are passed to the legend call. Defaults are
     \code{list(x="topright",legend=strata(attr(x,"newdata")),col=col,lty=lty)}.
@@ -98,7 +117,6 @@ fit <- coxph(Surv(surv_mm/12,status=="Dead: cancer")~agegrp, data=colon)
 newdata <- data.frame(agegrp=levels(colon$agegrp))
 haz <- suppressWarnings(coxphHaz(fit,newdata))
 plot(haz, xlab="Time since diagnosis (years)")
-legend("topright", legend=newdata$agegrp, lty=1:4, col=1:4, bty="n")
 }
 \keyword{ survival }
 

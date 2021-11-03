@@ -130,7 +130,7 @@ summary(glm( event ~ year8594 + offset( log( tstop/12/1000 ) ), family=poisson, 
 
 
 ## IRR
-eform(poisson7c)
+biostat3::eform(poisson7c)
 
 
 ## Note that the scaling of the offset term only has an impact on the intercept
@@ -194,26 +194,26 @@ summary(poisson7g <- glm( death_cancer ~ fu + offset( log(pt) ),
                          family = poisson,
                          data = melanoma.spl ))
 ## IRR
-eform(poisson7g)
+biostat3::eform(poisson7g)
 
 ## @knitr 7.h
 summary(poisson7h <- glm( death_cancer ~ fu + year8594 + offset( log(pt) ),
                          family = poisson,
                          data = melanoma.spl ))
 ## IRR
-eform(poisson7h)
+biostat3::eform(poisson7h)
 
 # Add interaction term
 summary(poisson7h2 <- glm( death_cancer ~ fu*year8594 + offset( log(pt) ), family=poisson, data=melanoma.spl ))
 ## IRR
-eform(poisson7h2)
+biostat3::eform(poisson7h2)
 
 ## @knitr 7.i
 
 summary(poisson7i <- glm( death_cancer ~ fu + year8594 + sex + agegrp + offset( log(pt) ), family=poisson, data=melanoma.spl ))
 
 ## IRR
-eform(poisson7i)
+biostat3::eform(poisson7i)
 
 ## Test if the effect of age is significant using a likelihood ratio test
 drop1(poisson7i, ~agegrp, test="Chisq")
@@ -229,7 +229,7 @@ linearHypothesis(poisson7i,c("agegrp45-59 = 0","agegrp60-74 = 0","agegrp75+ = 0"
 summary(poisson7j <- glm( death_cancer ~ fu + agegrp + year8594*sex + offset( log(pt) ), family=poisson, data=melanoma.spl ))
 
 ## IRR
-eform(poisson7j)
+biostat3::eform(poisson7j)
 
 ## @knitr 7.k.i
 # hand calculations
@@ -253,14 +253,14 @@ summary(poisson7k <- glm( death_cancer ~ fu + agegrp + year8594 + femaleEarly +
                          data=melanoma.spl ))
 
 ## IRR
-eform(poisson7k)
+biostat3::eform(poisson7k)
 
 ## @knitr 7.k.iv
 ## Add interaction term
 summary(poisson7k2 <- glm( death_cancer ~ fu + agegrp + year8594 + year8594:sex +
                          offset( log(pt) ), family=poisson,
                          data=melanoma.spl ))
-eform(poisson7k2)
+biostat3::eform(poisson7k2)
 
 
 ## @knitr 7.l
@@ -268,25 +268,25 @@ eform(poisson7k2)
 summary( poisson7l.early <- glm( death_cancer ~ fu + agegrp + sex + offset( log(pt) ),
                        family = poisson, data = melanoma.spl,
                        subset = year8594 == "Diagnosed 75-84" ) )
-eform(poisson7l.early)
+biostat3::eform(poisson7l.early)
 
 summary( poisson7l.late <- glm( death_cancer ~ fu + agegrp + sex + offset( log(pt) ),
                        family = poisson, data = melanoma.spl,
                        subset = year8594 == "Diagnosed 85-94" ) )
-eform(poisson7l.late)
+biostat3::eform(poisson7l.late)
 
 # compare with results in i
-eform(poisson7i)
+biostat3::eform(poisson7i)
 
 # compare with results in j
-eform(poisson7j)
+biostat3::eform(poisson7j)
 
 
 # Poisson-regression with effects specific for diagnose period
 summary(poisson7l2 <- glm( death_cancer ~ fu + fu:year8594 + agegrp + agegrp:year8594
                           + sex*year8594 + offset( log(pt) ),
                           family=poisson, data=melanoma.spl ))
-eform(poisson7l2)
+biostat3::eform(poisson7l2)
 
 ## @knitr 7.m
 ## Split follow up by month
@@ -317,12 +317,13 @@ poisson7n <- glm(event ~ ns(mid,df=4) + agegrp + year8594 +
                  family=poisson,
                  data=melanoma.spl)
 library(rstpm2)
+library(ggplot2)
 ## get log(RR) confidence interval using predictnl (delta method)
 pred <- predictnl(poisson7n, function(object)
     log(predict(object, newdata=transform(df, year8594="Diagnosed 85-94"),
                 type="response") /
         predict(object, newdata=df, type="response")))
-gpred2 <- transform(pred, time = df$mid, rr = exp(fit), ci = exp(confint(pred)))
+pred2 <- transform(pred, time = df$mid, rr = exp(fit), ci = exp(confint(pred)))
 ggplot(pred2, aes(x=time, y=rr, ymin=ci.2.5.., ymax=ci.97.5..)) +
     ggplot2::geom_line() + ggplot2::geom_ribbon(alpha=0.6) +
     xlab("Time since diagnosis (years)") +

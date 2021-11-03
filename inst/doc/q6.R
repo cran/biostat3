@@ -34,8 +34,8 @@ with(diet.ir6a, poisson.test(rev(event),rev(tstop)))
 ## @knitr 6b_ir
 poisson6b <- glm( chd ~ hieng + offset( log( y1k ) ), family=poisson, data=diet)
 summary(poisson6b)
-eform(poisson6b)
-eform(poisson6b, method="Profile")
+biostat3::eform(poisson6b)
+biostat3::eform(poisson6b, method="Profile")
 
 ## @knitr 6c_energyDist
 hist6c <- hist(diet$energy, breaks=25, probability=TRUE, xlab="Energy (units)")
@@ -84,7 +84,7 @@ filter(diet, eng3=="high")   %>% select(c(energy,eng3,X1,X2,X3)) %>% head
 ## @knitr 6h
 poisson6h <- glm( chd ~ X2 + X3 + offset( log( y1k ) ), family=poisson, data=diet )
 summary(poisson6h)
-eform(poisson6h)
+biostat3::eform(poisson6h)
 
 ## @knitr 6i
 poisson6i <- glm( chd ~ X1 + X3 + offset( log( y1k ) ), family=poisson, data=diet )
@@ -92,12 +92,12 @@ poisson6i <- glm( chd ~ X1 + X3 + offset( log( y1k ) ), family=poisson, data=die
 poisson6i <- glm( chd ~ I(eng3=="low") + I(eng3=="high") + offset( log( y1k ) ), family=poisson, data=diet )
 
 summary( poisson6i )
-eform( poisson6i )
+biostat3::eform( poisson6i )
 
 ## @knitr 6j
 poisson6j <- glm( chd ~ eng3 + offset( log( y1k ) ), family=poisson, data=diet )
 summary( poisson6j )
-eform( poisson6j )
+biostat3::eform( poisson6j )
 
 ## @knitr 6k
 summarise(diet, rate = sum(chd) / sum(y))
