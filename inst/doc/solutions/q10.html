@@ -139,7 +139,8 @@ a.sourceLine {
 <p>You may have to install the required packages the first time you use them. You can install a package by <code>install.packages(&quot;package_of_interest&quot;)</code> for each package you require.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">library</span>(biostat3)</a>
 <a class="sourceLine" id="cb1-2" title="2"><span class="kw">library</span>(dplyr)    <span class="co"># for data manipulation</span></a>
-<a class="sourceLine" id="cb1-3" title="3"><span class="kw">library</span>(ggplot2)</a></code></pre></div>
+<a class="sourceLine" id="cb1-3" title="3"><span class="kw">library</span>(ggplot2)</a>
+<a class="sourceLine" id="cb1-4" title="4"><span class="kw">library</span>(car)      <span class="co"># car::linearHypothesis -&gt; biostat3::lincom</span></a></code></pre></div>
 <p>Load melanoma data and explore it.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1">localised &lt;-<span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(biostat3<span class="op">::</span>melanoma, stage <span class="op">==</span><span class="st"> &quot;Localised&quot;</span>) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb2-2" title="2"><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(<span class="dt">death_cancer =</span> <span class="kw">ifelse</span>( status <span class="op">==</span><span class="st"> &quot;Dead: cancer&quot;</span> <span class="op">&amp;</span><span class="st"> </span>surv_mm <span class="op">&lt;=</span><span class="st"> </span><span class="dv">120</span>, <span class="dv">1</span>, <span class="dv">0</span>), <span class="co">#censoring for &gt; 120 months</span></a>
@@ -300,8 +301,9 @@ Using <code>survSplit</code> to split on time will give you the same results as 
 ## 4            0  2
 ## 5            0  1
 ## 6            0  2</code></pre>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" title="1">cox2p8Split1 &lt;-<span class="st"> </span><span class="kw">coxph</span>(<span class="kw">Surv</span>(start, trunc_yy, death_cancer) <span class="op">~</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>year8594 <span class="op">+</span><span class="st"> </span>agegrp<span class="op">*</span>fu, <span class="dt">data=</span>melanoma2p8Split)</a>
-<a class="sourceLine" id="cb19-2" title="2"><span class="kw">summary</span>(cox2p8Split1)</a></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" title="1">cox2p8Split1 &lt;-<span class="st"> </span><span class="kw">coxph</span>(<span class="kw">Surv</span>(start, trunc_yy, death_cancer) <span class="op">~</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>year8594 <span class="op">+</span><span class="st"> </span>agegrp<span class="op">*</span>fu,</a>
+<a class="sourceLine" id="cb19-2" title="2">                      <span class="dt">data=</span>melanoma2p8Split)</a>
+<a class="sourceLine" id="cb19-3" title="3"><span class="kw">summary</span>(cox2p8Split1)</a></code></pre></div>
 <pre><code>## Call:
 ## coxph(formula = Surv(start, trunc_yy, death_cancer) ~ sex + year8594 + 
 ##     agegrp * fu, data = melanoma2p8Split)
@@ -336,36 +338,48 @@ Using <code>survSplit</code> to split on time will give you the same results as 
 ## Likelihood ratio test= 222.5  on 8 df,   p=&lt;2e-16
 ## Wald test            = 224.5  on 8 df,   p=&lt;2e-16
 ## Score (logrank) test = 238  on 8 df,   p=&lt;2e-16</code></pre>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" title="1">cox2p8Split1b &lt;-<span class="st"> </span><span class="kw">coxph</span>(<span class="kw">Surv</span>(start, trunc_yy, death_cancer) <span class="op">~</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>year8594 <span class="op">+</span><span class="st"> </span>agegrp <span class="op">+</span><span class="st"> </span><span class="kw">I</span>(agegrp<span class="op">==</span><span class="st">&quot;75+&quot;</span> <span class="op">&amp;</span><span class="st"> </span>fu<span class="op">==</span><span class="st">&quot;2&quot;</span>), <span class="dt">data=</span>melanoma2p8Split)</a>
-<a class="sourceLine" id="cb21-2" title="2"><span class="kw">summary</span>(cox2p8Split1b)</a></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" title="1">cox2p8Split1b &lt;-<span class="st"> </span><span class="kw">coxph</span>(<span class="kw">Surv</span>(start, trunc_yy, death_cancer) <span class="op">~</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>year8594 <span class="op">+</span><span class="st"> </span>agegrp <span class="op">+</span></a>
+<a class="sourceLine" id="cb21-2" title="2"><span class="st">                           </span><span class="kw">I</span>(agegrp<span class="op">==</span><span class="st">&quot;45-59&quot;</span> <span class="op">&amp;</span><span class="st"> </span>fu<span class="op">==</span><span class="st">&quot;2&quot;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">I</span>(agegrp<span class="op">==</span><span class="st">&quot;60-74&quot;</span> <span class="op">&amp;</span><span class="st"> </span>fu<span class="op">==</span><span class="st">&quot;2&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb21-3" title="3"><span class="st">                           </span><span class="kw">I</span>(agegrp<span class="op">==</span><span class="st">&quot;75+&quot;</span> <span class="op">&amp;</span><span class="st"> </span>fu<span class="op">==</span><span class="st">&quot;2&quot;</span>), <span class="dt">data=</span>melanoma2p8Split)</a>
+<a class="sourceLine" id="cb21-4" title="4"><span class="kw">summary</span>(cox2p8Split1b)</a></code></pre></div>
 <pre><code>## Call:
 ## coxph(formula = Surv(start, trunc_yy, death_cancer) ~ sex + year8594 + 
-##     agegrp + I(agegrp == &quot;75+&quot; &amp; fu == &quot;2&quot;), data = melanoma2p8Split)
+##     agegrp + I(agegrp == &quot;45-59&quot; &amp; fu == &quot;2&quot;) + I(agegrp == &quot;60-74&quot; &amp; 
+##     fu == &quot;2&quot;) + I(agegrp == &quot;75+&quot; &amp; fu == &quot;2&quot;), data = melanoma2p8Split)
 ## 
 ##   n= 9856, number of events= 960 
 ## 
-##                                        coef exp(coef) se(coef)      z Pr(&gt;|z|)    
-## sexFemale                          -0.52813   0.58970  0.06543 -8.072 6.90e-16 ***
-## year8594Diagnosed 85-94            -0.33500   0.71534  0.06622 -5.059 4.22e-07 ***
-## agegrp45-59                         0.28459   1.32921  0.09417  3.022  0.00251 ** 
-## agegrp60-74                         0.62377   1.86595  0.09089  6.863 6.73e-12 ***
-## agegrp75+                           1.48077   4.39633  0.14309 10.348  &lt; 2e-16 ***
-## I(agegrp == &quot;75+&quot; &amp; fu == &quot;2&quot;)TRUE -0.43812   0.64525  0.16994 -2.578  0.00994 ** 
+##                                          coef exp(coef) se(coef)      z Pr(&gt;|z|)    
+## sexFemale                            -0.52742   0.59012  0.06543 -8.061 7.58e-16 ***
+## year8594Diagnosed 85-94              -0.33548   0.71499  0.06623 -5.065 4.08e-07 ***
+## agegrp45-59                           0.53058   1.69992  0.19634  2.702  0.00689 ** 
+## agegrp60-74                           0.90046   2.46074  0.18741  4.805 1.55e-06 ***
+## agegrp75+                             1.68918   5.41503  0.19175  8.809  &lt; 2e-16 ***
+## I(agegrp == &quot;45-59&quot; &amp; fu == &quot;2&quot;)TRUE -0.32093   0.72547  0.22382 -1.434  0.15161    
+## I(agegrp == &quot;60-74&quot; &amp; fu == &quot;2&quot;)TRUE -0.36715   0.69270  0.21467 -1.710  0.08720 .  
+## I(agegrp == &quot;75+&quot; &amp; fu == &quot;2&quot;)TRUE   -0.70783   0.49271  0.23207 -3.050  0.00229 ** 
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
-##                                    exp(coef) exp(-coef) lower .95 upper .95
-## sexFemale                             0.5897     1.6958    0.5187    0.6704
-## year8594Diagnosed 85-94               0.7153     1.3979    0.6283    0.8145
-## agegrp45-59                           1.3292     0.7523    1.1052    1.5987
-## agegrp60-74                           1.8660     0.5359    1.5615    2.2298
-## agegrp75+                             4.3963     0.2275    3.3211    5.8196
-## I(agegrp == &quot;75+&quot; &amp; fu == &quot;2&quot;)TRUE    0.6452     1.5498    0.4625    0.9003
+##                                      exp(coef) exp(-coef) lower .95 upper .95
+## sexFemale                               0.5901     1.6946    0.5191    0.6709
+## year8594Diagnosed 85-94                 0.7150     1.3986    0.6280    0.8141
+## agegrp45-59                             1.6999     0.5883    1.1569    2.4978
+## agegrp60-74                             2.4607     0.4064    1.7043    3.5529
+## agegrp75+                               5.4150     0.1847    3.7186    7.8853
+## I(agegrp == &quot;45-59&quot; &amp; fu == &quot;2&quot;)TRUE    0.7255     1.3784    0.4678    1.1250
+## I(agegrp == &quot;60-74&quot; &amp; fu == &quot;2&quot;)TRUE    0.6927     1.4436    0.4548    1.0550
+## I(agegrp == &quot;75+&quot; &amp; fu == &quot;2&quot;)TRUE      0.4927     2.0296    0.3126    0.7765
 ## 
-## Concordance= 0.646  (se = 0.009 )
-## Likelihood ratio test= 219.3  on 6 df,   p=&lt;2e-16
-## Wald test            = 225.4  on 6 df,   p=&lt;2e-16
-## Score (logrank) test = 236.9  on 6 df,   p=&lt;2e-16</code></pre>
+## Concordance= 0.645  (se = 0.009 )
+## Likelihood ratio test= 222.5  on 8 df,   p=&lt;2e-16
+## Wald test            = 224.5  on 8 df,   p=&lt;2e-16
+## Score (logrank) test = 238  on 8 df,   p=&lt;2e-16</code></pre>
+<p>The regression equation for the cox2p8Split1 model is <span class="math display">\[\begin{align*}
+h(t|\text{year8594},\text{sex},\text{agegrp},\text{fu}) &amp;= h_0(t) \exp(\beta_1 I(\text{sex}=\text{&quot;Female&quot;})+\beta_2 I(\text{year8594}=\text{&quot;Diagnosed 85-94&quot;})+\\
+&amp;\qquad\beta_3 I(\text{agegrp}=\text{&quot;45-59&quot;})+\beta_4 I(\text{agegrp}=\text{&quot;60-74&quot;})+\beta_5 I(\text{agegrp}=\text{&quot;75+&quot;}) + \\
+&amp;\qquad \beta_6 I(\text{agegrp}=\text{&quot;45-59&quot;} \&amp;\ \text{fu}=2)+\beta_7 I(\text{agegrp}=\text{&quot;60-74&quot;}  \&amp;\ \text{fu}=2)+\beta_8 I(\text{agegrp}=\text{&quot;75+&quot;} \&amp;\ \text{fu}=2))
+\end{align*}\]</span> where <span class="math inline">\(h(t|\text{year8594},\text{sex},\text{agegrp},\text{fu})\)</span> is the hazard at time <span class="math inline">\(t\)</span> given covariates <span class="math inline">\(\text{year8594}\)</span>, <span class="math inline">\(\text{sex}\)</span>, <span class="math inline">\(\text{agegrp}\)</span> and <span class="math inline">\(\text{fu}\)</span>, with baseline hazard <span class="math inline">\(h_0(t)\)</span> and regression coefficients representing log hazard ratios for <span class="math inline">\(\beta_1\)</span> for females, <span class="math inline">\(\beta_2\)</span> for the calendar period 1985–1994, <span class="math inline">\(\beta_3\)</span> for those aged 45–59 years at diagnosis, <span class="math inline">\(\beta_4\)</span> for those aged 60–74 years and <span class="math inline">\(\beta_5\)</span> for those aged 75 years and over, with interaction terms for the change in log hazard ratio for the second follow-up period being <span class="math inline">\(\beta_6\)</span> for those aged 45–59 years at diagnosis, <span class="math inline">\(\beta_7\)</span> for those aged 60–74 years and <span class="math inline">\(\beta_8\)</span> for those aged 75 years and over.</p>
 </div>
 <div id="i" class="section level2">
 <h2>(i)</h2>
@@ -436,147 +450,205 @@ Using <code>survSplit</code> to split on time will give you the same results as 
 ## Likelihood ratio test= 222.5  on 8 df,   p=&lt;2e-16
 ## Wald test            = 224.5  on 8 df,   p=&lt;2e-16
 ## Score (logrank) test = 238  on 8 df,   p=&lt;2e-16</code></pre>
+<p>The regression equation for the <code>cox2p8Split2</code> model is <span class="math display">\[\begin{align*}
+h(t|\text{year8594},\text{sex},\text{agegrp},\text{fu}) &amp;= h_0(t) \exp(\beta_1 I(\text{sex}=\text{&quot;Female&quot;})+\beta_2 I(\text{year8594}=\text{&quot;Diagnosed 85-94&quot;})+\\
+&amp;\qquad\beta_3 I(\text{agegrp}=\text{&quot;45-59&quot;} \&amp;\ \text{fu}=1)+\beta_4 I(\text{agegrp}=\text{&quot;45-59&quot;} \&amp;\ \text{fu}=2)+\beta_5 I(\text{agegrp}=\text{&quot;60-74&quot;} \&amp;\ \text{fu}=1) + \\
+&amp;\qquad \beta_6 I(\text{agegrp}=\text{&quot;60-74&quot;} \&amp;\ \text{fu}=2)+\beta_7 I(\text{agegrp}=\text{&quot;75+&quot;}  \&amp;\ \text{fu}=1)+\beta_8 I(\text{agegrp}=\text{&quot;75+&quot;} \&amp;\ \text{fu}=2))
+\end{align*}\]</span> where <span class="math inline">\(h(t|\text{year8594},\text{sex},\text{agegrp},\text{agegrp},\text{fu})\)</span> is the hazard at time <span class="math inline">\(t\)</span> given covariates <span class="math inline">\(\text{year8594}\)</span>, <span class="math inline">\(\text{sex}\)</span> and <span class="math inline">\(\text{agegrp}\)</span>, <span class="math inline">\(\text{agegrp}\)</span> and <span class="math inline">\(\text{fu}\)</span>, with baseline hazard <span class="math inline">\(h_0(t)\)</span> and regression coefficients representing log hazard ratios for <span class="math inline">\(\beta_1\)</span> for the calendar period 1985–1994, <span class="math inline">\(\beta_2\)</span> for females, with log hazard ratios for the first and second follow-up period being <span class="math inline">\(\beta_3\)</span> and <span class="math inline">\(\beta_4\)</span> for those aged 45–59 years at diagnosis, <span class="math inline">\(\beta_5\)</span> and <span class="math inline">\(\beta_6\)</span> for those aged 60–74 years and <span class="math inline">\(\beta_7\)</span> and <span class="math inline">\(\beta_8\)</span> for those aged 75 years and over.</p>
+<p>We can also use the <code>tt</code> argument in <code>coxph</code> for modelling for time-varying effects:</p>
 <div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" title="1"><span class="co">## Alternative approach using tt():</span></a>
 <a class="sourceLine" id="cb25-2" title="2"><span class="co">## http://cran.r-project.org/web/packages/survival/vignettes/timedep.pdf</span></a>
-<a class="sourceLine" id="cb25-3" title="3">cox2p8tvc2 &lt;-<span class="st"> </span><span class="kw">coxph</span>(<span class="kw">Surv</span>(trunc_yy, death_cancer) <span class="op">~</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>year8594 <span class="op">+</span><span class="st"> </span>agegrp <span class="op">+</span><span class="st"> </span><span class="kw">tt</span>(agegrp), <span class="dt">data=</span>localised,</a>
-<a class="sourceLine" id="cb25-4" title="4">                   <span class="dt">tt =</span> <span class="cf">function</span>(x, t, ...) (x<span class="op">==</span><span class="st">&quot;75+&quot;</span>)<span class="op">*</span>(t<span class="op">&gt;=</span><span class="dv">2</span>))</a>
-<a class="sourceLine" id="cb25-5" title="5"><span class="kw">summary</span>(cox2p8tvc2)</a></code></pre></div>
+<a class="sourceLine" id="cb25-3" title="3">cox2p8tvc2 &lt;-<span class="st"> </span><span class="kw">coxph</span>(<span class="kw">Surv</span>(trunc_yy, death_cancer) <span class="op">~</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>year8594 <span class="op">+</span><span class="st"> </span>agegrp <span class="op">+</span></a>
+<a class="sourceLine" id="cb25-4" title="4"><span class="st">                        </span><span class="kw">tt</span>(agegrp<span class="op">==</span><span class="st">&quot;45-59&quot;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">tt</span>(agegrp<span class="op">==</span><span class="st">&quot;60-74&quot;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">tt</span>(agegrp<span class="op">==</span><span class="st">&quot;75+&quot;</span>),</a>
+<a class="sourceLine" id="cb25-5" title="5">                    <span class="dt">data=</span>localised,</a>
+<a class="sourceLine" id="cb25-6" title="6">                    <span class="dt">tt =</span> <span class="cf">function</span>(x, t, ...) x<span class="op">*</span>(t<span class="op">&gt;=</span><span class="dv">2</span>))</a>
+<a class="sourceLine" id="cb25-7" title="7"><span class="kw">summary</span>(cox2p8tvc2)</a></code></pre></div>
 <pre><code>## Call:
 ## coxph(formula = Surv(trunc_yy, death_cancer) ~ sex + year8594 + 
-##     agegrp + tt(agegrp), data = localised, tt = function(x, t, 
-##     ...) (x == &quot;75+&quot;) * (t &gt;= 2))
+##     agegrp + tt(agegrp == &quot;45-59&quot;) + tt(agegrp == &quot;60-74&quot;) + 
+##     tt(agegrp == &quot;75+&quot;), data = localised, tt = function(x, t, 
+##     ...) x * (t &gt;= 2))
 ## 
 ##   n= 5318, number of events= 960 
 ## 
 ##                             coef exp(coef) se(coef)      z Pr(&gt;|z|)    
-## sexFemale               -0.52813   0.58970  0.06543 -8.072 6.90e-16 ***
-## year8594Diagnosed 85-94 -0.33500   0.71534  0.06622 -5.059 4.22e-07 ***
-## agegrp45-59              0.28459   1.32921  0.09417  3.022  0.00251 ** 
-## agegrp60-74              0.62377   1.86595  0.09089  6.863 6.73e-12 ***
-## agegrp75+                1.48077   4.39633  0.14309 10.348  &lt; 2e-16 ***
-## tt(agegrp)              -0.43812   0.64525  0.16994 -2.578  0.00994 ** 
+## sexFemale               -0.52742   0.59012  0.06543 -8.061 7.58e-16 ***
+## year8594Diagnosed 85-94 -0.33548   0.71499  0.06623 -5.065 4.08e-07 ***
+## agegrp45-59              0.53058   1.69992  0.19634  2.702  0.00689 ** 
+## agegrp60-74              0.90046   2.46074  0.18741  4.805 1.55e-06 ***
+## agegrp75+                1.68918   5.41503  0.19175  8.809  &lt; 2e-16 ***
+## tt(agegrp == &quot;45-59&quot;)   -0.32093   0.72547  0.22382 -1.434  0.15161    
+## tt(agegrp == &quot;60-74&quot;)   -0.36715   0.69270  0.21467 -1.710  0.08720 .  
+## tt(agegrp == &quot;75+&quot;)     -0.70783   0.49271  0.23207 -3.050  0.00229 ** 
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ##                         exp(coef) exp(-coef) lower .95 upper .95
-## sexFemale                  0.5897     1.6958    0.5187    0.6704
-## year8594Diagnosed 85-94    0.7153     1.3979    0.6283    0.8145
-## agegrp45-59                1.3292     0.7523    1.1052    1.5987
-## agegrp60-74                1.8660     0.5359    1.5615    2.2298
-## agegrp75+                  4.3963     0.2275    3.3211    5.8196
-## tt(agegrp)                 0.6452     1.5498    0.4625    0.9003
+## sexFemale                  0.5901     1.6946    0.5191    0.6709
+## year8594Diagnosed 85-94    0.7150     1.3986    0.6280    0.8141
+## agegrp45-59                1.6999     0.5883    1.1569    2.4978
+## agegrp60-74                2.4607     0.4064    1.7043    3.5529
+## agegrp75+                  5.4150     0.1847    3.7186    7.8853
+## tt(agegrp == &quot;45-59&quot;)      0.7255     1.3784    0.4678    1.1250
+## tt(agegrp == &quot;60-74&quot;)      0.6927     1.4436    0.4548    1.0550
+## tt(agegrp == &quot;75+&quot;)        0.4927     2.0296    0.3126    0.7765
 ## 
-## Concordance= 0.646  (se = 0.009 )
-## Likelihood ratio test= 219.3  on 6 df,   p=&lt;2e-16
-## Wald test            = 225.4  on 6 df,   p=&lt;2e-16
-## Score (logrank) test = 236.9  on 6 df,   p=&lt;2e-16</code></pre>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" title="1">cox2p8tvct &lt;-<span class="st"> </span><span class="kw">coxph</span>(<span class="kw">Surv</span>(trunc_yy, death_cancer) <span class="op">~</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>year8594 <span class="op">+</span><span class="st"> </span>agegrp <span class="op">+</span><span class="st"> </span><span class="kw">tt</span>(agegrp), <span class="dt">data=</span>localised,</a>
-<a class="sourceLine" id="cb27-2" title="2">                   <span class="dt">tt =</span> <span class="cf">function</span>(x, t, ...) (x<span class="op">==</span><span class="st">&quot;75+&quot;</span>)<span class="op">*</span>t)</a>
-<a class="sourceLine" id="cb27-3" title="3"><span class="kw">summary</span>(cox2p8tvct)</a></code></pre></div>
+## Concordance= 0.645  (se = 0.009 )
+## Likelihood ratio test= 222.5  on 8 df,   p=&lt;2e-16
+## Wald test            = 224.5  on 8 df,   p=&lt;2e-16
+## Score (logrank) test = 238  on 8 df,   p=&lt;2e-16</code></pre>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" title="1"><span class="co">## The tt labels do not play nicely with lincom:(</span></a>
+<a class="sourceLine" id="cb27-2" title="2"></a>
+<a class="sourceLine" id="cb27-3" title="3">cox2p8tvct &lt;-<span class="st"> </span><span class="kw">coxph</span>(<span class="kw">Surv</span>(trunc_yy, death_cancer) <span class="op">~</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>year8594 <span class="op">+</span><span class="st"> </span>agegrp <span class="op">+</span><span class="st"> </span><span class="kw">tt</span>(agegrp),</a>
+<a class="sourceLine" id="cb27-4" title="4">                    <span class="dt">data=</span>localised,</a>
+<a class="sourceLine" id="cb27-5" title="5">                    <span class="dt">tt =</span> <span class="cf">function</span>(x, t, ...) <span class="kw">cbind</span>(<span class="st">`</span><span class="dt">45-59</span><span class="st">`</span>=(x<span class="op">==</span><span class="st">&quot;45-59&quot;</span>)<span class="op">*</span>t,</a>
+<a class="sourceLine" id="cb27-6" title="6">                                                   <span class="st">`</span><span class="dt">60-74</span><span class="st">`</span>=(x<span class="op">==</span><span class="st">&quot;60-74&quot;</span>)<span class="op">*</span>t,</a>
+<a class="sourceLine" id="cb27-7" title="7">                                                   <span class="st">`</span><span class="dt">75+</span><span class="st">`</span>=(x<span class="op">==</span><span class="st">&quot;75+&quot;</span>)<span class="op">*</span>t))</a>
+<a class="sourceLine" id="cb27-8" title="8"><span class="kw">summary</span>(cox2p8tvct)</a></code></pre></div>
 <pre><code>## Call:
 ## coxph(formula = Surv(trunc_yy, death_cancer) ~ sex + year8594 + 
 ##     agegrp + tt(agegrp), data = localised, tt = function(x, t, 
-##     ...) (x == &quot;75+&quot;) * t)
+##     ...) cbind(`45-59` = (x == &quot;45-59&quot;) * t, `60-74` = (x == 
+##     &quot;60-74&quot;) * t, `75+` = (x == &quot;75+&quot;) * t))
 ## 
 ##   n= 5318, number of events= 960 
 ## 
 ##                             coef exp(coef) se(coef)      z Pr(&gt;|z|)    
-## sexFemale               -0.52607   0.59092  0.06540 -8.044 8.71e-16 ***
-## year8594Diagnosed 85-94 -0.33673   0.71410  0.06625 -5.083 3.72e-07 ***
-## agegrp45-59              0.28592   1.33099  0.09418  3.036  0.00240 ** 
-## agegrp60-74              0.62623   1.87054  0.09089  6.890 5.59e-12 ***
-## agegrp75+                1.66488   5.28506  0.17061  9.758  &lt; 2e-16 ***
-## tt(agegrp)              -0.15804   0.85381  0.05048 -3.131  0.00174 ** 
+## sexFemale               -0.52429   0.59198  0.06541 -8.016 1.10e-15 ***
+## year8594Diagnosed 85-94 -0.33768   0.71342  0.06627 -5.095 3.48e-07 ***
+## agegrp45-59              0.49614   1.64237  0.18573  2.671 0.007555 ** 
+## agegrp60-74              0.99490   2.70445  0.17856  5.572 2.52e-08 ***
+## agegrp75+                1.89383   6.64478  0.20455  9.259  &lt; 2e-16 ***
+## tt(agegrp)45-59         -0.05256   0.94880  0.04054 -1.297 0.194801    
+## tt(agegrp)60-74         -0.09839   0.90630  0.04040 -2.435 0.014875 *  
+## tt(agegrp)75+           -0.21623   0.80555  0.05739 -3.768 0.000165 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ##                         exp(coef) exp(-coef) lower .95 upper .95
-## sexFemale                  0.5909     1.6923    0.5198    0.6717
-## year8594Diagnosed 85-94    0.7141     1.4004    0.6271    0.8131
-## agegrp45-59                1.3310     0.7513    1.1066    1.6008
-## agegrp60-74                1.8705     0.5346    1.5653    2.2353
-## agegrp75+                  5.2851     0.1892    3.7829    7.3837
-## tt(agegrp)                 0.8538     1.1712    0.7734    0.9426
+## sexFemale                  0.5920     1.6893    0.5208    0.6729
+## year8594Diagnosed 85-94    0.7134     1.4017    0.6265    0.8124
+## agegrp45-59                1.6424     0.6089    1.1412    2.3635
+## agegrp60-74                2.7044     0.3698    1.9058    3.8377
+## agegrp75+                  6.6448     0.1505    4.4501    9.9218
+## tt(agegrp)45-59            0.9488     1.0540    0.8763    1.0273
+## tt(agegrp)60-74            0.9063     1.1034    0.8373    0.9810
+## tt(agegrp)75+              0.8055     1.2414    0.7198    0.9015
 ## 
-## Concordance= 0.646  (se = 0.009 )
-## Likelihood ratio test= 223.7  on 6 df,   p=&lt;2e-16
-## Wald test            = 230.6  on 6 df,   p=&lt;2e-16
-## Score (logrank) test = 242.8  on 6 df,   p=&lt;2e-16</code></pre>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" title="1"><span class="kw">lincom</span>(cox2p8tvct, <span class="st">&quot;agegrp75+ + tt(agegrp)&quot;</span>,<span class="dt">eform=</span><span class="ot">TRUE</span>)</a></code></pre></div>
-<pre><code>##                        Estimate    2.5 %   97.5 %    Chisq   Pr(&gt;Chisq)
-## agegrp75+ + tt(agegrp)  4.51245 3.465555 5.875597 125.1785 4.651533e-29</code></pre>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb31-1" title="1">cox2p8tvclogt &lt;-<span class="st"> </span><span class="kw">coxph</span>(<span class="kw">Surv</span>(trunc_yy, death_cancer) <span class="op">~</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>year8594 <span class="op">+</span><span class="st"> </span>agegrp <span class="op">+</span><span class="st"> </span><span class="kw">tt</span>(agegrp), <span class="dt">data=</span>localised,</a>
-<a class="sourceLine" id="cb31-2" title="2">                    <span class="dt">tt =</span> <span class="cf">function</span>(x, t, ...) (x<span class="op">==</span><span class="st">&quot;75+&quot;</span>)<span class="op">*</span><span class="kw">log</span>(t))</a>
-<a class="sourceLine" id="cb31-3" title="3"><span class="kw">summary</span>(cox2p8tvclogt)</a></code></pre></div>
+## Concordance= 0.645  (se = 0.009 )
+## Likelihood ratio test= 229.7  on 8 df,   p=&lt;2e-16
+## Wald test            = 231.3  on 8 df,   p=&lt;2e-16
+## Score (logrank) test = 245.9  on 8 df,   p=&lt;2e-16</code></pre>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" title="1"><span class="kw">lincom</span>(cox2p8tvct, <span class="st">&quot;agegrp75+&quot;</span>,<span class="dt">eform=</span><span class="ot">TRUE</span>)                   <span class="co"># t=0</span></a></code></pre></div>
+<pre><code>##           Estimate    2.5 %   97.5 %    Chisq   Pr(&gt;Chisq)
+## agegrp75+ 6.644778 4.450099 9.921819 85.72268 2.070247e-20</code></pre>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb31-1" title="1"><span class="kw">lincom</span>(cox2p8tvct, <span class="st">&quot;agegrp75+ + tt(agegrp)75+&quot;</span>,<span class="dt">eform=</span><span class="ot">TRUE</span>)   <span class="co"># t=1</span></a></code></pre></div>
+<pre><code>##                           Estimate    2.5 %   97.5 %    Chisq   Pr(&gt;Chisq)
+## agegrp75+ + tt(agegrp)75+  5.35269 3.915088 7.318171 110.5215 7.532419e-26</code></pre>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb33-1" title="1"><span class="kw">lincom</span>(cox2p8tvct, <span class="st">&quot;agegrp75+ + 2*tt(agegrp)75+&quot;</span>,<span class="dt">eform=</span><span class="ot">TRUE</span>) <span class="co"># t=2</span></a></code></pre></div>
+<pre><code>##                             Estimate    2.5 %   97.5 %    Chisq   Pr(&gt;Chisq)
+## agegrp75+ + 2*tt(agegrp)75+  4.31185 3.373556 5.511113 136.2282 1.778638e-31</code></pre>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb35-1" title="1">cox2p8tvclogt &lt;-<span class="st"> </span><span class="kw">coxph</span>(<span class="kw">Surv</span>(trunc_yy, death_cancer) <span class="op">~</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>year8594 <span class="op">+</span><span class="st"> </span>agegrp <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb35-2" title="2"><span class="st">                           </span><span class="kw">tt</span>(agegrp),</a>
+<a class="sourceLine" id="cb35-3" title="3">                       <span class="dt">data=</span>localised,</a>
+<a class="sourceLine" id="cb35-4" title="4">                    <span class="dt">tt =</span> <span class="cf">function</span>(x, t, ...) <span class="kw">cbind</span>(<span class="st">`</span><span class="dt">45-59</span><span class="st">`</span>=(x<span class="op">==</span><span class="st">&quot;45-59&quot;</span>)<span class="op">*</span><span class="kw">log</span>(t),</a>
+<a class="sourceLine" id="cb35-5" title="5">                                                   <span class="st">`</span><span class="dt">60-74</span><span class="st">`</span>=(x<span class="op">==</span><span class="st">&quot;60-74&quot;</span>)<span class="op">*</span><span class="kw">log</span>(t),</a>
+<a class="sourceLine" id="cb35-6" title="6">                                                   <span class="st">`</span><span class="dt">75+</span><span class="st">`</span>=(x<span class="op">==</span><span class="st">&quot;75+&quot;</span>)<span class="op">*</span><span class="kw">log</span>(t)))</a>
+<a class="sourceLine" id="cb35-7" title="7"><span class="kw">summary</span>(cox2p8tvclogt)</a></code></pre></div>
 <pre><code>## Call:
 ## coxph(formula = Surv(trunc_yy, death_cancer) ~ sex + year8594 + 
 ##     agegrp + tt(agegrp), data = localised, tt = function(x, t, 
-##     ...) (x == &quot;75+&quot;) * log(t))
+##     ...) cbind(`45-59` = (x == &quot;45-59&quot;) * log(t), `60-74` = (x == 
+##     &quot;60-74&quot;) * log(t), `75+` = (x == &quot;75+&quot;) * log(t)))
 ## 
 ##   n= 5318, number of events= 960 
 ## 
 ##                             coef exp(coef) se(coef)      z Pr(&gt;|z|)    
-## sexFemale               -0.52565   0.59117  0.06539 -8.038 9.11e-16 ***
-## year8594Diagnosed 85-94 -0.33703   0.71388  0.06626 -5.087 3.64e-07 ***
-## agegrp45-59              0.28630   1.33150  0.09418  3.040  0.00236 ** 
-## agegrp60-74              0.62732   1.87259  0.09089  6.902 5.13e-12 ***
-## agegrp75+                1.61984   5.05230  0.13844 11.701  &lt; 2e-16 ***
-## tt(agegrp)              -0.49528   0.60940  0.11848 -4.180 2.91e-05 ***
+## sexFemale               -0.52385   0.59224  0.06540 -8.010 1.15e-15 ***
+## year8594Diagnosed 85-94 -0.33810   0.71313  0.06628 -5.101 3.38e-07 ***
+## agegrp45-59              0.56930   1.76703  0.19477  2.923  0.00347 ** 
+## agegrp60-74              1.02025   2.77389  0.18503  5.514 3.51e-08 ***
+## agegrp75+                1.89910   6.67989  0.18956 10.018  &lt; 2e-16 ***
+## tt(agegrp)45-59         -0.23758   0.78853  0.14336 -1.657  0.09747 .  
+## tt(agegrp)60-74         -0.34509   0.70816  0.13838 -2.494  0.01264 *  
+## tt(agegrp)75+           -0.73311   0.48041  0.15837 -4.629 3.67e-06 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ##                         exp(coef) exp(-coef) lower .95 upper .95
-## sexFemale                  0.5912     1.6916    0.5201    0.6720
-## year8594Diagnosed 85-94    0.7139     1.4008    0.6269    0.8129
-## agegrp45-59                1.3315     0.7510    1.1071    1.6014
-## agegrp60-74                1.8726     0.5340    1.5670    2.2377
-## agegrp75+                  5.0523     0.1979    3.8517    6.6272
-## tt(agegrp)                 0.6094     1.6410    0.4831    0.7687
+## sexFemale                  0.5922     1.6885    0.5210    0.6732
+## year8594Diagnosed 85-94    0.7131     1.4023    0.6263    0.8121
+## agegrp45-59                1.7670     0.5659    1.2063    2.5884
+## agegrp60-74                2.7739     0.3605    1.9302    3.9864
+## agegrp75+                  6.6799     0.1497    4.6070    9.6855
+## tt(agegrp)45-59            0.7885     1.2682    0.5954    1.0444
+## tt(agegrp)60-74            0.7082     1.4121    0.5399    0.9288
+## tt(agegrp)75+              0.4804     2.0816    0.3522    0.6553
 ## 
-## Concordance= 0.646  (se = 0.009 )
-## Likelihood ratio test= 230.8  on 6 df,   p=&lt;2e-16
-## Wald test            = 237.6  on 6 df,   p=&lt;2e-16
-## Score (logrank) test = 255.6  on 6 df,   p=&lt;2e-16</code></pre>
-<p>Note that the <code>tt</code> functionality only works for a single variable (in our case, <code>agegrp75+</code>). We have used the <code>lincom</code> function to estimate the hazard ratio for <code>agegrp75+</code>. We will later describe a more flexible approach to modelling time-dependent effects using <code>stpm2</code>.</p>
+## Concordance= 0.643  (se = 0.009 )
+## Likelihood ratio test= 237.2  on 8 df,   p=&lt;2e-16
+## Wald test            = 235.8  on 8 df,   p=&lt;2e-16
+## Score (logrank) test = 257.7  on 8 df,   p=&lt;2e-16</code></pre>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb37-1" title="1"><span class="kw">lincom</span>(cox2p8tvclogt, <span class="st">&quot;agegrp75+ - 0.6931472*tt(agegrp)75+&quot;</span>,<span class="dt">eform=</span><span class="ot">TRUE</span>) <span class="co"># t=0.5 =&gt; log(t)=-0.6931472</span></a></code></pre></div>
+<pre><code>##                                     Estimate    2.5 %   97.5 %    Chisq   Pr(&gt;Chisq)
+## agegrp75+ - 0.6931472*tt(agegrp)75+ 11.10348 6.347921 19.42166 71.20567 3.218622e-17</code></pre>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb39-1" title="1"><span class="kw">lincom</span>(cox2p8tvclogt, <span class="st">&quot;agegrp75+&quot;</span>, <span class="dt">eform=</span><span class="ot">TRUE</span>) <span class="co"># t=1 =&gt; log(t)=0</span></a></code></pre></div>
+<pre><code>##           Estimate    2.5 %   97.5 %    Chisq   Pr(&gt;Chisq)
+## agegrp75+ 6.679893 4.606969 9.685537 100.3693 1.264746e-23</code></pre>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb41-1" title="1"><span class="kw">lincom</span>(cox2p8tvclogt, <span class="st">&quot;agegrp75+ + 0.6931472*tt(agegrp)75+&quot;</span>,<span class="dt">eform=</span><span class="ot">TRUE</span>) <span class="co"># t=2 =&gt; log(t)=0.6931472</span></a></code></pre></div>
+<pre><code>##                                     Estimate   2.5 %   97.5 %    Chisq   Pr(&gt;Chisq)
+## agegrp75+ + 0.6931472*tt(agegrp)75+ 4.018649 3.17166 5.091825 132.6644 1.070656e-30</code></pre>
+<p>The regression equation for the <code>cox2p8tvct</code> model is <span class="math display">\[\begin{align*}
+h(t|\text{year8594},\text{sex},\text{agegrp}) &amp;= h_0(t) \exp(\beta_1 I(\text{sex}=\text{&quot;Female&quot;})+\beta_2 I(\text{year8594}=\text{&quot;Diagnosed 85-94&quot;})+\\
+&amp;\qquad\beta_3 I(\text{agegrp}=\text{&quot;45-59&quot;})+\beta_4 I(\text{agegrp}=\text{&quot;60-64&quot;}) + \beta_5 I(\text{agegrp}=\text{&quot;75+&quot;}) + \\
+&amp;\qquad \beta_6 I(\text{agegrp}=\text{&quot;45-59&quot;}) t +\beta_7 I(\text{agegrp}=\text{&quot;60-74&quot;})t + \beta_8 I(\text{agegrp}=\text{&quot;75+&quot;}) t)
+\end{align*}\]</span> where <span class="math inline">\(h(t|\text{year8594},\text{sex},\text{agegrp},\text{agegrp})\)</span> is the hazard at time <span class="math inline">\(t\)</span> given covariates <span class="math inline">\(\text{year8594}\)</span>, <span class="math inline">\(\text{sex}\)</span> and <span class="math inline">\(\text{agegrp}\)</span> and <span class="math inline">\(\text{agegrp}\)</span>, with baseline hazard <span class="math inline">\(h_0(t)\)</span> and regression coefficients representing log hazard ratios for <span class="math inline">\(\beta_1\)</span> for the calendar period 1985–1994, <span class="math inline">\(\beta_2\)</span> for females, with log hazard ratios at time 0 for those aged 45–59 years, 60–74 years and 75 years and over are <span class="math inline">\(\beta_3\)</span>, <span class="math inline">\(\beta_4\)</span> and <span class="math inline">\(\beta_5\)</span>, respectively, while the change in log hazard ratios per year for those aged those aged 45–59 years, 60–74 years and 75 years and over are <span class="math inline">\(\beta_3\)</span>, <span class="math inline">\(\beta_4\)</span> and <span class="math inline">\(\beta_5\)</span>, respectively.</p>
+<p>The hazard ratio for model <code>cox2p8tvct</code> for the those aged 75 years and over compared with those aged less than 45 years is <span class="math display">\[\begin{align*}
+\frac{h(t|\text{year8594},\text{sex},\text{agegrp}=\text{&quot;75+&quot;})}{h(t|\text{year8594},\text{sex},\text{agegrp}=\text{&quot;0-44&quot;})} &amp;= 
+\frac{h_0(t) \exp(\beta_1 I(\text{sex}=\text{&quot;Female&quot;})+\beta_2 I(\text{year8594}=\text{&quot;Diagnosed 85-94&quot;})+ \beta_5 + \beta_8 t)}{h_0(t)\exp(\beta_1 I(\text{sex}=\text{&quot;Female&quot;})+\beta_2 I(\text{year8594}=\text{&quot;Diagnosed 85-94&quot;}))} \\
+&amp;= \exp(\beta_5 + \beta_8 t)
+\end{align*}\]</span></p>
+<p>We have shown several ways to use the <code>tt</code> functionality for a factor variable, including using different tt arguments for each factor level (as per model <code>cox2p8tvc2</code>) and using a <code>tt</code> term that returns a set of columns (as per model <code>cox2p8tvct</code>). We have used the <code>lincom</code> function to estimate the hazard ratio for <code>agegrp75+</code>. We will later describe a more flexible approach to modelling time-dependent effects using <code>stpm2</code>.</p>
 </div>
 <div id="j" class="section level2">
 <h2>(j)</h2>
-<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb33-1" title="1"><span class="kw">library</span>(splines)</a>
-<a class="sourceLine" id="cb33-2" title="2">time.cuts &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">0</span>,<span class="dv">10</span>,<span class="dt">length=</span><span class="dv">100</span>)</a>
-<a class="sourceLine" id="cb33-3" title="3">delta &lt;-<span class="st"> </span><span class="kw">diff</span>(time.cuts)[<span class="dv">1</span>]</a>
-<a class="sourceLine" id="cb33-4" title="4"><span class="co">## split and collapse</span></a>
-<a class="sourceLine" id="cb33-5" title="5">melanoma2p8Split2 &lt;-<span class="st"> </span><span class="kw">survSplit</span>(<span class="kw">Surv</span>(trunc_yy,death_cancer)<span class="op">~</span>., <span class="dt">data=</span>localised,</a>
-<a class="sourceLine" id="cb33-6" title="6">                               <span class="dt">cut=</span>time.cuts, <span class="dt">end=</span><span class="st">&quot;tstop&quot;</span>, <span class="dt">start=</span><span class="st">&quot;tstart&quot;</span>,</a>
-<a class="sourceLine" id="cb33-7" title="7">                               <span class="dt">event=</span><span class="st">&quot;death_cancer&quot;</span>) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb33-8" title="8"><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">fu=</span><span class="kw">cut</span>(tstop,time.cuts),</a>
-<a class="sourceLine" id="cb33-9" title="9">           <span class="dt">mid=</span>time.cuts[<span class="kw">unclass</span>(fu)]<span class="op">+</span>delta<span class="op">/</span><span class="dv">2</span>) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb33-10" title="10"><span class="st">    </span><span class="kw">group_by</span>(mid,sex,year8594,agegrp) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb33-11" title="11"><span class="st">    </span><span class="kw">summarise</span>(<span class="dt">pt=</span><span class="kw">sum</span>(tstop<span class="op">-</span>tstart), <span class="dt">death_cancer=</span><span class="kw">sum</span>(death_cancer)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb33-12" title="12"><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">age75 =</span> (agegrp<span class="op">==</span><span class="st">&quot;75+&quot;</span>)<span class="op">+</span><span class="dv">0</span>)</a></code></pre></div>
-<pre><code>## `summarise()` has grouped output by &#39;mid&#39;, &#39;sex&#39;, &#39;year8594&#39;. You can override using the `.groups` argument.</code></pre>
-<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb35-1" title="1">poisson2p8tvc &lt;-<span class="st"> </span><span class="kw">glm</span>(death_cancer <span class="op">~</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>year8594 <span class="op">+</span><span class="st"> </span>agegrp <span class="op">+</span><span class="st"> </span><span class="kw">ns</span>(mid,<span class="dt">df=</span><span class="dv">3</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb35-2" title="2"><span class="st">                         </span>age75<span class="op">:</span><span class="kw">ns</span>(mid,<span class="dt">df=</span><span class="dv">3</span>) <span class="op">+</span><span class="st"> </span><span class="kw">offset</span>(<span class="kw">log</span>(pt)),</a>
-<a class="sourceLine" id="cb35-3" title="3">    <span class="dt">data=</span>melanoma2p8Split2, <span class="dt">family=</span>poisson)</a>
-<a class="sourceLine" id="cb35-4" title="4"></a>
-<a class="sourceLine" id="cb35-5" title="5"><span class="co">## utility function to draw a confidence interval</span></a>
-<a class="sourceLine" id="cb35-6" title="6">polygon.ci &lt;-<span class="st"> </span><span class="cf">function</span>(time, interval, <span class="dt">col=</span><span class="st">&quot;lightgrey&quot;</span>) </a>
-<a class="sourceLine" id="cb35-7" title="7">    <span class="kw">polygon</span>(<span class="kw">c</span>(time,<span class="kw">rev</span>(time)), <span class="kw">c</span>(interval[,<span class="dv">1</span>],<span class="kw">rev</span>(interval[,<span class="dv">2</span>])), <span class="dt">col=</span>col, <span class="dt">border=</span>col)</a>
-<a class="sourceLine" id="cb35-8" title="8"><span class="co">## define exposures</span></a>
-<a class="sourceLine" id="cb35-9" title="9">newdata &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">mid=</span><span class="kw">seq</span>(<span class="dv">0</span>,<span class="kw">max</span>(time.cuts),<span class="dt">length=</span><span class="dv">100</span>), <span class="dt">year8594=</span><span class="st">&quot;Diagnosed 85-94&quot;</span>,</a>
-<a class="sourceLine" id="cb35-10" title="10">                      <span class="dt">sex=</span><span class="st">&quot;Male&quot;</span>, <span class="dt">agegrp=</span><span class="st">&quot;75+&quot;</span>, <span class="dt">age75=</span><span class="dv">1</span>, <span class="dt">pt=</span><span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb35-11" title="11"></a>
-<a class="sourceLine" id="cb35-12" title="12"><span class="kw">library</span>(rstpm2)</a>
-<a class="sourceLine" id="cb35-13" title="13">logirr &lt;-<span class="st"> </span>rstpm2<span class="op">::</span><span class="kw">predictnl</span>(poisson2p8tvc,</a>
-<a class="sourceLine" id="cb35-14" title="14">          <span class="dt">fun=</span><span class="cf">function</span>(fit,newdata) <span class="kw">predict</span>(fit, newdata) <span class="op">-</span></a>
-<a class="sourceLine" id="cb35-15" title="15"><span class="st">                        </span><span class="kw">predict</span>(fit, <span class="kw">transform</span>(newdata, <span class="dt">agegrp=</span><span class="st">&#39;0-44&#39;</span>, <span class="dt">age75=</span><span class="dv">0</span>)),</a>
-<a class="sourceLine" id="cb35-16" title="16">          <span class="dt">newdata=</span>newdata)</a>
-<a class="sourceLine" id="cb35-17" title="17">pred &lt;-<span class="st"> </span><span class="kw">exp</span>(logirr<span class="op">$</span>fit)</a>
-<a class="sourceLine" id="cb35-18" title="18">ci &lt;-<span class="st"> </span><span class="kw">exp</span>(<span class="kw">confint</span>(logirr))</a>
-<a class="sourceLine" id="cb35-19" title="19"><span class="co">## plot</span></a>
-<a class="sourceLine" id="cb35-20" title="20"><span class="kw">matplot</span>(newdata<span class="op">$</span>mid, ci, <span class="dt">type=</span><span class="st">&quot;n&quot;</span>, <span class="dt">xlab=</span><span class="st">&quot;Time since diagnosis (months)&quot;</span>,</a>
-<a class="sourceLine" id="cb35-21" title="21">        <span class="dt">ylab=</span><span class="st">&quot;Rate ratio&quot;</span>, <span class="dt">main=</span><span class="st">&quot;Ages 75+ compared with ages 0-44 years&quot;</span>)</a>
-<a class="sourceLine" id="cb35-22" title="22"><span class="kw">polygon.ci</span>(newdata<span class="op">$</span>mid, ci) </a>
-<a class="sourceLine" id="cb35-23" title="23"><span class="kw">lines</span>(newdata<span class="op">$</span>mid, pred)</a></code></pre></div>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb43-1" title="1"><span class="kw">library</span>(splines)</a>
+<a class="sourceLine" id="cb43-2" title="2">time.cuts &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">0</span>,<span class="dv">10</span>,<span class="dt">length=</span><span class="dv">100</span>)</a>
+<a class="sourceLine" id="cb43-3" title="3">delta &lt;-<span class="st"> </span><span class="kw">diff</span>(time.cuts)[<span class="dv">1</span>]</a>
+<a class="sourceLine" id="cb43-4" title="4"><span class="co">## split and collapse</span></a>
+<a class="sourceLine" id="cb43-5" title="5">melanoma2p8Split2 &lt;-<span class="st"> </span><span class="kw">survSplit</span>(<span class="kw">Surv</span>(trunc_yy,death_cancer)<span class="op">~</span>., <span class="dt">data=</span>localised,</a>
+<a class="sourceLine" id="cb43-6" title="6">                               <span class="dt">cut=</span>time.cuts, <span class="dt">end=</span><span class="st">&quot;tstop&quot;</span>, <span class="dt">start=</span><span class="st">&quot;tstart&quot;</span>,</a>
+<a class="sourceLine" id="cb43-7" title="7">                               <span class="dt">event=</span><span class="st">&quot;death_cancer&quot;</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb43-8" title="8"><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">fu=</span><span class="kw">cut</span>(tstop,time.cuts),</a>
+<a class="sourceLine" id="cb43-9" title="9">           <span class="dt">mid=</span>time.cuts[<span class="kw">unclass</span>(fu)]<span class="op">+</span>delta<span class="op">/</span><span class="dv">2</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb43-10" title="10"><span class="st">    </span><span class="kw">group_by</span>(mid,sex,year8594,agegrp) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb43-11" title="11"><span class="st">    </span><span class="kw">summarise</span>(<span class="dt">pt=</span><span class="kw">sum</span>(tstop<span class="op">-</span>tstart), <span class="dt">death_cancer=</span><span class="kw">sum</span>(death_cancer)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb43-12" title="12"><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">age75 =</span> (agegrp<span class="op">==</span><span class="st">&quot;75+&quot;</span>)<span class="op">+</span><span class="dv">0</span>)</a></code></pre></div>
+<pre><code>## `summarise()` has grouped output by &#39;mid&#39;, &#39;sex&#39;, &#39;year8594&#39;. You can override using the `.groups`
+## argument.</code></pre>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb45-1" title="1">poisson2p8tvc &lt;-<span class="st"> </span><span class="kw">glm</span>(death_cancer <span class="op">~</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>year8594 <span class="op">+</span><span class="st"> </span>agegrp <span class="op">+</span><span class="st"> </span><span class="kw">ns</span>(mid,<span class="dt">df=</span><span class="dv">3</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb45-2" title="2"><span class="st">                         </span>age75<span class="op">:</span><span class="kw">ns</span>(mid,<span class="dt">df=</span><span class="dv">3</span>) <span class="op">+</span><span class="st"> </span><span class="kw">offset</span>(<span class="kw">log</span>(pt)),</a>
+<a class="sourceLine" id="cb45-3" title="3">    <span class="dt">data=</span>melanoma2p8Split2, <span class="dt">family=</span>poisson)</a>
+<a class="sourceLine" id="cb45-4" title="4"></a>
+<a class="sourceLine" id="cb45-5" title="5"><span class="co">## utility function to draw a confidence interval</span></a>
+<a class="sourceLine" id="cb45-6" title="6">polygon.ci &lt;-<span class="st"> </span><span class="cf">function</span>(time, interval, <span class="dt">col=</span><span class="st">&quot;lightgrey&quot;</span>) </a>
+<a class="sourceLine" id="cb45-7" title="7">    <span class="kw">polygon</span>(<span class="kw">c</span>(time,<span class="kw">rev</span>(time)), <span class="kw">c</span>(interval[,<span class="dv">1</span>],<span class="kw">rev</span>(interval[,<span class="dv">2</span>])), <span class="dt">col=</span>col, <span class="dt">border=</span>col)</a>
+<a class="sourceLine" id="cb45-8" title="8"><span class="co">## define exposures</span></a>
+<a class="sourceLine" id="cb45-9" title="9">newdata &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">mid=</span><span class="kw">seq</span>(<span class="dv">0</span>,<span class="kw">max</span>(time.cuts),<span class="dt">length=</span><span class="dv">100</span>), <span class="dt">year8594=</span><span class="st">&quot;Diagnosed 85-94&quot;</span>,</a>
+<a class="sourceLine" id="cb45-10" title="10">                      <span class="dt">sex=</span><span class="st">&quot;Male&quot;</span>, <span class="dt">agegrp=</span><span class="st">&quot;75+&quot;</span>, <span class="dt">age75=</span><span class="dv">1</span>, <span class="dt">pt=</span><span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb45-11" title="11"></a>
+<a class="sourceLine" id="cb45-12" title="12"><span class="kw">library</span>(rstpm2)</a>
+<a class="sourceLine" id="cb45-13" title="13">logirr &lt;-<span class="st"> </span>rstpm2<span class="op">::</span><span class="kw">predictnl</span>(poisson2p8tvc,</a>
+<a class="sourceLine" id="cb45-14" title="14">          <span class="dt">fun=</span><span class="cf">function</span>(fit,newdata) <span class="kw">predict</span>(fit, newdata) <span class="op">-</span></a>
+<a class="sourceLine" id="cb45-15" title="15"><span class="st">                        </span><span class="kw">predict</span>(fit, <span class="kw">transform</span>(newdata, <span class="dt">agegrp=</span><span class="st">&#39;0-44&#39;</span>, <span class="dt">age75=</span><span class="dv">0</span>)),</a>
+<a class="sourceLine" id="cb45-16" title="16">          <span class="dt">newdata=</span>newdata)</a>
+<a class="sourceLine" id="cb45-17" title="17">pred &lt;-<span class="st"> </span><span class="kw">exp</span>(logirr<span class="op">$</span>fit)</a>
+<a class="sourceLine" id="cb45-18" title="18">ci &lt;-<span class="st"> </span><span class="kw">exp</span>(<span class="kw">confint</span>(logirr))</a>
+<a class="sourceLine" id="cb45-19" title="19"><span class="co">## plot</span></a>
+<a class="sourceLine" id="cb45-20" title="20"><span class="kw">matplot</span>(newdata<span class="op">$</span>mid, ci, <span class="dt">type=</span><span class="st">&quot;n&quot;</span>, <span class="dt">xlab=</span><span class="st">&quot;Time since diagnosis (months)&quot;</span>,</a>
+<a class="sourceLine" id="cb45-21" title="21">        <span class="dt">ylab=</span><span class="st">&quot;Rate ratio&quot;</span>, <span class="dt">main=</span><span class="st">&quot;Ages 75+ compared with ages 0-44 years&quot;</span>)</a>
+<a class="sourceLine" id="cb45-22" title="22"><span class="kw">polygon.ci</span>(newdata<span class="op">$</span>mid, ci) </a>
+<a class="sourceLine" id="cb45-23" title="23"><span class="kw">lines</span>(newdata<span class="op">$</span>mid, pred)</a></code></pre></div>
 <p><img src="data:image/png;base64,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" /><!-- --></p>
 </div>
 </div>

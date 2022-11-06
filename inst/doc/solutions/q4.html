@@ -134,11 +134,14 @@ a.sourceLine {
 <section class="main-content">
 <div id="exercise-4.-localised-melanoma-comparing-actuarial-and-kaplan-meier-approaches-with-discrete-time-data" class="section level2">
 <h2>Exercise 4. Localised melanoma: Comparing actuarial and Kaplan-Meier approaches with discrete time data</h2>
+<p>We load the dependencies:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">library</span>(biostat3) </a></code></pre></div>
+<p>Then load the data and define an indicator:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">data</span>(melanoma)</a>
 <a class="sourceLine" id="cb2-2" title="2">localised &lt;-<span class="st"> </span><span class="kw">subset</span>(melanoma, stage<span class="op">==</span><span class="st">&quot;Localised&quot;</span>)</a>
 <a class="sourceLine" id="cb2-3" title="3">localised &lt;-<span class="st"> </span><span class="kw">transform</span>(localised,</a>
 <a class="sourceLine" id="cb2-4" title="4">                       <span class="dt">death_cancer =</span> <span class="kw">ifelse</span>(status <span class="op">==</span><span class="st"> &quot;Dead: cancer&quot;</span>, <span class="dv">1</span>, <span class="dv">0</span>))</a></code></pre></div>
+<p>Then we show the results using the actuarial estimator with years:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">lifetab2</span>(<span class="kw">Surv</span>(<span class="kw">floor</span>(surv_yy),death_cancer)<span class="op">~</span><span class="dv">1</span>, <span class="dt">data =</span> localised)[,<span class="dv">1</span><span class="op">:</span><span class="dv">7</span>]</a></code></pre></div>
 <pre><code>##        tstart tstop nsubs nlost  nrisk nevent      surv
 ## 0-1         0     1  5318    81 5277.5     71 1.0000000
@@ -162,6 +165,7 @@ a.sourceLine {
 ## 18-19      18    19   208    81  167.5      1 0.7174561
 ## 19-20      19    20   126    65   93.5      0 0.7131728
 ## 20-Inf     20   Inf    61    61   30.5      0 0.7131728</code></pre>
+<p>Similarly, we use the actuarial estimator using months:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">lifetab2</span>(<span class="kw">Surv</span>(<span class="kw">floor</span>(surv_mm),death_cancer)<span class="op">~</span><span class="dv">1</span>, <span class="dt">data =</span> localised)[<span class="dv">110</span><span class="op">:</span><span class="dv">130</span>,<span class="dv">1</span><span class="op">:</span><span class="dv">7</span>]</a></code></pre></div>
 <pre><code>##         tstart tstop nsubs nlost  nrisk nevent      surv
 ## 109-110    109   110  1699    27 1685.5      1 0.7701209
@@ -185,6 +189,7 @@ a.sourceLine {
 ## 127-128    127   128  1347    25 1334.5      2 0.7567029
 ## 128-129    128   129  1320    15 1312.5      0 0.7555688
 ## 129-130    129   130  1305    16 1297.0      1 0.7555688</code></pre>
+<p>Then the code using the Kaplan-Meier estimator with years:</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1">mfit_years &lt;-<span class="st"> </span><span class="kw">survfit</span>(<span class="kw">Surv</span>(surv_yy, death_cancer) <span class="op">~</span><span class="st"> </span><span class="dv">1</span>, <span class="dt">data =</span> localised)</a>
 <a class="sourceLine" id="cb7-2" title="2"><span class="kw">summary</span>(mfit_years)</a></code></pre></div>
 <pre><code>## Call: survfit(formula = Surv(surv_yy, death_cancer) ~ 1, data = localised)
@@ -209,6 +214,7 @@ a.sourceLine {
 ##  16.5    422       5    0.733 0.00882        0.716        0.751
 ##  17.5    306       1    0.731 0.00911        0.713        0.749
 ##  18.5    208       1    0.727 0.00972        0.709        0.747</code></pre>
+<p>And the Kaplan-Meier estimator with data in months:</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1">mfit_months &lt;-<span class="st"> </span><span class="kw">survfit</span>(<span class="kw">Surv</span>(surv_mm, death_cancer) <span class="op">~</span><span class="st"> </span><span class="dv">1</span>, <span class="dt">data =</span> localised)</a>
 <a class="sourceLine" id="cb9-2" title="2"><span class="kw">summary</span>(mfit_months,<span class="dt">times=</span><span class="dv">110</span><span class="op">:</span><span class="dv">130</span>)</a></code></pre></div>
 <pre><code>## Call: survfit(formula = Surv(surv_mm, death_cancer) ~ 1, data = localised)

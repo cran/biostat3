@@ -142,7 +142,7 @@ a.sourceLine {
 <p>You may have to install the required packages the first time you use them. You can install a package by <code>install.packages(&quot;package_of_interest&quot;)</code> for each package you require.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">library</span>(biostat3)</a>
 <a class="sourceLine" id="cb1-2" title="2"><span class="kw">library</span>(dplyr)    <span class="co"># for data manipulation</span></a>
-<a class="sourceLine" id="cb1-3" title="3"><span class="kw">library</span>(car)      <span class="co"># for linearHypothesis</span></a></code></pre></div>
+<a class="sourceLine" id="cb1-3" title="3"><span class="kw">library</span>(car)      <span class="co"># for car::linearHypothesis -&gt; biostat3::lincom</span></a></code></pre></div>
 <p>Load the melanoma data and explore it.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="co">## Read melanoma data</span></a>
 <a class="sourceLine" id="cb2-2" title="2"></a>
@@ -351,7 +351,7 @@ a.sourceLine {
 ## 
 ## Number of Fisher Scoring iterations: 2</code></pre>
 <div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" title="1"><span class="co">## IRR</span></a>
-<a class="sourceLine" id="cb21-2" title="2">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson7c)</a></code></pre></div>
+<a class="sourceLine" id="cb21-2" title="2"><span class="kw">eform</span>(poisson7c)</a></code></pre></div>
 <pre><code>##                          exp(beta)     2.5 %    97.5 %
 ## (Intercept)             31.4525600 28.859880 34.278158
 ## year8594Diagnosed 85-94  0.8831851  0.777905  1.002714</code></pre>
@@ -382,6 +382,10 @@ a.sourceLine {
 ## 
 ## Number of Fisher Scoring iterations: 6</code></pre>
 <p>We see that Poisson regression is estimating the mortality rate ratio which, in this simple example, is the ratio of the two mortality rates.</p>
+<p>The regression equation is: <span class="math display">\[\begin{align*}
+E(\text{death_cancer}) &amp;= \frac{\text{surv_mm}}{12 \times 1000}\exp\left(\beta_0 + \beta_1 I(\text{year8594}=&quot;\text{Diagnosed 85-94}&quot;)\right) \\
+&amp;= \exp\left(\beta_0 + \beta_1 I(\text{year8594}=&quot;\text{Diagnosed 85-94}&quot;) + \log(\text{surv_mm}/1000/12) \right)
+\end{align*}\]</span> where <span class="math inline">\(E(\text{death_cancer})\)</span> is the expected number of cancer deaths, <span class="math inline">\(\beta_0\)</span> is the intercept term for the log rate, <span class="math inline">\(\beta_1\)</span> is the log rate ratio for the later calendar period, and <span class="math inline">\(\text{surv_mm}/1000/12\)</span> is the period-time.</p>
 </div>
 </div>
 <div id="d" class="section level2">
@@ -478,7 +482,7 @@ a.sourceLine {
 ## 
 ## Number of Fisher Scoring iterations: 6</code></pre>
 <div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" title="1"><span class="co">## IRR</span></a>
-<a class="sourceLine" id="cb30-2" title="2">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson7g)</a></code></pre></div>
+<a class="sourceLine" id="cb30-2" title="2"><span class="kw">eform</span>(poisson7g)</a></code></pre></div>
 <pre><code>##             exp(beta)      2.5 %     97.5 %
 ## (Intercept) 0.0135058 0.01070318 0.01704229
 ## fu1         3.4750768 2.66250895 4.53563117
@@ -491,140 +495,32 @@ a.sourceLine {
 ## fu8         1.3345367 0.88679255 2.00834805
 ## fu9         0.7483554 0.43523195 1.28675268</code></pre>
 <p>The pattern of the estimated mortality rate ratios mirrors the pattern we saw in the plot of the rates. Note that the first year of follow-up is the reference so the estimated rate ratio labelled <code>1</code> for <code>fu</code> is the rate ratio for the second year compared to the first year.</p>
+<p>The regression equation is: <span class="math display">\[\begin{align*}
+E(\text{death_cancer}) &amp;= \text{pt}\exp\left(\beta_0 + \beta_1 I(\text{fu}=1) + \beta_2 I(\text{fu}=2) + \beta_3 I(\text{fu}=3) + \beta_4 I(\text{fu}=4) + \beta_5 I(\text{fu}=5) + \beta_6 I(\text{fu}=6) + \beta_7 I(\text{fu}=7) + \beta_8 I(\text{fu}=8) + \beta_9 I(\text{fu}=9)}\left) \\
+&amp;= \exp\left(\beta_0 + \beta_1 I(\text{fu}=1) + \beta_2 I(\text{fu}=2) + \beta_3 I(\text{fu}=3) + \beta_4 I(\text{fu}=4) + \beta_5 I(\text{fu}=5) + \beta_6 I(\text{fu}=6) + \beta_7 I(\text{fu}=7) + \beta_8 I(\text{fu}=8) + \beta_9 I(\text{fu}=9)} + \log{text{pt})\left)
+\end{align*}\]</span></p>
 </div>
 <div id="h" class="section level2">
 <h2>(h)</h2>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb32-1" title="1"><span class="kw">summary</span>(poisson7h &lt;-<span class="st"> </span><span class="kw">glm</span>( death_cancer <span class="op">~</span><span class="st"> </span>fu <span class="op">+</span><span class="st"> </span>year8594 <span class="op">+</span><span class="st"> </span><span class="kw">offset</span>( <span class="kw">log</span>(pt) ),</a>
-<a class="sourceLine" id="cb32-2" title="2">                         <span class="dt">family =</span> poisson,</a>
-<a class="sourceLine" id="cb32-3" title="3">                         <span class="dt">data =</span> melanoma.spl ))</a></code></pre></div>
-<pre><code>## 
-## Call:
-## glm(formula = death_cancer ~ fu + year8594 + offset(log(pt)), 
-##     family = poisson, data = melanoma.spl)
-## 
-## Deviance Residuals: 
-##     Min       1Q   Median       3Q      Max  
-## -0.3297  -0.2900  -0.2207  -0.1761   3.6707  
-## 
-## Coefficients:
-##                         Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept)             -4.16612    0.12380 -33.651  &lt; 2e-16 ***
-## fu1                      1.24352    0.13589   9.151  &lt; 2e-16 ***
-## fu2                      1.25370    0.13797   9.087  &lt; 2e-16 ***
-## fu3                      0.99738    0.14610   6.827 8.68e-12 ***
-## fu4                      0.79438    0.15532   5.115 3.14e-07 ***
-## fu5                      0.69247    0.16329   4.241 2.23e-05 ***
-## fu6                      0.45104    0.17911   2.518 0.011796 *  
-## fu7                      0.10844    0.20710   0.524 0.600559    
-## fu8                      0.21049    0.20954   1.004 0.315139    
-## fu9                     -0.39239    0.27780  -1.413 0.157802    
-## year8594Diagnosed 85-94 -0.24444    0.06579  -3.715 0.000203 ***
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## (Dispersion parameter for poisson family taken to be 1)
-## 
-##     Null deviance: 8651.5  on 34308  degrees of freedom
-## Residual deviance: 8432.6  on 34298  degrees of freedom
-## AIC: 10375
-## 
-## Number of Fisher Scoring iterations: 6</code></pre>
-<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb34-1" title="1"><span class="co">## IRR</span></a>
-<a class="sourceLine" id="cb34-2" title="2">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson7h)</a></code></pre></div>
-<pre><code>##                          exp(beta)      2.5 %     97.5 %
-## (Intercept)             0.01551228 0.01217011 0.01977229
-## fu1                     3.46780081 2.65693069 4.52614081
-## fu2                     3.50326901 2.67320128 4.59108479
-## fu3                     2.71116147 2.03608968 3.61005538
-## fu4                     2.21306295 1.63225462 3.00054142
-## fu5                     1.99864158 1.45125272 2.75249659
-## fu6                     1.56993640 1.10515372 2.23018778
-## fu7                     1.11453748 0.74268832 1.67256405
-## fu8                     1.23427730 0.81855780 1.86112752
-## fu9                     0.67543732 0.39185040 1.16425955
-## year8594Diagnosed 85-94 0.78314061 0.68839639 0.89092450</code></pre>
-<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb36-1" title="1"><span class="co"># Add interaction term</span></a>
-<a class="sourceLine" id="cb36-2" title="2"><span class="kw">summary</span>(poisson7h2 &lt;-<span class="st"> </span><span class="kw">glm</span>( death_cancer <span class="op">~</span><span class="st"> </span>fu<span class="op">*</span>year8594 <span class="op">+</span><span class="st"> </span><span class="kw">offset</span>( <span class="kw">log</span>(pt) ), <span class="dt">family=</span>poisson, <span class="dt">data=</span>melanoma.spl ))</a></code></pre></div>
-<pre><code>## 
-## Call:
-## glm(formula = death_cancer ~ fu * year8594 + offset(log(pt)), 
-##     family = poisson, data = melanoma.spl)
-## 
-## Deviance Residuals: 
-##     Min       1Q   Median       3Q      Max  
-## -0.3546  -0.2682  -0.2244  -0.1764   3.6684  
-## 
-## Coefficients:
-##                             Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept)                 -4.16333    0.17408 -23.917  &lt; 2e-16 ***
-## fu1                          1.28028    0.19807   6.464 1.02e-10 ***
-## fu2                          1.39664    0.19729   7.079 1.45e-12 ***
-## fu3                          0.81978    0.21609   3.794 0.000148 ***
-## fu4                          0.65306    0.22519   2.900 0.003732 ** 
-## fu5                          0.66513    0.22711   2.929 0.003404 ** 
-## fu6                          0.41495    0.24264   1.710 0.087240 .  
-## fu7                          0.03655    0.27163   0.135 0.892966    
-## fu8                          0.30339    0.25453   1.192 0.233279    
-## fu9                         -0.38675    0.31895  -1.213 0.225302    
-## year8594Diagnosed 85-94     -0.24965    0.23795  -1.049 0.294089    
-## fu1:year8594Diagnosed 85-94 -0.07110    0.27234  -0.261 0.794025    
-## fu2:year8594Diagnosed 85-94 -0.30852    0.27725  -1.113 0.265806    
-## fu3:year8594Diagnosed 85-94  0.34410    0.29326   1.173 0.240642    
-## fu4:year8594Diagnosed 85-94  0.29777    0.31086   0.958 0.338115    
-## fu5:year8594Diagnosed 85-94  0.06578    0.32894   0.200 0.841494    
-## fu6:year8594Diagnosed 85-94  0.09658    0.36443   0.265 0.790988    
-## fu7:year8594Diagnosed 85-94  0.22179    0.42829   0.518 0.604555    
-## fu8:year8594Diagnosed 85-94 -0.51530    0.53954  -0.955 0.339542    
-## fu9:year8594Diagnosed 85-94 -0.06040    0.79245  -0.076 0.939240    
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## (Dispersion parameter for poisson family taken to be 1)
-## 
-##     Null deviance: 8651.5  on 34308  degrees of freedom
-## Residual deviance: 8419.4  on 34289  degrees of freedom
-## AIC: 10379
-## 
-## Number of Fisher Scoring iterations: 7</code></pre>
-<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb38-1" title="1"><span class="co">## IRR</span></a>
-<a class="sourceLine" id="cb38-2" title="2">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson7h2)</a></code></pre></div>
-<pre><code>##                              exp(beta)      2.5 %    97.5 %
-## (Intercept)                 0.01555564 0.01105892 0.0218808
-## fu1                         3.59765631 2.44018328 5.3041634
-## fu2                         4.04160662 2.74548881 5.9496087
-## fu3                         2.26998933 1.48622497 3.4670737
-## fu4                         1.92140436 1.23576375 2.9874599
-## fu5                         1.94474961 1.24608035 3.0351582
-## fu6                         1.51429324 0.94118270 2.4363857
-## fu7                         1.03722422 0.60906442 1.7663716
-## fu8                         1.35444106 0.82243832 2.2305753
-## fu9                         0.67926283 0.36353299 1.2692053
-## year8594Diagnosed 85-94     0.77907144 0.48869327 1.2419903
-## fu1:year8594Diagnosed 85-94 0.93136483 0.54614148 1.5883072
-## fu2:year8594Diagnosed 85-94 0.73453606 0.42659693 1.2647612
-## fu3:year8594Diagnosed 85-94 1.41072301 0.79400185 2.5064670
-## fu4:year8594Diagnosed 85-94 1.34685580 0.73234442 2.4770047
-## fu5:year8594Diagnosed 85-94 1.06799324 0.56050340 2.0349735
-## fu6:year8594Diagnosed 85-94 1.10140218 0.53919080 2.2498284
-## fu7:year8594Diagnosed 85-94 1.24831405 0.53921836 2.8899016
-## fu8:year8594Diagnosed 85-94 0.59732398 0.20746996 1.7197475
-## fu9:year8594Diagnosed 85-94 0.94138428 0.19917538 4.4493671</code></pre>
-<p>The estimated mortality rate ratio is <span class="math inline">\(0.7791\)</span> compared to <span class="math inline">\(0.8832\)</span> (part c) and a value greater than 1 in part (b). The estimate we obtained in part (b) was subject to confounding by time-since-diagnosis. In part (c) we restricted to the first 10 years of follow-up subsequent to diagnosis. This did not, however, completely remove the confounding effect of time since diagnosis. There was still some confounding within the first 10 years of follow-up (if this is not clear to you then look in the data to see if there are associations between the confounder and the exposure and the confounder and the outcome) so the estimate was subject to residual confounding. Now, when we adjust for time since diagnosis we see that the estimate changes further.</p>
+<p><code>{r 7.h, message=FALSE}</code> The estimated mortality rate ratio is <span class="math inline">\(0.7791\)</span> compared to <span class="math inline">\(0.8832\)</span> (part c) and a value greater than 1 in part (b). The estimate we obtained in part (b) was subject to confounding by time-since-diagnosis. In part (c) we restricted to the first 10 years of follow-up subsequent to diagnosis. This did not, however, completely remove the confounding effect of time since diagnosis. There was still some confounding within the first 10 years of follow-up (if this is not clear to you then look in the data to see if there are associations between the confounder and the exposure and the confounder and the outcome) so the estimate was subject to residual confounding. Now, when we adjust for time since diagnosis we see that the estimate changes further.</p>
 </div>
 <div id="i" class="section level2">
 <h2>(i)</h2>
 <p>Now control for age, sex, and calendar period. Write the linear predictor using pen and paper.</p>
-<div id="i.-2" class="section level3">
-<h3>i.</h3>
-<p>For patients of the same sex diagnosed in the same calendar period, those aged 60–74 at diagnosis have an estimated 86% higher risk of death due to skin melanoma than those aged 0–44 at diagnosis. The difference is statistically significant.</p>
+<p>The regression equation is: <span class="math display">\[\begin{align*}
+E(\text{death_cancer}) &amp;= \text{pt}\exp\left(\beta_0 + \beta_1 I(\text{fu}=1) + \beta_2 I(\text{fu}=2) + \beta_3 I(\text{fu}=3) + \beta_4 I(\text{fu}=4) + \beta_5 I(\text{fu}=5) + \beta_6 I(\text{fu}=6) + \beta_7 I(\text{fu}=7) + \beta_8 I(\text{fu}=8) + \beta_9 I(\text{fu}=9) + \beta_{10} x + \beta_{11} I(\text{fu}=1) x + \beta_{12} I(\text{fu}=2) x + \beta_{13} I(\text{fu}=3) x + \beta_{14} I(\text{fu}=4) x + \beta_{15} I(\text{fu}=5) x + \beta_{16} I(\text{fu}=6) x + \beta_{17} I(\text{fu}=7) x + \beta_{18} I(\text{fu}=8) x + \beta_{19} I(\text{fu}=9) x \right)
+\end{align*}\]</span> where <span class="math inline">\(x\)</span> is the indicator variable when year8594=“Diagnosed 85-94”.</p>
+<div id="i.-for-patients-of-the-same-sex-diagnosed-in-the-same-calendar" class="section level3">
+<h3>i. ### For patients of the same sex diagnosed in the same calendar</h3>
+<p>period, those aged 60–74 at diagnosis have an estimated 86% higher risk of death due to skin melanoma than those aged 0–44 at diagnosis. The difference is statistically significant.</p>
 </div>
-<div id="ii.-2" class="section level3">
-<h3>ii.</h3>
-<p>The parameter estimate for period changes from 0.78 to 0.72 when age and sex are added to the model. Whether this is ‘strong confounding’, or even ‘confounding’ is a matter of judgement. I would consider this confounding but not strong confounding but there is no correct answer.</p>
+<div id="ii.-the-parameter-estimate-for-period-changes-from-0.78-to" class="section level3">
+<h3>ii. ### The parameter estimate for period changes from 0.78 to</h3>
+<p>0.72 when age and sex are added to the model. Whether this is ‘strong confounding’, or even ‘confounding’ is a matter of judgement. I would consider this confounding but not strong confounding but there is no correct answer.</p>
 </div>
 <div id="iii.-2" class="section level3">
 <h3>iii.</h3>
-<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb40-1" title="1"><span class="kw">summary</span>(poisson7i &lt;-<span class="st"> </span><span class="kw">glm</span>( death_cancer <span class="op">~</span><span class="st"> </span>fu <span class="op">+</span><span class="st"> </span>year8594 <span class="op">+</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>agegrp <span class="op">+</span><span class="st"> </span><span class="kw">offset</span>( <span class="kw">log</span>(pt) ), <span class="dt">family=</span>poisson, <span class="dt">data=</span>melanoma.spl ))</a></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb32-1" title="1"><span class="kw">summary</span>(poisson7i &lt;-<span class="st"> </span><span class="kw">glm</span>( death_cancer <span class="op">~</span><span class="st"> </span>fu <span class="op">+</span><span class="st"> </span>year8594 <span class="op">+</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>agegrp <span class="op">+</span><span class="st"> </span><span class="kw">offset</span>( <span class="kw">log</span>(pt) ), <span class="dt">family=</span>poisson, <span class="dt">data=</span>melanoma.spl ))</a></code></pre></div>
 <pre><code>## 
 ## Call:
 ## glm(formula = death_cancer ~ fu + year8594 + sex + agegrp + offset(log(pt)), 
@@ -661,8 +557,8 @@ a.sourceLine {
 ## AIC: 10183
 ## 
 ## Number of Fisher Scoring iterations: 7</code></pre>
-<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb42-1" title="1"><span class="co">## IRR</span></a>
-<a class="sourceLine" id="cb42-2" title="2">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson7i)</a></code></pre></div>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb34-1" title="1"><span class="co">## IRR</span></a>
+<a class="sourceLine" id="cb34-2" title="2"><span class="kw">eform</span>(poisson7i)</a></code></pre></div>
 <pre><code>##                          exp(beta)       2.5 %     97.5 %
 ## (Intercept)             0.01269168 0.009585413 0.01680457
 ## fu1                     3.55468470 2.723340923 4.63980959
@@ -679,8 +575,8 @@ a.sourceLine {
 ## agegrp45-59             1.32779475 1.104004888 1.59694845
 ## agegrp60-74             1.86237635 1.558526802 2.22546423
 ## agegrp75+               3.40028687 2.770846371 4.17271449</code></pre>
-<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb44-1" title="1"><span class="co">## Test if the effect of age is significant using a likelihood ratio test</span></a>
-<a class="sourceLine" id="cb44-2" title="2"><span class="kw">drop1</span>(poisson7i, <span class="op">~</span>agegrp, <span class="dt">test=</span><span class="st">&quot;Chisq&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb36-1" title="1"><span class="co">## Test if the effect of age is significant using a likelihood ratio test</span></a>
+<a class="sourceLine" id="cb36-2" title="2"><span class="kw">drop1</span>(poisson7i, <span class="op">~</span>agegrp, <span class="dt">test=</span><span class="st">&quot;Chisq&quot;</span>)</a></code></pre></div>
 <pre><code>## Single term deletions
 ## 
 ## Model:
@@ -690,8 +586,8 @@ a.sourceLine {
 ## agegrp  3   8377.9 10322 144.59 &lt; 2.2e-16 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb46-1" title="1"><span class="co">## For this we can also use the car package and a Wald test</span></a>
-<a class="sourceLine" id="cb46-2" title="2"><span class="kw">linearHypothesis</span>(poisson7i,<span class="kw">c</span>(<span class="st">&quot;agegrp45-59 = 0&quot;</span>,<span class="st">&quot;agegrp60-74 = 0&quot;</span>,<span class="st">&quot;agegrp75+ = 0&quot;</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb38-1" title="1"><span class="co">## For this we can also use the car package and a Wald test</span></a>
+<a class="sourceLine" id="cb38-2" title="2"><span class="kw">linearHypothesis</span>(poisson7i,<span class="kw">c</span>(<span class="st">&quot;agegrp45-59 = 0&quot;</span>,<span class="st">&quot;agegrp60-74 = 0&quot;</span>,<span class="st">&quot;agegrp75+ = 0&quot;</span>))</a></code></pre></div>
 <pre><code>## Linear hypothesis test
 ## 
 ## Hypothesis:
@@ -707,16 +603,16 @@ a.sourceLine {
 ## 2  34294  3 155.82  &lt; 2.2e-16 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb48-1" title="1"><span class="co">## ADVANCED:</span></a>
-<a class="sourceLine" id="cb48-2" title="2"><span class="co">## Alternative approach for the likelihood ratio test</span></a>
-<a class="sourceLine" id="cb48-3" title="3"><span class="co"># poisson7i_2 &lt;- update(poisson7i,. ~ . - agegrp)</span></a>
-<a class="sourceLine" id="cb48-4" title="4"><span class="co"># anova(poisson7i_2,poisson7i,test=&quot;Chisq&quot;)</span></a></code></pre></div>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb40-1" title="1"><span class="co">## ADVANCED:</span></a>
+<a class="sourceLine" id="cb40-2" title="2"><span class="co">## Alternative approach for the likelihood ratio test</span></a>
+<a class="sourceLine" id="cb40-3" title="3"><span class="co"># poisson7i_2 &lt;- update(poisson7i,. ~ . - agegrp)</span></a>
+<a class="sourceLine" id="cb40-4" title="4"><span class="co"># anova(poisson7i_2,poisson7i,test=&quot;Chisq&quot;)</span></a></code></pre></div>
 <p>Age (modelled as a categorical variable with 4 levels) is highly significant in the model.</p>
 </div>
 </div>
 <div id="j" class="section level2">
 <h2>(j)</h2>
-<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb49-1" title="1"><span class="kw">summary</span>(poisson7j &lt;-<span class="st"> </span><span class="kw">glm</span>( death_cancer <span class="op">~</span><span class="st"> </span>fu <span class="op">+</span><span class="st"> </span>agegrp <span class="op">+</span><span class="st"> </span>year8594<span class="op">*</span>sex <span class="op">+</span><span class="st"> </span><span class="kw">offset</span>( <span class="kw">log</span>(pt) ), <span class="dt">family=</span>poisson, <span class="dt">data=</span>melanoma.spl ))</a></code></pre></div>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb41-1" title="1"><span class="kw">summary</span>(poisson7j &lt;-<span class="st"> </span><span class="kw">glm</span>( death_cancer <span class="op">~</span><span class="st"> </span>fu <span class="op">+</span><span class="st"> </span>agegrp <span class="op">+</span><span class="st"> </span>year8594<span class="op">*</span>sex <span class="op">+</span><span class="st"> </span><span class="kw">offset</span>( <span class="kw">log</span>(pt) ), <span class="dt">family=</span>poisson, <span class="dt">data=</span>melanoma.spl ))</a></code></pre></div>
 <pre><code>## 
 ## Call:
 ## glm(formula = death_cancer ~ fu + agegrp + year8594 * sex + offset(log(pt)), 
@@ -754,8 +650,8 @@ a.sourceLine {
 ## AIC: 10185
 ## 
 ## Number of Fisher Scoring iterations: 7</code></pre>
-<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb51-1" title="1"><span class="co">## IRR</span></a>
-<a class="sourceLine" id="cb51-2" title="2">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson7j)</a></code></pre></div>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb43-1" title="1"><span class="co">## IRR</span></a>
+<a class="sourceLine" id="cb43-2" title="2"><span class="kw">eform</span>(poisson7j)</a></code></pre></div>
 <pre><code>##                                    exp(beta)       2.5 %     97.5 %
 ## (Intercept)                       0.01253791 0.009418543 0.01669039
 ## fu1                               3.55479530 2.723425214 4.63995469
@@ -779,22 +675,24 @@ a.sourceLine {
 <h2>(k)</h2>
 <p>Based on the interaction model you fitted in exercise 7j, estimate the hazard ratio for the effect of sex (with 95% confidence interval) for each calendar period.</p>
 <p>ADVANCED: Do this with each of the following methods and confirm that the results are the same:</p>
-<div id="i.-3" class="section level3">
+<div id="i.-2" class="section level3">
 <h3>i.</h3>
-<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb53-1" title="1"><span class="co"># hand calculations</span></a>
-<a class="sourceLine" id="cb53-2" title="2">hz7k &lt;-<span class="st"> </span><span class="kw">exp</span>(<span class="kw">coef</span>(poisson7j))</a>
-<a class="sourceLine" id="cb53-3" title="3">hz7k[<span class="st">&quot;sexFemale&quot;</span>]</a></code></pre></div>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb45-1" title="1"><span class="co"># hand calculations</span></a>
+<a class="sourceLine" id="cb45-2" title="2">hz7k &lt;-<span class="st"> </span><span class="kw">exp</span>(<span class="kw">coef</span>(poisson7j))</a>
+<a class="sourceLine" id="cb45-3" title="3">hz7k[<span class="st">&quot;sexFemale&quot;</span>]</a></code></pre></div>
 <pre><code>## sexFemale 
 ## 0.6031338</code></pre>
-<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb55-1" title="1">hz7k[<span class="st">&quot;sexFemale&quot;</span>]<span class="op">*</span>hz7k[<span class="st">&quot;year8594Diagnosed 85-94:sexFemale&quot;</span>]</a></code></pre></div>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb47-1" title="1">hz7k[<span class="st">&quot;sexFemale&quot;</span>]<span class="op">*</span>hz7k[<span class="st">&quot;year8594Diagnosed 85-94:sexFemale&quot;</span>]</a></code></pre></div>
 <pre><code>## sexFemale 
 ## 0.5691922</code></pre>
 <p>The effect of sex for patients diagnosed 1975–84 is <span class="math inline">\(0.6031338\)</span> and the effect of sex for patients diagnosed 1985–94 is <span class="math inline">\(0.6031338 \times 0.9437245=0.56919214\)</span>.</p>
 </div>
-<div id="ii.-3" class="section level3">
+<div id="ii.-2" class="section level3">
 <h3>ii.</h3>
 <p>We can use <code>lincom</code> to get the estimated effect for patients diagnosed 1985–94.</p>
-<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb57-1" title="1">biostat3<span class="op">::</span><span class="kw">lincom</span>(poisson7j,<span class="kw">c</span>(<span class="st">&quot;sexFemale + year8594Diagnosed 85-94:sexFemale&quot;</span>),<span class="dt">eform=</span><span class="ot">TRUE</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb49-1" title="1"><span class="co">## You will need the &quot;car&quot; package to use lincom. If it is not already installed:</span></a>
+<a class="sourceLine" id="cb49-2" title="2"><span class="co">## install.packages(&quot;car&quot;)</span></a>
+<a class="sourceLine" id="cb49-3" title="3"><span class="kw">lincom</span>(poisson7j,<span class="kw">c</span>(<span class="st">&quot;sexFemale + year8594Diagnosed 85-94:sexFemale&quot;</span>),<span class="dt">eform=</span><span class="ot">TRUE</span>)</a></code></pre></div>
 <pre><code>##                                                Estimate     2.5 %    97.5 %    Chisq
 ## sexFemale + year8594Diagnosed 85-94:sexFemale 0.5691922 0.4705541 0.6885069 33.68456
 ##                                                 Pr(&gt;Chisq)
@@ -803,15 +701,15 @@ a.sourceLine {
 </div>
 <div id="iii.-3" class="section level3">
 <h3>iii.</h3>
-<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb59-1" title="1"><span class="co">## Create dummies and Poisson regression</span></a>
-<a class="sourceLine" id="cb59-2" title="2">melanoma.spl &lt;-<span class="st"> </span>melanoma.spl <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb59-3" title="3"><span class="st">    </span><span class="co">## Add confidence intervals for the rates</span></a>
-<a class="sourceLine" id="cb59-4" title="4"><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">femaleEarly =</span> sex<span class="op">==</span><span class="st">&quot;Female&quot;</span> <span class="op">&amp;</span><span class="st"> </span>year8594<span class="op">==</span><span class="st">&quot;Diagnosed 75-84&quot;</span>,</a>
-<a class="sourceLine" id="cb59-5" title="5">           <span class="dt">femaleLate =</span> sex<span class="op">==</span><span class="st">&quot;Female&quot;</span> <span class="op">&amp;</span><span class="st"> </span>year8594<span class="op">==</span><span class="st">&quot;Diagnosed 85-94&quot;</span>)</a>
-<a class="sourceLine" id="cb59-6" title="6"></a>
-<a class="sourceLine" id="cb59-7" title="7"><span class="kw">summary</span>(poisson7k &lt;-<span class="st"> </span><span class="kw">glm</span>( death_cancer <span class="op">~</span><span class="st"> </span>fu <span class="op">+</span><span class="st"> </span>agegrp <span class="op">+</span><span class="st"> </span>year8594 <span class="op">+</span><span class="st"> </span>femaleEarly <span class="op">+</span></a>
-<a class="sourceLine" id="cb59-8" title="8"><span class="st">                         </span>femaleLate <span class="op">+</span><span class="st"> </span><span class="kw">offset</span>( <span class="kw">log</span>(pt) ), <span class="dt">family=</span>poisson,</a>
-<a class="sourceLine" id="cb59-9" title="9">                         <span class="dt">data=</span>melanoma.spl ))</a></code></pre></div>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb51-1" title="1"><span class="co">## Create dummies and Poisson regression</span></a>
+<a class="sourceLine" id="cb51-2" title="2">melanoma.spl &lt;-<span class="st"> </span>melanoma.spl <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb51-3" title="3"><span class="st">    </span><span class="co">## Add confidence intervals for the rates</span></a>
+<a class="sourceLine" id="cb51-4" title="4"><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">femaleEarly =</span> sex<span class="op">==</span><span class="st">&quot;Female&quot;</span> <span class="op">&amp;</span><span class="st"> </span>year8594<span class="op">==</span><span class="st">&quot;Diagnosed 75-84&quot;</span>,</a>
+<a class="sourceLine" id="cb51-5" title="5">           <span class="dt">femaleLate =</span> sex<span class="op">==</span><span class="st">&quot;Female&quot;</span> <span class="op">&amp;</span><span class="st"> </span>year8594<span class="op">==</span><span class="st">&quot;Diagnosed 85-94&quot;</span>)</a>
+<a class="sourceLine" id="cb51-6" title="6"></a>
+<a class="sourceLine" id="cb51-7" title="7"><span class="kw">summary</span>(poisson7k &lt;-<span class="st"> </span><span class="kw">glm</span>( death_cancer <span class="op">~</span><span class="st"> </span>fu <span class="op">+</span><span class="st"> </span>agegrp <span class="op">+</span><span class="st"> </span>year8594 <span class="op">+</span><span class="st"> </span>femaleEarly <span class="op">+</span></a>
+<a class="sourceLine" id="cb51-8" title="8"><span class="st">                         </span>femaleLate <span class="op">+</span><span class="st"> </span><span class="kw">offset</span>( <span class="kw">log</span>(pt) ), <span class="dt">family=</span>poisson,</a>
+<a class="sourceLine" id="cb51-9" title="9">                         <span class="dt">data=</span>melanoma.spl ))</a></code></pre></div>
 <pre><code>## 
 ## Call:
 ## glm(formula = death_cancer ~ fu + agegrp + year8594 + femaleEarly + 
@@ -849,8 +747,8 @@ a.sourceLine {
 ## AIC: 10185
 ## 
 ## Number of Fisher Scoring iterations: 7</code></pre>
-<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb61-1" title="1"><span class="co">## IRR</span></a>
-<a class="sourceLine" id="cb61-2" title="2">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson7k)</a></code></pre></div>
+<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb53-1" title="1"><span class="co">## IRR</span></a>
+<a class="sourceLine" id="cb53-2" title="2"><span class="kw">eform</span>(poisson7k)</a></code></pre></div>
 <pre><code>##                          exp(beta)       2.5 %     97.5 %
 ## (Intercept)             0.01253791 0.009418543 0.01669039
 ## fu1                     3.55479530 2.723425214 4.63995469
@@ -871,10 +769,10 @@ a.sourceLine {
 </div>
 <div id="iv." class="section level3">
 <h3>iv.</h3>
-<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb63-1" title="1"><span class="co">## Add interaction term</span></a>
-<a class="sourceLine" id="cb63-2" title="2"><span class="kw">summary</span>(poisson7k2 &lt;-<span class="st"> </span><span class="kw">glm</span>( death_cancer <span class="op">~</span><span class="st"> </span>fu <span class="op">+</span><span class="st"> </span>agegrp <span class="op">+</span><span class="st"> </span>year8594 <span class="op">+</span><span class="st"> </span>year8594<span class="op">:</span>sex <span class="op">+</span></a>
-<a class="sourceLine" id="cb63-3" title="3"><span class="st">                         </span><span class="kw">offset</span>( <span class="kw">log</span>(pt) ), <span class="dt">family=</span>poisson,</a>
-<a class="sourceLine" id="cb63-4" title="4">                         <span class="dt">data=</span>melanoma.spl ))</a></code></pre></div>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb55-1" title="1"><span class="co">## Add interaction term</span></a>
+<a class="sourceLine" id="cb55-2" title="2"><span class="kw">summary</span>(poisson7k2 &lt;-<span class="st"> </span><span class="kw">glm</span>( death_cancer <span class="op">~</span><span class="st"> </span>fu <span class="op">+</span><span class="st"> </span>agegrp <span class="op">+</span><span class="st"> </span>year8594 <span class="op">+</span><span class="st"> </span>year8594<span class="op">:</span>sex <span class="op">+</span></a>
+<a class="sourceLine" id="cb55-3" title="3"><span class="st">                         </span><span class="kw">offset</span>( <span class="kw">log</span>(pt) ), <span class="dt">family=</span>poisson,</a>
+<a class="sourceLine" id="cb55-4" title="4">                         <span class="dt">data=</span>melanoma.spl ))</a></code></pre></div>
 <pre><code>## 
 ## Call:
 ## glm(formula = death_cancer ~ fu + agegrp + year8594 + year8594:sex + 
@@ -912,7 +810,7 @@ a.sourceLine {
 ## AIC: 10185
 ## 
 ## Number of Fisher Scoring iterations: 7</code></pre>
-<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb65-1" title="1">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson7k2)</a></code></pre></div>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb57-1" title="1"><span class="kw">eform</span>(poisson7k2)</a></code></pre></div>
 <pre><code>##                                    exp(beta)       2.5 %     97.5 %
 ## (Intercept)                       0.01253791 0.009418543 0.01669039
 ## fu1                               3.55479530 2.723425214 4.63995469
@@ -935,9 +833,9 @@ a.sourceLine {
 <div id="l" class="section level2">
 <h2>(l)</h2>
 <p>If we fit stratified models we get slightly different estimates (<span class="math inline">\(0.6165815\)</span> and <span class="math inline">\(0.5549737\)</span>) since the models stratified by calendar period imply that all estimates are modified by calendar period. That is, we are actually estimating the following model:</p>
-<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb67-1" title="1"><span class="kw">summary</span>( poisson7l.early &lt;-<span class="st"> </span><span class="kw">glm</span>( death_cancer <span class="op">~</span><span class="st"> </span>fu <span class="op">+</span><span class="st"> </span>agegrp <span class="op">+</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span><span class="kw">offset</span>( <span class="kw">log</span>(pt) ),</a>
-<a class="sourceLine" id="cb67-2" title="2">                       <span class="dt">family =</span> poisson, <span class="dt">data =</span> melanoma.spl,</a>
-<a class="sourceLine" id="cb67-3" title="3">                       <span class="dt">subset =</span> year8594 <span class="op">==</span><span class="st"> &quot;Diagnosed 75-84&quot;</span> ) )</a></code></pre></div>
+<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb59-1" title="1"><span class="kw">summary</span>( poisson7l.early &lt;-<span class="st"> </span><span class="kw">glm</span>( death_cancer <span class="op">~</span><span class="st"> </span>fu <span class="op">+</span><span class="st"> </span>agegrp <span class="op">+</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span><span class="kw">offset</span>( <span class="kw">log</span>(pt) ),</a>
+<a class="sourceLine" id="cb59-2" title="2">                       <span class="dt">family =</span> poisson, <span class="dt">data =</span> melanoma.spl,</a>
+<a class="sourceLine" id="cb59-3" title="3">                       <span class="dt">subset =</span> year8594 <span class="op">==</span><span class="st"> &quot;Diagnosed 75-84&quot;</span> ) )</a></code></pre></div>
 <pre><code>## 
 ## Call:
 ## glm(formula = death_cancer ~ fu + agegrp + sex + offset(log(pt)), 
@@ -974,7 +872,7 @@ a.sourceLine {
 ## AIC: 5496.6
 ## 
 ## Number of Fisher Scoring iterations: 6</code></pre>
-<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb69-1" title="1">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson7l.early)</a></code></pre></div>
+<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb61-1" title="1"><span class="kw">eform</span>(poisson7l.early)</a></code></pre></div>
 <pre><code>##              exp(beta)       2.5 %     97.5 %
 ## (Intercept) 0.01290368 0.008762127 0.01900279
 ## fu1         3.65871653 2.481590140 5.39420529
@@ -990,9 +888,9 @@ a.sourceLine {
 ## agegrp60-74 1.81153335 1.433732925 2.28888730
 ## agegrp75+   2.78152101 2.059958553 3.75583242
 ## sexFemale   0.61658148 0.518507340 0.73320605</code></pre>
-<div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb71-1" title="1"><span class="kw">summary</span>( poisson7l.late &lt;-<span class="st"> </span><span class="kw">glm</span>( death_cancer <span class="op">~</span><span class="st"> </span>fu <span class="op">+</span><span class="st"> </span>agegrp <span class="op">+</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span><span class="kw">offset</span>( <span class="kw">log</span>(pt) ),</a>
-<a class="sourceLine" id="cb71-2" title="2">                       <span class="dt">family =</span> poisson, <span class="dt">data =</span> melanoma.spl,</a>
-<a class="sourceLine" id="cb71-3" title="3">                       <span class="dt">subset =</span> year8594 <span class="op">==</span><span class="st"> &quot;Diagnosed 85-94&quot;</span> ) )</a></code></pre></div>
+<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb63-1" title="1"><span class="kw">summary</span>( poisson7l.late &lt;-<span class="st"> </span><span class="kw">glm</span>( death_cancer <span class="op">~</span><span class="st"> </span>fu <span class="op">+</span><span class="st"> </span>agegrp <span class="op">+</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span><span class="kw">offset</span>( <span class="kw">log</span>(pt) ),</a>
+<a class="sourceLine" id="cb63-2" title="2">                       <span class="dt">family =</span> poisson, <span class="dt">data =</span> melanoma.spl,</a>
+<a class="sourceLine" id="cb63-3" title="3">                       <span class="dt">subset =</span> year8594 <span class="op">==</span><span class="st"> &quot;Diagnosed 85-94&quot;</span> ) )</a></code></pre></div>
 <pre><code>## 
 ## Call:
 ## glm(formula = death_cancer ~ fu + agegrp + sex + offset(log(pt)), 
@@ -1029,7 +927,7 @@ a.sourceLine {
 ## AIC: 4690.7
 ## 
 ## Number of Fisher Scoring iterations: 7</code></pre>
-<div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb73-1" title="1">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson7l.late)</a></code></pre></div>
+<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb65-1" title="1"><span class="kw">eform</span>(poisson7l.late)</a></code></pre></div>
 <pre><code>##               exp(beta)       2.5 %     97.5 %
 ## (Intercept) 0.008948632 0.006060435 0.01321324
 ## fu1         3.465448196 2.402316723 4.99906240
@@ -1045,8 +943,8 @@ a.sourceLine {
 ## agegrp60-74 1.930340028 1.465259625 2.54303917
 ## agegrp75+   3.991981639 2.982359282 5.34339290
 ## sexFemale   0.554973666 0.458369470 0.67193779</code></pre>
-<div class="sourceCode" id="cb75"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb75-1" title="1"><span class="co"># compare with results in i</span></a>
-<a class="sourceLine" id="cb75-2" title="2">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson7i)</a></code></pre></div>
+<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb67-1" title="1"><span class="co"># compare with results in i</span></a>
+<a class="sourceLine" id="cb67-2" title="2"><span class="kw">eform</span>(poisson7i)</a></code></pre></div>
 <pre><code>##                          exp(beta)       2.5 %     97.5 %
 ## (Intercept)             0.01269168 0.009585413 0.01680457
 ## fu1                     3.55468470 2.723340923 4.63980959
@@ -1063,8 +961,8 @@ a.sourceLine {
 ## agegrp45-59             1.32779475 1.104004888 1.59694845
 ## agegrp60-74             1.86237635 1.558526802 2.22546423
 ## agegrp75+               3.40028687 2.770846371 4.17271449</code></pre>
-<div class="sourceCode" id="cb77"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb77-1" title="1"><span class="co"># compare with results in j</span></a>
-<a class="sourceLine" id="cb77-2" title="2">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson7j)</a></code></pre></div>
+<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb69-1" title="1"><span class="co"># compare with results in j</span></a>
+<a class="sourceLine" id="cb69-2" title="2"><span class="kw">eform</span>(poisson7j)</a></code></pre></div>
 <pre><code>##                                    exp(beta)       2.5 %     97.5 %
 ## (Intercept)                       0.01253791 0.009418543 0.01669039
 ## fu1                               3.55479530 2.723425214 4.63995469
@@ -1082,10 +980,10 @@ a.sourceLine {
 ## year8594Diagnosed 85-94           0.74143513 0.623488755 0.88169360
 ## sexFemale                         0.60313385 0.507452579 0.71685602
 ## year8594Diagnosed 85-94:sexFemale 0.94372451 0.730577239 1.21905789</code></pre>
-<div class="sourceCode" id="cb79"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb79-1" title="1"><span class="co"># Poisson-regression with effects specific for diagnose period</span></a>
-<a class="sourceLine" id="cb79-2" title="2"><span class="kw">summary</span>(poisson7l2 &lt;-<span class="st"> </span><span class="kw">glm</span>( death_cancer <span class="op">~</span><span class="st"> </span>fu <span class="op">+</span><span class="st"> </span>fu<span class="op">:</span>year8594 <span class="op">+</span><span class="st"> </span>agegrp <span class="op">+</span><span class="st"> </span>agegrp<span class="op">:</span>year8594</a>
-<a class="sourceLine" id="cb79-3" title="3">                          <span class="op">+</span><span class="st"> </span>sex<span class="op">*</span>year8594 <span class="op">+</span><span class="st"> </span><span class="kw">offset</span>( <span class="kw">log</span>(pt) ),</a>
-<a class="sourceLine" id="cb79-4" title="4">                          <span class="dt">family=</span>poisson, <span class="dt">data=</span>melanoma.spl ))</a></code></pre></div>
+<div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb71-1" title="1"><span class="co"># Poisson-regression with effects specific for diagnose period</span></a>
+<a class="sourceLine" id="cb71-2" title="2"><span class="kw">summary</span>(poisson7l2 &lt;-<span class="st"> </span><span class="kw">glm</span>( death_cancer <span class="op">~</span><span class="st"> </span>fu <span class="op">+</span><span class="st"> </span>fu<span class="op">:</span>year8594 <span class="op">+</span><span class="st"> </span>agegrp <span class="op">+</span><span class="st"> </span>agegrp<span class="op">:</span>year8594</a>
+<a class="sourceLine" id="cb71-3" title="3">                          <span class="op">+</span><span class="st"> </span>sex<span class="op">*</span>year8594 <span class="op">+</span><span class="st"> </span><span class="kw">offset</span>( <span class="kw">log</span>(pt) ),</a>
+<a class="sourceLine" id="cb71-4" title="4">                          <span class="dt">family=</span>poisson, <span class="dt">data=</span>melanoma.spl ))</a></code></pre></div>
 <pre><code>## 
 ## Call:
 ## glm(formula = death_cancer ~ fu + fu:year8594 + agegrp + agegrp:year8594 + 
@@ -1135,7 +1033,7 @@ a.sourceLine {
 ## AIC: 10187
 ## 
 ## Number of Fisher Scoring iterations: 7</code></pre>
-<div class="sourceCode" id="cb81"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb81-1" title="1">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson7l2)</a></code></pre></div>
+<div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb73-1" title="1"><span class="kw">eform</span>(poisson7l2)</a></code></pre></div>
 <pre><code>##                                      exp(beta)       2.5 %     97.5 %
 ## (Intercept)                         0.01290368 0.008761852 0.01900338
 ## fu1                                 3.65871657 2.481529705 5.39433679

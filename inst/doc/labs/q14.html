@@ -268,10 +268,8 @@ a.sourceLine {
 <div id="e-accelerated-failure-time-models" class="section level2">
 <h2>(e) Accelerated failure time models</h2>
 <p>As an alternative model class, we can fit <em>accelerated failure time models</em> with a smooth baseline survival function. We can use the <em>rstpm2::aft</em> function, which uses splines to model baseline survival. Using the baseline simulation, fit and interpret smooth accelerated failure time models:</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" title="1">fit &lt;-<span class="st"> </span><span class="kw">aft</span>(<span class="kw">Surv</span>(y,delta)<span class="op">~</span>x<span class="op">+</span>u,<span class="dt">data=</span>d,<span class="dt">df=</span><span class="dv">4</span>)</a></code></pre></div>
-<pre><code>## Warning in aft(Surv(y, delta) ~ x + u, data = d, df = 4): Some event times &lt; 1e-4:
-## consider transforming time to avoid problems with finite differences</code></pre>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" title="1"><span class="kw">summary</span>(fit)</a></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" title="1">fit &lt;-<span class="st"> </span><span class="kw">aft</span>(<span class="kw">Surv</span>(y,delta)<span class="op">~</span>x<span class="op">+</span>u,<span class="dt">data=</span>d,<span class="dt">df=</span><span class="dv">4</span>)</a>
+<a class="sourceLine" id="cb20-2" title="2"><span class="kw">summary</span>(fit)</a></code></pre></div>
 <pre><code>## Maximum likelihood estimation
 ## 
 ## Call:
@@ -290,10 +288,8 @@ a.sourceLine {
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## -2 log L: 7681.266</code></pre>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" title="1">fit &lt;-<span class="st"> </span><span class="kw">aft</span>(<span class="kw">Surv</span>(y,delta)<span class="op">~</span>x,<span class="dt">data=</span>d,<span class="dt">df=</span><span class="dv">4</span>)</a></code></pre></div>
-<pre><code>## Warning in aft(Surv(y, delta) ~ x, data = d, df = 4): Some event times &lt; 1e-4: consider
-## transforming time to avoid problems with finite differences</code></pre>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" title="1"><span class="kw">summary</span>(fit)</a></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" title="1">fit &lt;-<span class="st"> </span><span class="kw">aft</span>(<span class="kw">Surv</span>(y,delta)<span class="op">~</span>x,<span class="dt">data=</span>d,<span class="dt">df=</span><span class="dv">4</span>)</a>
+<a class="sourceLine" id="cb22-2" title="2"><span class="kw">summary</span>(fit)</a></code></pre></div>
 <pre><code>## Maximum likelihood estimation
 ## 
 ## Call:

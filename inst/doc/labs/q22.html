@@ -165,7 +165,7 @@ a.sourceLine {
 <a class="sourceLine" id="cb3-7" title="7"></a>
 <a class="sourceLine" id="cb3-8" title="8">poisson22b &lt;-<span class="st"> </span><span class="kw">glm</span>( fail <span class="op">~</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span><span class="kw">offset</span>( <span class="kw">log</span>( t_at_risk) ), <span class="dt">family=</span>poisson, <span class="dt">data=</span>brv)</a>
 <a class="sourceLine" id="cb3-9" title="9"><span class="kw">summary</span>( poisson22b )</a>
-<a class="sourceLine" id="cb3-10" title="10">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson22b)</a>
+<a class="sourceLine" id="cb3-10" title="10"><span class="kw">eform</span>(poisson22b)</a>
 <a class="sourceLine" id="cb3-11" title="11"></a>
 <a class="sourceLine" id="cb3-12" title="12"><span class="kw">select</span>(brv, sex, age_entry) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb3-13" title="13"><span class="st">    </span><span class="kw">group_by</span>(sex) <span class="op">%&gt;%</span></a>
@@ -196,7 +196,7 @@ a.sourceLine {
 <p>Now find the (crude) effect of bereavement.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1">poisson22d &lt;-<span class="st"> </span><span class="kw">glm</span>( fail <span class="op">~</span><span class="st"> </span>brv <span class="op">+</span><span class="st"> </span><span class="kw">offset</span>( <span class="kw">log</span>(t_sp_at_risk) ), <span class="dt">family=</span>poisson, <span class="dt">data=</span>brvSplit)</a>
 <a class="sourceLine" id="cb5-2" title="2"><span class="kw">summary</span>(poisson22d)</a>
-<a class="sourceLine" id="cb5-3" title="3">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson22d)</a></code></pre></div>
+<a class="sourceLine" id="cb5-3" title="3"><span class="kw">eform</span>(poisson22d)</a></code></pre></div>
 </div>
 <div id="e" class="section level2">
 <h2>(e)</h2>
@@ -204,12 +204,12 @@ a.sourceLine {
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1"><span class="co">## Poisson regression for sex==1</span></a>
 <a class="sourceLine" id="cb6-2" title="2">poisson22e1 &lt;-<span class="st"> </span><span class="kw">glm</span>( fail <span class="op">~</span><span class="st"> </span>brv <span class="op">+</span><span class="st"> </span><span class="kw">offset</span>( <span class="kw">log</span>(t_sp_at_risk) ), <span class="dt">family=</span>poisson, <span class="dt">data=</span><span class="kw">filter</span>(brvSplit, sex<span class="op">==</span><span class="dv">1</span>))</a>
 <a class="sourceLine" id="cb6-3" title="3"><span class="kw">summary</span>(poisson22e1)</a>
-<a class="sourceLine" id="cb6-4" title="4">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson22e1)</a>
+<a class="sourceLine" id="cb6-4" title="4"><span class="kw">eform</span>(poisson22e1)</a>
 <a class="sourceLine" id="cb6-5" title="5"></a>
 <a class="sourceLine" id="cb6-6" title="6"><span class="co">## Poisson regression for sex==2</span></a>
 <a class="sourceLine" id="cb6-7" title="7">poisson22e2 &lt;-<span class="st"> </span><span class="kw">glm</span>( fail <span class="op">~</span><span class="st"> </span>brv <span class="op">+</span><span class="st"> </span><span class="kw">offset</span>( <span class="kw">log</span>(t_sp_at_risk) ), <span class="dt">family=</span>poisson, <span class="dt">data=</span><span class="kw">filter</span>(brvSplit, sex<span class="op">==</span><span class="dv">2</span>))</a>
 <a class="sourceLine" id="cb6-8" title="8"><span class="kw">summary</span>(poisson22e2)</a>
-<a class="sourceLine" id="cb6-9" title="9">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson22e2)</a>
+<a class="sourceLine" id="cb6-9" title="9"><span class="kw">eform</span>(poisson22e2)</a>
 <a class="sourceLine" id="cb6-10" title="10"></a>
 <a class="sourceLine" id="cb6-11" title="11"><span class="co">## Poisson regression, interaction with sex</span></a>
 <a class="sourceLine" id="cb6-12" title="12">brvSplit2 &lt;-<span class="st"> </span><span class="kw">mutate</span>(brvSplit,</a>
@@ -217,7 +217,7 @@ a.sourceLine {
 <a class="sourceLine" id="cb6-14" title="14">                    <span class="dt">brv =</span> <span class="kw">as.factor</span>(brv))</a>
 <a class="sourceLine" id="cb6-15" title="15">poisson22e3 &lt;-<span class="st"> </span><span class="kw">glm</span>( fail <span class="op">~</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>brv<span class="op">:</span>sex <span class="op">+</span><span class="st"> </span><span class="kw">offset</span>( <span class="kw">log</span>(t_sp_at_risk) ), <span class="dt">family=</span>poisson, <span class="dt">data=</span>brvSplit2)</a>
 <a class="sourceLine" id="cb6-16" title="16"><span class="kw">summary</span>(poisson22e3)</a>
-<a class="sourceLine" id="cb6-17" title="17">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson22e3)</a></code></pre></div>
+<a class="sourceLine" id="cb6-17" title="17"><span class="kw">eform</span>(poisson22e3)</a></code></pre></div>
 </div>
 <div id="f-controlling-for-age." class="section level2">
 <h2>(f) Controlling for age.</h2>
@@ -240,18 +240,18 @@ a.sourceLine {
 <a class="sourceLine" id="cb7-16" title="16"></a>
 <a class="sourceLine" id="cb7-17" title="17">poisson22f1 &lt;-<span class="st"> </span><span class="kw">glm</span>( fail <span class="op">~</span><span class="st"> </span>brv <span class="op">+</span><span class="st"> </span>age <span class="op">+</span><span class="st"> </span><span class="kw">offset</span>( <span class="kw">log</span>(t_at_risk) ), <span class="dt">family=</span>poisson, <span class="dt">data=</span>brvSplit4)</a>
 <a class="sourceLine" id="cb7-18" title="18"><span class="kw">summary</span>(poisson22f1)</a>
-<a class="sourceLine" id="cb7-19" title="19">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson22f1)</a>
+<a class="sourceLine" id="cb7-19" title="19"><span class="kw">eform</span>(poisson22f1)</a>
 <a class="sourceLine" id="cb7-20" title="20"></a>
 <a class="sourceLine" id="cb7-21" title="21">poisson22f2 &lt;-<span class="st"> </span><span class="kw">glm</span>( fail <span class="op">~</span><span class="st"> </span>brv <span class="op">+</span>age <span class="op">+</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span><span class="kw">offset</span>( <span class="kw">log</span>(t_at_risk) ), <span class="dt">family=</span>poisson, <span class="dt">data=</span>brvSplit4)</a>
 <a class="sourceLine" id="cb7-22" title="22"><span class="kw">summary</span>(poisson22f2)</a>
-<a class="sourceLine" id="cb7-23" title="23">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson22f2)</a></code></pre></div>
+<a class="sourceLine" id="cb7-23" title="23"><span class="kw">eform</span>(poisson22f2)</a></code></pre></div>
 </div>
 <div id="g" class="section level2">
 <h2>(g)</h2>
 <p>Now estimate the effect of bereavement (controlled for age) separately for each sex.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1">poisson22g &lt;-<span class="st"> </span><span class="kw">glm</span>( fail <span class="op">~</span><span class="st"> </span>age <span class="op">+</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>brv<span class="op">:</span>sex <span class="op">+</span><span class="st"> </span><span class="kw">offset</span>( <span class="kw">log</span>(t_at_risk) ), <span class="dt">family=</span>poisson, <span class="dt">data=</span>brvSplit4)</a>
 <a class="sourceLine" id="cb8-2" title="2"><span class="kw">summary</span>(poisson22g)</a>
-<a class="sourceLine" id="cb8-3" title="3">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson22g)</a></code></pre></div>
+<a class="sourceLine" id="cb8-3" title="3"><span class="kw">eform</span>(poisson22g)</a></code></pre></div>
 </div>
 <div id="h" class="section level2">
 <h2>(h)</h2>

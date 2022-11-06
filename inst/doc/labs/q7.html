@@ -142,7 +142,7 @@ a.sourceLine {
 <p>You may have to install the required packages the first time you use them. You can install a package by <code>install.packages(&quot;package_of_interest&quot;)</code> for each package you require.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">library</span>(biostat3)</a>
 <a class="sourceLine" id="cb1-2" title="2"><span class="kw">library</span>(dplyr)    <span class="co"># for data manipulation</span></a>
-<a class="sourceLine" id="cb1-3" title="3"><span class="kw">library</span>(car)      <span class="co"># for linearHypothesis</span></a></code></pre></div>
+<a class="sourceLine" id="cb1-3" title="3"><span class="kw">library</span>(car)      <span class="co"># for car::linearHypothesis -&gt; biostat3::lincom</span></a></code></pre></div>
 <p>Load the melanoma data and explore it.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="co">## Read melanoma data</span></a>
 <a class="sourceLine" id="cb2-2" title="2"></a>
@@ -271,7 +271,7 @@ a.sourceLine {
 <a class="sourceLine" id="cb9-8" title="8"></a>
 <a class="sourceLine" id="cb9-9" title="9"></a>
 <a class="sourceLine" id="cb9-10" title="10"><span class="co">## IRR</span></a>
-<a class="sourceLine" id="cb9-11" title="11">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson7c)</a>
+<a class="sourceLine" id="cb9-11" title="11"><span class="kw">eform</span>(poisson7c)</a>
 <a class="sourceLine" id="cb9-12" title="12"></a>
 <a class="sourceLine" id="cb9-13" title="13"></a>
 <a class="sourceLine" id="cb9-14" title="14"><span class="co">## Note that the scaling of the offset term only has an impact on the intercept</span></a>
@@ -343,8 +343,9 @@ a.sourceLine {
 <a class="sourceLine" id="cb13-3" title="3">                         <span class="dt">family =</span> poisson,</a>
 <a class="sourceLine" id="cb13-4" title="4">                         <span class="dt">data =</span> melanoma.spl ))</a>
 <a class="sourceLine" id="cb13-5" title="5"><span class="co">## IRR</span></a>
-<a class="sourceLine" id="cb13-6" title="6">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson7g)</a></code></pre></div>
+<a class="sourceLine" id="cb13-6" title="6"><span class="kw">eform</span>(poisson7g)</a></code></pre></div>
 <p>Does the pattern of estimated incident rate ratios mirror the pattern you observed in the plots? Draw a graph of the fitted hazard rate using pen and paper.</p>
+<p>Write out the regression equation.</p>
 </div>
 <div id="h" class="section level2">
 <h2>(h)</h2>
@@ -353,12 +354,12 @@ a.sourceLine {
 <a class="sourceLine" id="cb14-2" title="2">                         <span class="dt">family =</span> poisson,</a>
 <a class="sourceLine" id="cb14-3" title="3">                         <span class="dt">data =</span> melanoma.spl ))</a>
 <a class="sourceLine" id="cb14-4" title="4"><span class="co">## IRR</span></a>
-<a class="sourceLine" id="cb14-5" title="5">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson7h)</a>
+<a class="sourceLine" id="cb14-5" title="5"><span class="kw">eform</span>(poisson7h)</a>
 <a class="sourceLine" id="cb14-6" title="6"></a>
 <a class="sourceLine" id="cb14-7" title="7"><span class="co"># Add interaction term</span></a>
 <a class="sourceLine" id="cb14-8" title="8"><span class="kw">summary</span>(poisson7h2 &lt;-<span class="st"> </span><span class="kw">glm</span>( death_cancer <span class="op">~</span><span class="st"> </span>fu<span class="op">*</span>year8594 <span class="op">+</span><span class="st"> </span><span class="kw">offset</span>( <span class="kw">log</span>(pt) ), <span class="dt">family=</span>poisson, <span class="dt">data=</span>melanoma.spl ))</a>
 <a class="sourceLine" id="cb14-9" title="9"><span class="co">## IRR</span></a>
-<a class="sourceLine" id="cb14-10" title="10">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson7h2)</a></code></pre></div>
+<a class="sourceLine" id="cb14-10" title="10"><span class="kw">eform</span>(poisson7h2)</a></code></pre></div>
 <p>Is the estimated effect of calendar period of diagnosis consistent with what you expected? Add an interaction between follow-up and calendar period of diagnosis and interpret the results.</p>
 </div>
 <div id="i" class="section level2">
@@ -372,7 +373,7 @@ Perform a Wald test of the overall effect of age and interpret the results.</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" title="1"><span class="kw">summary</span>(poisson7i &lt;-<span class="st"> </span><span class="kw">glm</span>( death_cancer <span class="op">~</span><span class="st"> </span>fu <span class="op">+</span><span class="st"> </span>year8594 <span class="op">+</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>agegrp <span class="op">+</span><span class="st"> </span><span class="kw">offset</span>( <span class="kw">log</span>(pt) ), <span class="dt">family=</span>poisson, <span class="dt">data=</span>melanoma.spl ))</a>
 <a class="sourceLine" id="cb15-2" title="2"></a>
 <a class="sourceLine" id="cb15-3" title="3"><span class="co">## IRR</span></a>
-<a class="sourceLine" id="cb15-4" title="4">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson7i)</a>
+<a class="sourceLine" id="cb15-4" title="4"><span class="kw">eform</span>(poisson7i)</a>
 <a class="sourceLine" id="cb15-5" title="5"></a>
 <a class="sourceLine" id="cb15-6" title="6"><span class="co">## Test if the effect of age is significant using a likelihood ratio test</span></a>
 <a class="sourceLine" id="cb15-7" title="7"><span class="kw">drop1</span>(poisson7i, <span class="op">~</span>agegrp, <span class="dt">test=</span><span class="st">&quot;Chisq&quot;</span>)</a>
@@ -390,7 +391,7 @@ Perform a Wald test of the overall effect of age and interpret the results.</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" title="1"><span class="kw">summary</span>(poisson7j &lt;-<span class="st"> </span><span class="kw">glm</span>( death_cancer <span class="op">~</span><span class="st"> </span>fu <span class="op">+</span><span class="st"> </span>agegrp <span class="op">+</span><span class="st"> </span>year8594<span class="op">*</span>sex <span class="op">+</span><span class="st"> </span><span class="kw">offset</span>( <span class="kw">log</span>(pt) ), <span class="dt">family=</span>poisson, <span class="dt">data=</span>melanoma.spl ))</a>
 <a class="sourceLine" id="cb16-2" title="2"></a>
 <a class="sourceLine" id="cb16-3" title="3"><span class="co">## IRR</span></a>
-<a class="sourceLine" id="cb16-4" title="4">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson7j)</a></code></pre></div>
+<a class="sourceLine" id="cb16-4" title="4"><span class="kw">eform</span>(poisson7j)</a></code></pre></div>
 </div>
 <div id="k" class="section level2">
 <h2>(k)</h2>
@@ -407,7 +408,9 @@ Perform a Wald test of the overall effect of age and interpret the results.</p>
 <div id="ii.-2" class="section level3">
 <h3>ii.</h3>
 <p>Using the estimates from exercise 7j.</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" title="1">biostat3<span class="op">::</span><span class="kw">lincom</span>(poisson7j,<span class="kw">c</span>(<span class="st">&quot;sexFemale + year8594Diagnosed 85-94:sexFemale&quot;</span>),<span class="dt">eform=</span><span class="ot">TRUE</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" title="1"><span class="co">## You will need the &quot;car&quot; package to use lincom. If it is not already installed:</span></a>
+<a class="sourceLine" id="cb18-2" title="2"><span class="co">## install.packages(&quot;car&quot;)</span></a>
+<a class="sourceLine" id="cb18-3" title="3"><span class="kw">lincom</span>(poisson7j,<span class="kw">c</span>(<span class="st">&quot;sexFemale + year8594Diagnosed 85-94:sexFemale&quot;</span>),<span class="dt">eform=</span><span class="ot">TRUE</span>)</a></code></pre></div>
 </div>
 <div id="iii.-2" class="section level3">
 <h3>iii.</h3>
@@ -423,7 +426,7 @@ Perform a Wald test of the overall effect of age and interpret the results.</p>
 <a class="sourceLine" id="cb19-9" title="9">                         <span class="dt">data=</span>melanoma.spl ))</a>
 <a class="sourceLine" id="cb19-10" title="10"></a>
 <a class="sourceLine" id="cb19-11" title="11"><span class="co">## IRR</span></a>
-<a class="sourceLine" id="cb19-12" title="12">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson7k)</a></code></pre></div>
+<a class="sourceLine" id="cb19-12" title="12"><span class="kw">eform</span>(poisson7k)</a></code></pre></div>
 <p>Write the linear predictor using pen and paper.</p>
 </div>
 <div id="iv." class="section level3">
@@ -433,7 +436,7 @@ Perform a Wald test of the overall effect of age and interpret the results.</p>
 <a class="sourceLine" id="cb20-2" title="2"><span class="kw">summary</span>(poisson7k2 &lt;-<span class="st"> </span><span class="kw">glm</span>( death_cancer <span class="op">~</span><span class="st"> </span>fu <span class="op">+</span><span class="st"> </span>agegrp <span class="op">+</span><span class="st"> </span>year8594 <span class="op">+</span><span class="st"> </span>year8594<span class="op">:</span>sex <span class="op">+</span></a>
 <a class="sourceLine" id="cb20-3" title="3"><span class="st">                         </span><span class="kw">offset</span>( <span class="kw">log</span>(pt) ), <span class="dt">family=</span>poisson,</a>
 <a class="sourceLine" id="cb20-4" title="4">                         <span class="dt">data=</span>melanoma.spl ))</a>
-<a class="sourceLine" id="cb20-5" title="5">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson7k2)</a></code></pre></div>
+<a class="sourceLine" id="cb20-5" title="5"><span class="kw">eform</span>(poisson7k2)</a></code></pre></div>
 <p>Using the formula to specify the interactions, repeat the previous model.</p>
 </div>
 </div>
@@ -444,25 +447,25 @@ Perform a Wald test of the overall effect of age and interpret the results.</p>
 <div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" title="1"><span class="kw">summary</span>( poisson7l.early &lt;-<span class="st"> </span><span class="kw">glm</span>( death_cancer <span class="op">~</span><span class="st"> </span>fu <span class="op">+</span><span class="st"> </span>agegrp <span class="op">+</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span><span class="kw">offset</span>( <span class="kw">log</span>(pt) ),</a>
 <a class="sourceLine" id="cb21-2" title="2">                       <span class="dt">family =</span> poisson, <span class="dt">data =</span> melanoma.spl,</a>
 <a class="sourceLine" id="cb21-3" title="3">                       <span class="dt">subset =</span> year8594 <span class="op">==</span><span class="st"> &quot;Diagnosed 75-84&quot;</span> ) )</a>
-<a class="sourceLine" id="cb21-4" title="4">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson7l.early)</a>
+<a class="sourceLine" id="cb21-4" title="4"><span class="kw">eform</span>(poisson7l.early)</a>
 <a class="sourceLine" id="cb21-5" title="5"></a>
 <a class="sourceLine" id="cb21-6" title="6"><span class="kw">summary</span>( poisson7l.late &lt;-<span class="st"> </span><span class="kw">glm</span>( death_cancer <span class="op">~</span><span class="st"> </span>fu <span class="op">+</span><span class="st"> </span>agegrp <span class="op">+</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span><span class="kw">offset</span>( <span class="kw">log</span>(pt) ),</a>
 <a class="sourceLine" id="cb21-7" title="7">                       <span class="dt">family =</span> poisson, <span class="dt">data =</span> melanoma.spl,</a>
 <a class="sourceLine" id="cb21-8" title="8">                       <span class="dt">subset =</span> year8594 <span class="op">==</span><span class="st"> &quot;Diagnosed 85-94&quot;</span> ) )</a>
-<a class="sourceLine" id="cb21-9" title="9">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson7l.late)</a>
+<a class="sourceLine" id="cb21-9" title="9"><span class="kw">eform</span>(poisson7l.late)</a>
 <a class="sourceLine" id="cb21-10" title="10"></a>
 <a class="sourceLine" id="cb21-11" title="11"><span class="co"># compare with results in i</span></a>
-<a class="sourceLine" id="cb21-12" title="12">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson7i)</a>
+<a class="sourceLine" id="cb21-12" title="12"><span class="kw">eform</span>(poisson7i)</a>
 <a class="sourceLine" id="cb21-13" title="13"></a>
 <a class="sourceLine" id="cb21-14" title="14"><span class="co"># compare with results in j</span></a>
-<a class="sourceLine" id="cb21-15" title="15">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson7j)</a>
+<a class="sourceLine" id="cb21-15" title="15"><span class="kw">eform</span>(poisson7j)</a>
 <a class="sourceLine" id="cb21-16" title="16"></a>
 <a class="sourceLine" id="cb21-17" title="17"></a>
 <a class="sourceLine" id="cb21-18" title="18"><span class="co"># Poisson-regression with effects specific for diagnose period</span></a>
 <a class="sourceLine" id="cb21-19" title="19"><span class="kw">summary</span>(poisson7l2 &lt;-<span class="st"> </span><span class="kw">glm</span>( death_cancer <span class="op">~</span><span class="st"> </span>fu <span class="op">+</span><span class="st"> </span>fu<span class="op">:</span>year8594 <span class="op">+</span><span class="st"> </span>agegrp <span class="op">+</span><span class="st"> </span>agegrp<span class="op">:</span>year8594</a>
 <a class="sourceLine" id="cb21-20" title="20">                          <span class="op">+</span><span class="st"> </span>sex<span class="op">*</span>year8594 <span class="op">+</span><span class="st"> </span><span class="kw">offset</span>( <span class="kw">log</span>(pt) ),</a>
 <a class="sourceLine" id="cb21-21" title="21">                          <span class="dt">family=</span>poisson, <span class="dt">data=</span>melanoma.spl ))</a>
-<a class="sourceLine" id="cb21-22" title="22">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson7l2)</a></code></pre></div>
+<a class="sourceLine" id="cb21-22" title="22"><span class="kw">eform</span>(poisson7l2)</a></code></pre></div>
 <p>Can you fit a single model that reproduces the estimates you obtained from the stratified models?</p>
 </div>
 <div id="m" class="section level2">

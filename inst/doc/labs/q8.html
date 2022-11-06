@@ -177,7 +177,7 @@ a.sourceLine {
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1">diet &lt;-<span class="st"> </span><span class="kw">mutate</span>(diet, <span class="dt">y1k =</span> y <span class="op">/</span><span class="st"> </span><span class="dv">1000</span>)</a>
 <a class="sourceLine" id="cb5-2" title="2">poisson8b &lt;-<span class="st"> </span><span class="kw">glm</span>( chd <span class="op">~</span><span class="st"> </span>hieng <span class="op">+</span><span class="st"> </span><span class="kw">offset</span>( <span class="kw">log</span>( y1k ) ), <span class="dt">family=</span>poisson, <span class="dt">data=</span>diet)</a>
 <a class="sourceLine" id="cb5-3" title="3"><span class="kw">summary</span>(poisson8b)</a>
-<a class="sourceLine" id="cb5-4" title="4">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson8b)</a></code></pre></div>
+<a class="sourceLine" id="cb5-4" title="4"><span class="kw">eform</span>(poisson8b)</a></code></pre></div>
 </div>
 <div id="c" class="section level2">
 <h2>(c)</h2>
@@ -191,7 +191,7 @@ a.sourceLine {
 <a class="sourceLine" id="cb6-7" title="7"></a>
 <a class="sourceLine" id="cb6-8" title="8">poisson8c &lt;-<span class="st"> </span><span class="kw">glm</span>( chd <span class="op">~</span><span class="st"> </span>hieng <span class="op">+</span><span class="st"> </span>jobNumber <span class="op">+</span><span class="st"> </span>bmi <span class="op">+</span><span class="st"> </span><span class="kw">offset</span>( <span class="kw">log</span>( y1k ) ), <span class="dt">family=</span>poisson, <span class="dt">data=</span>diet)</a>
 <a class="sourceLine" id="cb6-9" title="9"><span class="kw">summary</span>(poisson8c)</a>
-<a class="sourceLine" id="cb6-10" title="10">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson8c)</a>
+<a class="sourceLine" id="cb6-10" title="10"><span class="kw">eform</span>(poisson8c)</a>
 <a class="sourceLine" id="cb6-11" title="11"></a>
 <a class="sourceLine" id="cb6-12" title="12"><span class="co">##########################################################</span></a></code></pre></div>
 </div>
@@ -229,14 +229,14 @@ a.sourceLine {
 <a class="sourceLine" id="cb8-3" title="3">                 <span class="dt">data=</span>diet.spl.dob)</a>
 <a class="sourceLine" id="cb8-4" title="4"></a>
 <a class="sourceLine" id="cb8-5" title="5"><span class="kw">summary</span>(poisson8d)</a>
-<a class="sourceLine" id="cb8-6" title="6">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson8d)</a></code></pre></div>
+<a class="sourceLine" id="cb8-6" title="6"><span class="kw">eform</span>(poisson8d)</a></code></pre></div>
 <p>Fitting the model for CHD, with adjustment for job and bmi.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1">poisson8d &lt;-<span class="st"> </span><span class="kw">glm</span>( chd <span class="op">~</span><span class="st"> </span>hieng <span class="op">+</span><span class="st"> </span>agespan <span class="op">+</span><span class="st"> </span>jobNumber <span class="op">+</span><span class="st"> </span>bmi <span class="op">+</span><span class="st"> </span><span class="kw">offset</span>( <span class="kw">log</span>( risk_time) ),</a>
 <a class="sourceLine" id="cb9-2" title="2">                 <span class="dt">family=</span>poisson,</a>
 <a class="sourceLine" id="cb9-3" title="3">                 <span class="dt">data=</span>diet.spl.dob)</a>
 <a class="sourceLine" id="cb9-4" title="4"></a>
 <a class="sourceLine" id="cb9-5" title="5"><span class="kw">summary</span>(poisson8d)</a>
-<a class="sourceLine" id="cb9-6" title="6">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson8d)</a></code></pre></div>
+<a class="sourceLine" id="cb9-6" title="6"><span class="kw">eform</span>(poisson8d)</a></code></pre></div>
 <p>The effect of high energy intake is somewhat confounded by age, but also confounded by job and bmi. What assumption is being made about the shape of the baseline hazard (HINT: the baseline hazard takes the shape of the timescale)?</p>
 </div>
 <div id="e" class="section level2">
@@ -260,7 +260,7 @@ a.sourceLine {
 <a class="sourceLine" id="cb10-16" title="16">                 <span class="dt">data=</span>diet.spl.t_entry )</a>
 <a class="sourceLine" id="cb10-17" title="17"></a>
 <a class="sourceLine" id="cb10-18" title="18"><span class="kw">summary</span>(poisson8e1)</a>
-<a class="sourceLine" id="cb10-19" title="19">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson8e1)</a></code></pre></div>
+<a class="sourceLine" id="cb10-19" title="19"><span class="kw">eform</span>(poisson8e1)</a></code></pre></div>
 <p>Compare the results with the analysis adjusted for attained age. Are there any differences? Why (or why not)? Go back to the graphs at the beginning of the exercise and look for explanations.</p>
 </div>
 </div>

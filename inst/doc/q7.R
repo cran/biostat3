@@ -16,7 +16,7 @@
 ## @knitr loadDependencies
 library(biostat3)
 library(dplyr)    # for data manipulation
-library(car)      # for linearHypothesis
+library(car)      # for car::linearHypothesis -> biostat3::lincom
 
 
 ## @knitr loadPreprocess
@@ -130,7 +130,7 @@ summary(glm( event ~ year8594 + offset( log( tstop/12/1000 ) ), family=poisson, 
 
 
 ## IRR
-biostat3::eform(poisson7c)
+eform(poisson7c)
 
 
 ## Note that the scaling of the offset term only has an impact on the intercept
@@ -194,26 +194,26 @@ summary(poisson7g <- glm( death_cancer ~ fu + offset( log(pt) ),
                          family = poisson,
                          data = melanoma.spl ))
 ## IRR
-biostat3::eform(poisson7g)
+eform(poisson7g)
 
 ## @knitr 7.h
 summary(poisson7h <- glm( death_cancer ~ fu + year8594 + offset( log(pt) ),
                          family = poisson,
                          data = melanoma.spl ))
 ## IRR
-biostat3::eform(poisson7h)
+eform(poisson7h)
 
 # Add interaction term
 summary(poisson7h2 <- glm( death_cancer ~ fu*year8594 + offset( log(pt) ), family=poisson, data=melanoma.spl ))
 ## IRR
-biostat3::eform(poisson7h2)
+eform(poisson7h2)
 
 ## @knitr 7.i
 
 summary(poisson7i <- glm( death_cancer ~ fu + year8594 + sex + agegrp + offset( log(pt) ), family=poisson, data=melanoma.spl ))
 
 ## IRR
-biostat3::eform(poisson7i)
+eform(poisson7i)
 
 ## Test if the effect of age is significant using a likelihood ratio test
 drop1(poisson7i, ~agegrp, test="Chisq")
@@ -229,7 +229,7 @@ linearHypothesis(poisson7i,c("agegrp45-59 = 0","agegrp60-74 = 0","agegrp75+ = 0"
 summary(poisson7j <- glm( death_cancer ~ fu + agegrp + year8594*sex + offset( log(pt) ), family=poisson, data=melanoma.spl ))
 
 ## IRR
-biostat3::eform(poisson7j)
+eform(poisson7j)
 
 ## @knitr 7.k.i
 # hand calculations
@@ -238,7 +238,9 @@ hz7k["sexFemale"]
 hz7k["sexFemale"]*hz7k["year8594Diagnosed 85-94:sexFemale"]
 
 ## @knitr 7.k.ii
-biostat3::lincom(poisson7j,c("sexFemale + year8594Diagnosed 85-94:sexFemale"),eform=TRUE)
+## You will need the "car" package to use lincom. If it is not already installed:
+## install.packages("car")
+lincom(poisson7j,c("sexFemale + year8594Diagnosed 85-94:sexFemale"),eform=TRUE)
 
 
 ## @knitr 7.k.iii
@@ -253,14 +255,14 @@ summary(poisson7k <- glm( death_cancer ~ fu + agegrp + year8594 + femaleEarly +
                          data=melanoma.spl ))
 
 ## IRR
-biostat3::eform(poisson7k)
+eform(poisson7k)
 
 ## @knitr 7.k.iv
 ## Add interaction term
 summary(poisson7k2 <- glm( death_cancer ~ fu + agegrp + year8594 + year8594:sex +
                          offset( log(pt) ), family=poisson,
                          data=melanoma.spl ))
-biostat3::eform(poisson7k2)
+eform(poisson7k2)
 
 
 ## @knitr 7.l
@@ -268,25 +270,25 @@ biostat3::eform(poisson7k2)
 summary( poisson7l.early <- glm( death_cancer ~ fu + agegrp + sex + offset( log(pt) ),
                        family = poisson, data = melanoma.spl,
                        subset = year8594 == "Diagnosed 75-84" ) )
-biostat3::eform(poisson7l.early)
+eform(poisson7l.early)
 
 summary( poisson7l.late <- glm( death_cancer ~ fu + agegrp + sex + offset( log(pt) ),
                        family = poisson, data = melanoma.spl,
                        subset = year8594 == "Diagnosed 85-94" ) )
-biostat3::eform(poisson7l.late)
+eform(poisson7l.late)
 
 # compare with results in i
-biostat3::eform(poisson7i)
+eform(poisson7i)
 
 # compare with results in j
-biostat3::eform(poisson7j)
+eform(poisson7j)
 
 
 # Poisson-regression with effects specific for diagnose period
 summary(poisson7l2 <- glm( death_cancer ~ fu + fu:year8594 + agegrp + agegrp:year8594
                           + sex*year8594 + offset( log(pt) ),
                           family=poisson, data=melanoma.spl ))
-biostat3::eform(poisson7l2)
+eform(poisson7l2)
 
 ## @knitr 7.m
 ## Split follow up by month

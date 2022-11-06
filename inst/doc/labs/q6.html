@@ -163,9 +163,10 @@ a.sourceLine {
 <p>Fit a poisson model to find the incidence rate ratio for the high energy group compared to the low energy group and compare the estimate to the one you obtained in the previous question.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1">poisson6b &lt;-<span class="st"> </span><span class="kw">glm</span>( chd <span class="op">~</span><span class="st"> </span>hieng <span class="op">+</span><span class="st"> </span><span class="kw">offset</span>( <span class="kw">log</span>( y1k ) ), <span class="dt">family=</span>poisson, <span class="dt">data=</span>diet)</a>
 <a class="sourceLine" id="cb4-2" title="2"><span class="kw">summary</span>(poisson6b)</a>
-<a class="sourceLine" id="cb4-3" title="3">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson6b)</a>
-<a class="sourceLine" id="cb4-4" title="4">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson6b, <span class="dt">method=</span><span class="st">&quot;Profile&quot;</span>)</a></code></pre></div>
+<a class="sourceLine" id="cb4-3" title="3"><span class="kw">eform</span>(poisson6b)</a>
+<a class="sourceLine" id="cb4-4" title="4"><span class="kw">eform</span>(poisson6b, <span class="dt">method=</span><span class="st">&quot;Profile&quot;</span>)</a></code></pre></div>
 <pre><code>## Waiting for profiling to be done...</code></pre>
+<p>Also write out the regression equation, defining your notation.</p>
 </div>
 <div id="c" class="section level2">
 <h2>(c)</h2>
@@ -225,8 +226,9 @@ a.sourceLine {
 <p>Use poisson to compare the second and third levels with the first.</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1">poisson6h &lt;-<span class="st"> </span><span class="kw">glm</span>( chd <span class="op">~</span><span class="st"> </span>X2 <span class="op">+</span><span class="st"> </span>X3 <span class="op">+</span><span class="st"> </span><span class="kw">offset</span>( <span class="kw">log</span>( y1k ) ), <span class="dt">family=</span>poisson, <span class="dt">data=</span>diet )</a>
 <a class="sourceLine" id="cb12-2" title="2"><span class="kw">summary</span>(poisson6h)</a>
-<a class="sourceLine" id="cb12-3" title="3">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson6h)</a></code></pre></div>
+<a class="sourceLine" id="cb12-3" title="3"><span class="kw">eform</span>(poisson6h)</a></code></pre></div>
 <p>Compare your estimates with those you obtained in part 6e. Write the linear predictor using pen and paper.</p>
+<p>Also write out the regression equation, defining your notation.</p>
 </div>
 <div id="i" class="section level2">
 <h2>(i)</h2>
@@ -236,14 +238,14 @@ a.sourceLine {
 <a class="sourceLine" id="cb13-3" title="3">poisson6i &lt;-<span class="st"> </span><span class="kw">glm</span>( chd <span class="op">~</span><span class="st"> </span><span class="kw">I</span>(eng3<span class="op">==</span><span class="st">&quot;low&quot;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">I</span>(eng3<span class="op">==</span><span class="st">&quot;high&quot;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">offset</span>( <span class="kw">log</span>( y1k ) ), <span class="dt">family=</span>poisson, <span class="dt">data=</span>diet )</a>
 <a class="sourceLine" id="cb13-4" title="4"></a>
 <a class="sourceLine" id="cb13-5" title="5"><span class="kw">summary</span>( poisson6i )</a>
-<a class="sourceLine" id="cb13-6" title="6">biostat3<span class="op">::</span><span class="kw">eform</span>( poisson6i )</a></code></pre></div>
+<a class="sourceLine" id="cb13-6" title="6"><span class="kw">eform</span>( poisson6i )</a></code></pre></div>
 </div>
 <div id="j" class="section level2">
 <h2>(j)</h2>
 <p>Repeat the analysis comparing the second and third levels with the first but this time have R create the indicators automatically y using the categorical variable eng3.</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1">poisson6j &lt;-<span class="st"> </span><span class="kw">glm</span>( chd <span class="op">~</span><span class="st"> </span>eng3 <span class="op">+</span><span class="st"> </span><span class="kw">offset</span>( <span class="kw">log</span>( y1k ) ), <span class="dt">family=</span>poisson, <span class="dt">data=</span>diet )</a>
 <a class="sourceLine" id="cb14-2" title="2"><span class="kw">summary</span>( poisson6j )</a>
-<a class="sourceLine" id="cb14-3" title="3">biostat3<span class="op">::</span><span class="kw">eform</span>( poisson6j )</a></code></pre></div>
+<a class="sourceLine" id="cb14-3" title="3"><span class="kw">eform</span>( poisson6j )</a></code></pre></div>
 </div>
 <div id="k" class="section level2">
 <h2>(k)</h2>

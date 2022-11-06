@@ -210,14 +210,14 @@ a.sourceLine {
 ## AIC: 1074.6
 ## 
 ## Number of Fisher Scoring iterations: 6</code></pre>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson22b)</a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1"><span class="kw">eform</span>(poisson22b)</a></code></pre></div>
 <pre><code>##             exp(beta)     2.5 %    97.5 %
 ## (Intercept) 0.2058383 0.1446403 0.2929295
 ## sex         0.6559620 0.5125885 0.8394379</code></pre>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1"><span class="kw">select</span>(brv, sex, age_entry) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb12-2" title="2"><span class="st">    </span><span class="kw">group_by</span>(sex) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb12-3" title="3"><span class="st">    </span><span class="kw">summarise</span>(<span class="dt">meanAgeAtEntry =</span> <span class="kw">mean</span>(age_entry))</a></code></pre></div>
-<pre><code>## # A tibble: 2 x 2
+<pre><code>## # A tibble: 2 × 2
 ##     sex meanAgeAtEntry
 ##   &lt;int&gt;          &lt;dbl&gt;
 ## 1     1           79.1
@@ -294,7 +294,7 @@ a.sourceLine {
 ## AIC: 1263.6
 ## 
 ## Number of Fisher Scoring iterations: 6</code></pre>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" title="1">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson22d)</a></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" title="1"><span class="kw">eform</span>(poisson22d)</a></code></pre></div>
 <pre><code>##             exp(beta)      2.5 %   97.5 %
 ## (Intercept) 0.1103837 0.09599736 0.126926
 ## brv         1.1271537 0.87022603 1.459937</code></pre>
@@ -327,7 +327,7 @@ a.sourceLine {
 ## AIC: 707.95
 ## 
 ## Number of Fisher Scoring iterations: 6</code></pre>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" title="1">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson22e1)</a></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" title="1"><span class="kw">eform</span>(poisson22e1)</a></code></pre></div>
 <pre><code>##             exp(beta)     2.5 %   97.5 %
 ## (Intercept) 0.1347495 0.1146361 0.158392
 ## brv         1.0108630 0.6961580 1.467834</code></pre>
@@ -357,7 +357,7 @@ a.sourceLine {
 ## AIC: 543.21
 ## 
 ## Number of Fisher Scoring iterations: 6</code></pre>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" title="1">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson22e2)</a></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" title="1"><span class="kw">eform</span>(poisson22e2)</a></code></pre></div>
 <pre><code>##              exp(beta)      2.5 %     97.5 %
 ## (Intercept) 0.07206987 0.05462311 0.09508916
 ## brv         1.62461324 1.09098341 2.41925600</code></pre>
@@ -392,7 +392,7 @@ a.sourceLine {
 ## AIC: 1251.2
 ## 
 ## Number of Fisher Scoring iterations: 6</code></pre>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" title="1">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson22e3)</a></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" title="1"><span class="kw">eform</span>(poisson22e3)</a></code></pre></div>
 <pre><code>##             exp(beta)     2.5 %    97.5 %
 ## (Intercept) 0.1347495 0.1146361 0.1583920
 ## sex2        0.5348431 0.3880363 0.7371919
@@ -451,7 +451,7 @@ a.sourceLine {
 ## AIC: 1642.4
 ## 
 ## Number of Fisher Scoring iterations: 6</code></pre>
-<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb36-1" title="1">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson22f1)</a></code></pre></div>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb36-1" title="1"><span class="kw">eform</span>(poisson22f1)</a></code></pre></div>
 <pre><code>##               exp(beta)      2.5 %     97.5 %
 ## (Intercept)  0.06483296 0.04836526  0.0869077
 ## brv1         0.85941225 0.65684485  1.1244503
@@ -489,7 +489,7 @@ a.sourceLine {
 ## AIC: 1629.6
 ## 
 ## Number of Fisher Scoring iterations: 6</code></pre>
-<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb40-1" title="1">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson22f2)</a></code></pre></div>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb40-1" title="1"><span class="kw">eform</span>(poisson22f2)</a></code></pre></div>
 <pre><code>##               exp(beta)      2.5 %     97.5 %
 ## (Intercept)  0.07597334 0.05621929  0.1026685
 ## brv1         0.97359228 0.73968454  1.2814678
@@ -532,7 +532,7 @@ a.sourceLine {
 ## AIC: 1629.8
 ## 
 ## Number of Fisher Scoring iterations: 6</code></pre>
-<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb44-1" title="1">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson22g)</a></code></pre></div>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb44-1" title="1"><span class="kw">eform</span>(poisson22g)</a></code></pre></div>
 <pre><code>##               exp(beta)      2.5 %     97.5 %
 ## (Intercept)  0.07888104 0.05816888  0.1069682
 ## age(80,85]   1.67794302 1.18911789  2.3677154

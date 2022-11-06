@@ -159,7 +159,16 @@ a.sourceLine {
 <a class="sourceLine" id="cb2-18" title="18">         <span class="dt">surv_mm =</span> <span class="kw">pmin</span>(surv_mm, <span class="dv">120</span>))</a></code></pre></div>
 <div id="a" class="section level2">
 <h2>(a)</h2>
-<p>For patients of the same sex diagnosed in the same period, those aged 60–74 at diagnosis have a 2.9 times higher risk of death <em>due to any causes</em> than those aged 0–44 at diagnosis. This difference is statistically significant.</p>
+<p>For patients of the same sex diagnosed in the same period, those aged 60–74 at diagnosis have a 2.94 times higher risk of death <em>due to any causes</em> than those aged 0-–44 at diagnosis. The 95% confidence interval is (2.52, 3.44). This difference is statistically significant.</p>
+<p>The regression equation is <span class="math display">\[\begin{align*}
+h(t|\text{year8594},\text{sex},\text{agegrp}) &amp;= h_0(t) \exp(\beta_1 I(\text{sex}=\text{&quot;Female&quot;})+\beta_2 I(\text{year8594}=\text{&quot;Diagnosed 85-94&quot;})+\\
+&amp;\qquad\beta_3 I(\text{agegrp}=\text{&quot;45-59&quot;})+\beta_4 I(\text{agegrp}=\text{&quot;60-64&quot;}) + \beta_5 I(\text{agegrp}=\text{&quot;75+&quot;}) 
+\end{align*}\]</span> where <span class="math inline">\(h(t|\text{year8594},\text{sex},\text{agegrp},\text{agegrp})\)</span> is the hazard at time <span class="math inline">\(t\)</span> given covariates <span class="math inline">\(\text{year8594}\)</span>, <span class="math inline">\(\text{sex}\)</span> and <span class="math inline">\(\text{agegrp}\)</span> and <span class="math inline">\(\text{agegrp}\)</span>, with baseline hazard <span class="math inline">\(h_0(t)\)</span> and regression coefficients representing log hazard ratios for <span class="math inline">\(\beta_1\)</span> for the calendar period 1985–1994, <span class="math inline">\(\beta_2\)</span> for females, with log hazard ratios at time 0 for those aged 45–59 years, 60–74 years and 75 years and over are <span class="math inline">\(\beta_3\)</span>, <span class="math inline">\(\beta_4\)</span> and <span class="math inline">\(\beta_5\)</span>, respectively.</p>
+<p>From the regression equation, a formula for the hazard ratio comparing a male aged 60–74 years with a female aged 75 years and over is <span class="math display">\[\begin{align*}
+\frac{h(t|\text{year8594},\text{sex}=\text{&quot;Male&quot;},\text{agegrp}=\text{&quot;60-74&quot;})}{h(t|\text{year8594},\text{sex}=\text{&quot;Female&quot;},\text{agegrp}=\text{&quot;75+&quot;})} &amp;= 
+\frac{h_0(t) \exp(\beta_2 I(\text{year8594}=\text{&quot;Diagnosed 85-94&quot;})+ \beta_4)}{h_0(t)\exp(\beta_1}+\beta_2 I(\text{year8594}=\text{&quot;Diagnosed 85-94&quot;}+\beta_5))} \\
+&amp;= \exp(\beta_4 - \beta_1 - \beta_5)
+\end{align*}\]</span></p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">summary</span>( coxfit11a &lt;-<span class="st"> </span><span class="kw">coxph</span>(<span class="kw">Surv</span>(surv_mm, death_any) <span class="op">~</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>year8594 <span class="op">+</span><span class="st"> </span>agegrp,</a>
 <a class="sourceLine" id="cb3-2" title="2">                           <span class="dt">data =</span> melanoma.l2) )</a></code></pre></div>
 <pre><code>## Call:

@@ -409,10 +409,8 @@ a.sourceLine {
 <a class="sourceLine" id="cb34-11" title="11">})</a>
 <a class="sourceLine" id="cb34-12" title="12"><span class="kw">head</span>(d)</a></code></pre></div>
 <p>The accelerated failure time models have the form <span class="math inline">\(S(t|x,u)=S_0(t/\exp( \beta_1 x + \beta_2 u))\)</span>, where the function <span class="math inline">\(S_0(t)\)</span> is expressed in terms of splines. For an exponential distribution, the hazard ratio is equal to the inverse of the ratio of the means — so we expect values of <span class="math inline">\(-1\)</span> for <span class="math inline">\(x\)</span> and <span class="math inline">\(u\)</span>.</p>
-<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb35-1" title="1">fit &lt;-<span class="st"> </span><span class="kw">aft</span>(<span class="kw">Surv</span>(y,delta)<span class="op">~</span>x<span class="op">+</span>u,<span class="dt">data=</span>d,<span class="dt">df=</span><span class="dv">4</span>)</a></code></pre></div>
-<pre><code>## Warning in aft(Surv(y, delta) ~ x + u, data = d, df = 4): Some event times &lt; 1e-4:
-## consider transforming time to avoid problems with finite differences</code></pre>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb37-1" title="1"><span class="kw">summary</span>(fit)</a></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb35-1" title="1">fit &lt;-<span class="st"> </span><span class="kw">aft</span>(<span class="kw">Surv</span>(y,delta)<span class="op">~</span>x<span class="op">+</span>u,<span class="dt">data=</span>d,<span class="dt">df=</span><span class="dv">4</span>)</a>
+<a class="sourceLine" id="cb35-2" title="2"><span class="kw">summary</span>(fit)</a></code></pre></div>
 <pre><code>## Maximum likelihood estimation
 ## 
 ## Call:
@@ -431,10 +429,8 @@ a.sourceLine {
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## -2 log L: 8520.726</code></pre>
-<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb39-1" title="1">fit &lt;-<span class="st"> </span><span class="kw">aft</span>(<span class="kw">Surv</span>(y,delta)<span class="op">~</span>x,<span class="dt">data=</span>d,<span class="dt">df=</span><span class="dv">4</span>)</a></code></pre></div>
-<pre><code>## Warning in aft(Surv(y, delta) ~ x, data = d, df = 4): Some event times &lt; 1e-4: consider
-## transforming time to avoid problems with finite differences</code></pre>
-<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb41-1" title="1"><span class="kw">summary</span>(fit)</a></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb37-1" title="1">fit &lt;-<span class="st"> </span><span class="kw">aft</span>(<span class="kw">Surv</span>(y,delta)<span class="op">~</span>x,<span class="dt">data=</span>d,<span class="dt">df=</span><span class="dv">4</span>)</a>
+<a class="sourceLine" id="cb37-2" title="2"><span class="kw">summary</span>(fit)</a></code></pre></div>
 <pre><code>## Maximum likelihood estimation
 ## 
 ## Call:

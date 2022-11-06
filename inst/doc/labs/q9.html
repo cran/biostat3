@@ -153,7 +153,7 @@ a.sourceLine {
 <a class="sourceLine" id="cb2-10" title="10">                         <span class="dt">surv_mm =</span> <span class="kw">pmin</span>(surv_mm, <span class="dv">120</span>))</a></code></pre></div>
 <div id="a" class="section level2">
 <h2>(a)</h2>
-<p>Interpret the estimated hazard ratio, including a comment on statistical significance. Write the linear predictor using pen and paper. Draw a graph showing the shape of the fitted hazard rates for the two calendar periods, also indicating the distance between the curves (HINT: draw on the log hazard scale if you find it easier). Compare this to how you drew the graph in exercise 7h.</p>
+<p>Interpret the estimated hazard ratio, including a comment on statistical significance. Write the regression equation. Draw a graph showing the shape of the fitted hazard rates for the two calendar periods, also indicating the distance between the curves (HINT: draw on the log hazard scale if you find it easier). Compare this to how you drew the graph in exercise 7h.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">summary</span>( coxfit9a &lt;-<span class="st"> </span><span class="kw">coxph</span>(<span class="kw">Surv</span>(surv_mm, death_cancer) <span class="op">~</span><span class="st"> </span>year8594,</a>
 <a class="sourceLine" id="cb3-2" title="2">                           <span class="dt">data =</span> melanoma.l2) )</a></code></pre></div>
 </div>
@@ -169,7 +169,7 @@ a.sourceLine {
 </div>
 <div id="c" class="section level2">
 <h2>(c)</h2>
-<p>Now include sex and age (in categories) in the model. Write the linear predictor using pen and paper.</p>
+<p>Now include sex and age (in categories) in the model. Write out the regression equation.</p>
 <ol style="list-style-type: lower-roman">
 <li>Interpret the estimated hazard ratio for the parameter labelled agegrp45-59, including a comment on its statistical significance.</li>
 <li>Is the effect of calendar period strongly confounded by age and sex? That is, does the inclusion of sex and age in the model change the estimate for the effect of calendar period?</li>
@@ -216,7 +216,7 @@ a.sourceLine {
 <a class="sourceLine" id="cb6-16" title="16">                         <span class="dt">family =</span> poisson,</a>
 <a class="sourceLine" id="cb6-17" title="17">                         <span class="dt">data =</span> melanoma.spl ))</a>
 <a class="sourceLine" id="cb6-18" title="18"></a>
-<a class="sourceLine" id="cb6-19" title="19">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson9e)</a>
+<a class="sourceLine" id="cb6-19" title="19"><span class="kw">eform</span>(poisson9e)</a>
 <a class="sourceLine" id="cb6-20" title="20"><span class="kw">summary</span>(coxfit9e)</a></code></pre></div>
 </div>
 <div id="f" class="section level2">
@@ -251,7 +251,7 @@ a.sourceLine {
 <a class="sourceLine" id="cb7-27" title="27">                 <span class="dt">data =</span> melanoma.spl3 )</a>
 <a class="sourceLine" id="cb7-28" title="28"></a>
 <a class="sourceLine" id="cb7-29" title="29"><span class="co">## IRR</span></a>
-<a class="sourceLine" id="cb7-30" title="30">coef9f &lt;-<span class="st"> </span>biostat3<span class="op">::</span><span class="kw">eform</span>(poisson9f)</a>
+<a class="sourceLine" id="cb7-30" title="30">coef9f &lt;-<span class="st"> </span><span class="kw">eform</span>(poisson9f)</a>
 <a class="sourceLine" id="cb7-31" title="31"><span class="co">## We are not interested in nuisance parameters fu1, fu2, etc</span></a>
 <a class="sourceLine" id="cb7-32" title="32">npar &lt;-<span class="st"> </span><span class="kw">nrow</span>(coef9f)</a>
 <a class="sourceLine" id="cb7-33" title="33">pars &lt;-<span class="st"> </span>(npar<span class="dv">-4</span>)<span class="op">:</span>npar</a>
@@ -277,7 +277,7 @@ a.sourceLine {
 <a class="sourceLine" id="cb8-13" title="13">                 <span class="dt">family =</span> poisson,</a>
 <a class="sourceLine" id="cb8-14" title="14">                 <span class="dt">data =</span> melanoma.spl4 )</a>
 <a class="sourceLine" id="cb8-15" title="15"><span class="kw">summary</span>(poisson9g)</a>
-<a class="sourceLine" id="cb8-16" title="16">biostat3<span class="op">::</span><span class="kw">eform</span>(poisson9g)</a>
+<a class="sourceLine" id="cb8-16" title="16"><span class="kw">eform</span>(poisson9g)</a>
 <a class="sourceLine" id="cb8-17" title="17"></a>
 <a class="sourceLine" id="cb8-18" title="18"><span class="co">## quick approach: use the effects package</span></a>
 <a class="sourceLine" id="cb8-19" title="19"><span class="kw">library</span>(effects)</a>

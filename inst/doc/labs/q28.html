@@ -156,101 +156,104 @@ a.sourceLine {
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="co">## (a) Flexible parametric model with df=4</span></a>
 <a class="sourceLine" id="cb3-2" title="2">fpma &lt;-<span class="st"> </span><span class="kw">stpm2</span>(<span class="kw">Surv</span>(time,event) <span class="op">~</span><span class="st"> </span>year8594, <span class="dt">data=</span>melanoma0, <span class="dt">df=</span><span class="dv">4</span>)</a>
 <a class="sourceLine" id="cb3-3" title="3"><span class="kw">summary</span>(fpma)</a>
-<a class="sourceLine" id="cb3-4" title="4">biostat3<span class="op">::</span><span class="kw">eform</span>(fpma)[<span class="st">&quot;year8594Diagnosed 85-94&quot;</span>,]</a></code></pre></div>
+<a class="sourceLine" id="cb3-4" title="4"><span class="kw">eform</span>(fpma)[<span class="st">&quot;year8594Diagnosed 85-94&quot;</span>,]</a></code></pre></div>
+<pre><code>## Warning in .local(object, parm, level, ...): non-monotonic spline fit to profile
+## (nsx(log(time), df = 4)2): reverting from spline to linear approximation</code></pre>
 <p>Also fit a similar Cox model. How similar are the points estimates and standard errors for the parameters that are in both models?</p>
 <p>For those parameters in the stpm2 model that are not in the Cox model, what do those parameters represent? <!-- ```{r a_cox} --> <!-- ``` --></p>
 <p>##(b)## Using the fitted model, present plots for survival and hazards by calendar period. What do you observe?</p>
 <p>Example <code>ggplot2</code> code for survival is below:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"><span class="co">## (b) Prediction and plots of survival and hazard by calendar period</span></a>
-<a class="sourceLine" id="cb4-2" title="2">years &lt;-<span class="st"> </span><span class="kw">levels</span>(melanoma0<span class="op">$</span>year8594)</a>
-<a class="sourceLine" id="cb4-3" title="3"></a>
-<a class="sourceLine" id="cb4-4" title="4">s &lt;-<span class="st"> </span><span class="kw">predict</span>(fpma,<span class="dt">newdata=</span><span class="kw">data.frame</span>(<span class="dt">year8594=</span>years),<span class="dt">grid=</span><span class="ot">TRUE</span>,<span class="dt">full=</span><span class="ot">TRUE</span>,<span class="dt">se.fit=</span><span class="ot">TRUE</span>,</a>
-<a class="sourceLine" id="cb4-5" title="5">             <span class="dt">type=</span><span class="st">&quot;surv&quot;</span>)</a>
-<a class="sourceLine" id="cb4-6" title="6"><span class="kw">head</span>(s)</a>
-<a class="sourceLine" id="cb4-7" title="7"><span class="kw">ggplot</span>(s, <span class="kw">aes</span>(<span class="dt">x=</span>time,<span class="dt">y=</span>Estimate,<span class="dt">fill=</span>year8594,<span class="dt">ymin=</span>lower,<span class="dt">ymax=</span>upper)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb4-8" title="8"><span class="st">    </span><span class="kw">xlab</span>(<span class="st">&quot;Time since diagnosis (years)&quot;</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb4-9" title="9"><span class="st">    </span><span class="kw">ylab</span>(<span class="st">&quot;Survival&quot;</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb4-10" title="10"><span class="st">    </span><span class="kw">geom_ribbon</span>(<span class="dt">alpha=</span><span class="fl">0.6</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb4-11" title="11"><span class="st">    </span><span class="kw">geom_line</span>()</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1"><span class="co">## (b) Prediction and plots of survival and hazard by calendar period</span></a>
+<a class="sourceLine" id="cb5-2" title="2">years &lt;-<span class="st"> </span><span class="kw">levels</span>(melanoma0<span class="op">$</span>year8594)</a>
+<a class="sourceLine" id="cb5-3" title="3"></a>
+<a class="sourceLine" id="cb5-4" title="4">s &lt;-<span class="st"> </span><span class="kw">predict</span>(fpma,<span class="dt">newdata=</span><span class="kw">data.frame</span>(<span class="dt">year8594=</span>years),<span class="dt">grid=</span><span class="ot">TRUE</span>,<span class="dt">full=</span><span class="ot">TRUE</span>,<span class="dt">se.fit=</span><span class="ot">TRUE</span>,</a>
+<a class="sourceLine" id="cb5-5" title="5">             <span class="dt">type=</span><span class="st">&quot;surv&quot;</span>)</a>
+<a class="sourceLine" id="cb5-6" title="6"><span class="kw">head</span>(s)</a>
+<a class="sourceLine" id="cb5-7" title="7"><span class="kw">ggplot</span>(s, <span class="kw">aes</span>(<span class="dt">x=</span>time,<span class="dt">y=</span>Estimate,<span class="dt">fill=</span>year8594,<span class="dt">ymin=</span>lower,<span class="dt">ymax=</span>upper)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb5-8" title="8"><span class="st">    </span><span class="kw">xlab</span>(<span class="st">&quot;Time since diagnosis (years)&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb5-9" title="9"><span class="st">    </span><span class="kw">ylab</span>(<span class="st">&quot;Survival&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb5-10" title="10"><span class="st">    </span><span class="kw">geom_ribbon</span>(<span class="dt">alpha=</span><span class="fl">0.6</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb5-11" title="11"><span class="st">    </span><span class="kw">geom_line</span>()</a></code></pre></div>
 <p>Example code using <code>base</code> graphics is below:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">plot</span>(fpma,<span class="dt">newdata=</span><span class="kw">data.frame</span>(<span class="dt">year8594=</span>years[<span class="dv">1</span>]), <span class="dt">type=</span><span class="st">&quot;haz&quot;</span>,</a>
-<a class="sourceLine" id="cb5-2" title="2">     <span class="dt">xlab=</span><span class="st">&quot;Time since diagnosis (years)&quot;</span>, <span class="dt">ylab=</span><span class="st">&quot;Hazard&quot;</span>)</a>
-<a class="sourceLine" id="cb5-3" title="3"><span class="kw">lines</span>(fpma,<span class="dt">newdata=</span><span class="kw">data.frame</span>(<span class="dt">year8594=</span>years[<span class="dv">2</span>]), <span class="dt">type=</span><span class="st">&quot;haz&quot;</span>, <span class="dt">col=</span><span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb5-4" title="4"><span class="kw">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="dt">legend=</span>years, <span class="dt">col=</span><span class="dv">1</span><span class="op">:</span><span class="dv">2</span>, <span class="dt">lty=</span><span class="dv">1</span>, <span class="dt">bty=</span><span class="st">&quot;n&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1"><span class="kw">plot</span>(fpma,<span class="dt">newdata=</span><span class="kw">data.frame</span>(<span class="dt">year8594=</span>years[<span class="dv">1</span>]), <span class="dt">type=</span><span class="st">&quot;haz&quot;</span>,</a>
+<a class="sourceLine" id="cb6-2" title="2">     <span class="dt">xlab=</span><span class="st">&quot;Time since diagnosis (years)&quot;</span>, <span class="dt">ylab=</span><span class="st">&quot;Hazard&quot;</span>)</a>
+<a class="sourceLine" id="cb6-3" title="3"><span class="kw">lines</span>(fpma,<span class="dt">newdata=</span><span class="kw">data.frame</span>(<span class="dt">year8594=</span>years[<span class="dv">2</span>]), <span class="dt">type=</span><span class="st">&quot;haz&quot;</span>, <span class="dt">col=</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb6-4" title="4"><span class="kw">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="dt">legend=</span>years, <span class="dt">col=</span><span class="dv">1</span><span class="op">:</span><span class="dv">2</span>, <span class="dt">lty=</span><span class="dv">1</span>, <span class="dt">bty=</span><span class="st">&quot;n&quot;</span>)</a></code></pre></div>
 <p>##(c)## Plotting the hazards on the log scale. Is there evidence that the difference in predictions is similar by time? Does the plot suggest that the model assumes proportionality?</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1"><span class="co">## (c) hazards on log scale, adding log=&quot;y&quot;</span></a>
-<a class="sourceLine" id="cb6-2" title="2"><span class="kw">plot</span>(fpma,<span class="dt">newdata=</span><span class="kw">data.frame</span>(<span class="dt">year8594=</span>years[<span class="dv">1</span>]), <span class="dt">type=</span><span class="st">&quot;haz&quot;</span>,</a>
-<a class="sourceLine" id="cb6-3" title="3">     <span class="dt">xlab=</span><span class="st">&quot;Time since diagnosis (years)&quot;</span>,</a>
-<a class="sourceLine" id="cb6-4" title="4">     <span class="dt">ci=</span><span class="ot">FALSE</span>,</a>
-<a class="sourceLine" id="cb6-5" title="5">     <span class="dt">ylab=</span><span class="st">&quot;Hazard (log scale)&quot;</span>,<span class="dt">main=</span>years[<span class="dv">1</span>], <span class="dt">log=</span><span class="st">&quot;y&quot;</span>, <span class="dt">ylim=</span><span class="kw">c</span>(<span class="fl">0.01</span>,<span class="fl">0.07</span>))</a>
-<a class="sourceLine" id="cb6-6" title="6"><span class="kw">lines</span>(fpma,<span class="dt">newdata=</span><span class="kw">data.frame</span>(<span class="dt">year8594=</span>years[<span class="dv">2</span>]), <span class="dt">type=</span><span class="st">&quot;haz&quot;</span>, <span class="dt">col=</span><span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb6-7" title="7"><span class="kw">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="dt">legend=</span>years, <span class="dt">col=</span><span class="dv">1</span><span class="op">:</span><span class="dv">2</span>, <span class="dt">lty=</span><span class="dv">1</span>, <span class="dt">bty=</span><span class="st">&quot;n&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1"><span class="co">## (c) hazards on log scale, adding log=&quot;y&quot;</span></a>
+<a class="sourceLine" id="cb7-2" title="2"><span class="kw">plot</span>(fpma,<span class="dt">newdata=</span><span class="kw">data.frame</span>(<span class="dt">year8594=</span>years[<span class="dv">1</span>]), <span class="dt">type=</span><span class="st">&quot;haz&quot;</span>,</a>
+<a class="sourceLine" id="cb7-3" title="3">     <span class="dt">xlab=</span><span class="st">&quot;Time since diagnosis (years)&quot;</span>,</a>
+<a class="sourceLine" id="cb7-4" title="4">     <span class="dt">ci=</span><span class="ot">FALSE</span>,</a>
+<a class="sourceLine" id="cb7-5" title="5">     <span class="dt">ylab=</span><span class="st">&quot;Hazard (log scale)&quot;</span>,<span class="dt">main=</span>years[<span class="dv">1</span>], <span class="dt">log=</span><span class="st">&quot;y&quot;</span>, <span class="dt">ylim=</span><span class="kw">c</span>(<span class="fl">0.01</span>,<span class="fl">0.07</span>))</a>
+<a class="sourceLine" id="cb7-6" title="6"><span class="kw">lines</span>(fpma,<span class="dt">newdata=</span><span class="kw">data.frame</span>(<span class="dt">year8594=</span>years[<span class="dv">2</span>]), <span class="dt">type=</span><span class="st">&quot;haz&quot;</span>, <span class="dt">col=</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb7-7" title="7"><span class="kw">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="dt">legend=</span>years, <span class="dt">col=</span><span class="dv">1</span><span class="op">:</span><span class="dv">2</span>, <span class="dt">lty=</span><span class="dv">1</span>, <span class="dt">bty=</span><span class="st">&quot;n&quot;</span>)</a></code></pre></div>
 <p>##(d)## Investigate varying the degrees of freedom for the baseline using the AIC and BIC criteria.</p>
 <p>Re-fit the model with degrees of freedom varying between 1 and 6 degrees of freedom. Calculate the AIC and BIC and extract the beta and standard error for the period term. Which model has the smallest AIC and which has the smallest BIC?</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1"><span class="co">## utility function to row bind from a list</span></a>
-<a class="sourceLine" id="cb7-2" title="2">Rbind &lt;-<span class="st"> </span><span class="cf">function</span>(object) <span class="kw">do.call</span>(rbind,object)</a>
-<a class="sourceLine" id="cb7-3" title="3">out &lt;-<span class="st"> </span><span class="kw">lapply</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">6</span>, <span class="cf">function</span>(i) {</a>
-<a class="sourceLine" id="cb7-4" title="4">    fitaic &lt;-<span class="st"> </span><span class="kw">stpm2</span>(<span class="kw">Surv</span>(time, event) <span class="op">~</span><span class="st"> </span>year8594, <span class="dt">data=</span>melanoma0, <span class="dt">df=</span>i)</a>
-<a class="sourceLine" id="cb7-5" title="5">    <span class="kw">data.frame</span>(</a>
-<a class="sourceLine" id="cb7-6" title="6">        i,</a>
-<a class="sourceLine" id="cb7-7" title="7">        <span class="dt">AIC=</span><span class="kw">AIC</span>(fitaic),</a>
-<a class="sourceLine" id="cb7-8" title="8">        <span class="dt">BIC=</span><span class="kw">BIC</span>(fitaic),</a>
-<a class="sourceLine" id="cb7-9" title="9">        <span class="dt">beta=</span><span class="kw">as.numeric</span>(<span class="kw">coef</span>(fitaic)[<span class="dv">2</span>]),</a>
-<a class="sourceLine" id="cb7-10" title="10">        <span class="dt">se=</span><span class="kw">coef</span>(<span class="kw">summary</span>(fitaic))[<span class="dv">2</span>,<span class="dv">2</span>])</a>
-<a class="sourceLine" id="cb7-11" title="11">})</a>
-<a class="sourceLine" id="cb7-12" title="12">out <span class="op">%&gt;%</span><span class="st"> </span>Rbind</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1"><span class="co">## utility function to row bind from a list</span></a>
+<a class="sourceLine" id="cb8-2" title="2">Rbind &lt;-<span class="st"> </span><span class="cf">function</span>(object) <span class="kw">do.call</span>(rbind,object)</a>
+<a class="sourceLine" id="cb8-3" title="3">out &lt;-<span class="st"> </span><span class="kw">lapply</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">6</span>, <span class="cf">function</span>(i) {</a>
+<a class="sourceLine" id="cb8-4" title="4">    fitaic &lt;-<span class="st"> </span><span class="kw">stpm2</span>(<span class="kw">Surv</span>(time, event) <span class="op">~</span><span class="st"> </span>year8594, <span class="dt">data=</span>melanoma0, <span class="dt">df=</span>i)</a>
+<a class="sourceLine" id="cb8-5" title="5">    <span class="kw">data.frame</span>(</a>
+<a class="sourceLine" id="cb8-6" title="6">        i,</a>
+<a class="sourceLine" id="cb8-7" title="7">        <span class="dt">AIC=</span><span class="kw">AIC</span>(fitaic),</a>
+<a class="sourceLine" id="cb8-8" title="8">        <span class="dt">BIC=</span><span class="kw">BIC</span>(fitaic),</a>
+<a class="sourceLine" id="cb8-9" title="9">        <span class="dt">beta=</span><span class="kw">as.numeric</span>(<span class="kw">coef</span>(fitaic)[<span class="dv">2</span>]),</a>
+<a class="sourceLine" id="cb8-10" title="10">        <span class="dt">se=</span><span class="kw">coef</span>(<span class="kw">summary</span>(fitaic))[<span class="dv">2</span>,<span class="dv">2</span>])</a>
+<a class="sourceLine" id="cb8-11" title="11">})</a>
+<a class="sourceLine" id="cb8-12" title="12">out <span class="op">%&gt;%</span><span class="st"> </span>Rbind</a></code></pre></div>
 <p>Finally, is it clear why we use the AIC and BIC criteria rather than using likelihood ratio tests?</p>
 <p>##(e)## Plots of predicted baseline survivals and hazards with varying degrees of freedom.</p>
 <p>We first plot survival by varying the degrees of freedom:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1"><span class="co">## Baseline survival</span></a>
-<a class="sourceLine" id="cb8-2" title="2">fitaic0 &lt;-<span class="st"> </span><span class="kw">stpm2</span>(<span class="kw">Surv</span>(time, event) <span class="op">~</span><span class="st"> </span>year8594, <span class="dt">data=</span>melanoma0, <span class="dt">df=</span><span class="dv">6</span>)</a>
-<a class="sourceLine" id="cb8-3" title="3"><span class="kw">plot</span>(fitaic0,<span class="dt">newdata=</span><span class="kw">data.frame</span>(<span class="dt">year8594=</span>years[<span class="dv">1</span>]), <span class="dt">lty=</span><span class="dv">6</span>, <span class="dt">ci=</span><span class="ot">FALSE</span>,</a>
-<a class="sourceLine" id="cb8-4" title="4">     <span class="dt">xlab=</span><span class="st">&quot;Time since diagnosis (years)&quot;</span>)</a>
-<a class="sourceLine" id="cb8-5" title="5"><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">5</span> ) {</a>
-<a class="sourceLine" id="cb8-6" title="6">  fitaic &lt;-<span class="st"> </span><span class="kw">stpm2</span>(<span class="kw">Surv</span>(time, event) <span class="op">~</span><span class="st"> </span>year8594, <span class="dt">data=</span>melanoma0, <span class="dt">df=</span>i)</a>
-<a class="sourceLine" id="cb8-7" title="7">  <span class="kw">lines</span>(fitaic,<span class="dt">newdata=</span><span class="kw">data.frame</span>(<span class="dt">year8594=</span>years[<span class="dv">1</span>]), <span class="dt">lty=</span>i)</a>
-<a class="sourceLine" id="cb8-8" title="8">}</a>
-<a class="sourceLine" id="cb8-9" title="9"><span class="kw">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="dt">legend=</span><span class="kw">paste0</span>(<span class="st">&quot;df=&quot;</span>,<span class="dv">1</span><span class="op">:</span><span class="dv">6</span>), <span class="dt">lty=</span><span class="dv">1</span><span class="op">:</span><span class="dv">6</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1"><span class="co">## Baseline survival</span></a>
+<a class="sourceLine" id="cb9-2" title="2">fitaic0 &lt;-<span class="st"> </span><span class="kw">stpm2</span>(<span class="kw">Surv</span>(time, event) <span class="op">~</span><span class="st"> </span>year8594, <span class="dt">data=</span>melanoma0, <span class="dt">df=</span><span class="dv">6</span>)</a>
+<a class="sourceLine" id="cb9-3" title="3"><span class="kw">plot</span>(fitaic0,<span class="dt">newdata=</span><span class="kw">data.frame</span>(<span class="dt">year8594=</span>years[<span class="dv">1</span>]), <span class="dt">lty=</span><span class="dv">6</span>, <span class="dt">ci=</span><span class="ot">FALSE</span>,</a>
+<a class="sourceLine" id="cb9-4" title="4">     <span class="dt">xlab=</span><span class="st">&quot;Time since diagnosis (years)&quot;</span>)</a>
+<a class="sourceLine" id="cb9-5" title="5"><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">5</span> ) {</a>
+<a class="sourceLine" id="cb9-6" title="6">  fitaic &lt;-<span class="st"> </span><span class="kw">stpm2</span>(<span class="kw">Surv</span>(time, event) <span class="op">~</span><span class="st"> </span>year8594, <span class="dt">data=</span>melanoma0, <span class="dt">df=</span>i)</a>
+<a class="sourceLine" id="cb9-7" title="7">  <span class="kw">lines</span>(fitaic,<span class="dt">newdata=</span><span class="kw">data.frame</span>(<span class="dt">year8594=</span>years[<span class="dv">1</span>]), <span class="dt">lty=</span>i)</a>
+<a class="sourceLine" id="cb9-8" title="8">}</a>
+<a class="sourceLine" id="cb9-9" title="9"><span class="kw">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="dt">legend=</span><span class="kw">paste0</span>(<span class="st">&quot;df=&quot;</span>,<span class="dv">1</span><span class="op">:</span><span class="dv">6</span>), <span class="dt">lty=</span><span class="dv">1</span><span class="op">:</span><span class="dv">6</span>)</a></code></pre></div>
 <p>Adapt the above code to work with hazards.</p>
 <p>##(f) Adjust for sex and age (in categories) ##</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1">fpmf &lt;-<span class="st"> </span><span class="kw">stpm2</span>(<span class="kw">Surv</span>(time, event) <span class="op">~</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>year8594 <span class="op">+</span><span class="st"> </span>agegrp,</a>
-<a class="sourceLine" id="cb9-2" title="2">              <span class="dt">data=</span>melanoma0, <span class="dt">df=</span><span class="dv">4</span>)</a>
-<a class="sourceLine" id="cb9-3" title="3"><span class="kw">summary</span>(fpmf)</a>
-<a class="sourceLine" id="cb9-4" title="4">biostat3<span class="op">::</span><span class="kw">eform</span>(fpmf)[<span class="dv">2</span><span class="op">:</span><span class="dv">6</span>,]</a>
-<a class="sourceLine" id="cb9-5" title="5"></a>
-<a class="sourceLine" id="cb9-6" title="6"><span class="co">## To test the overall effect of age with LR test</span></a>
-<a class="sourceLine" id="cb9-7" title="7">fpmf2 &lt;-<span class="st"> </span><span class="kw">stpm2</span>(<span class="kw">Surv</span>(time,event) <span class="op">~</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>year8594, <span class="dt">data=</span>melanoma0, <span class="dt">df=</span><span class="dv">4</span>)</a>
-<a class="sourceLine" id="cb9-8" title="8"><span class="kw">anova</span>(fpmf, fpmf2)</a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1">fpmf &lt;-<span class="st"> </span><span class="kw">stpm2</span>(<span class="kw">Surv</span>(time, event) <span class="op">~</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>year8594 <span class="op">+</span><span class="st"> </span>agegrp,</a>
+<a class="sourceLine" id="cb10-2" title="2">              <span class="dt">data=</span>melanoma0, <span class="dt">df=</span><span class="dv">4</span>)</a>
+<a class="sourceLine" id="cb10-3" title="3"><span class="kw">summary</span>(fpmf)</a>
+<a class="sourceLine" id="cb10-4" title="4"><span class="kw">eform</span>(fpmf)[<span class="dv">2</span><span class="op">:</span><span class="dv">6</span>,]</a></code></pre></div>
+<pre><code>## Warning in .local(object, parm, level, ...): non-monotonic spline fit to profile
+## (nsx(log(time), df = 4)2): reverting from spline to linear approximation</code></pre>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1"><span class="co">## To test the overall effect of age with LR test</span></a>
+<a class="sourceLine" id="cb12-2" title="2">fpmf2 &lt;-<span class="st"> </span><span class="kw">stpm2</span>(<span class="kw">Surv</span>(time,event) <span class="op">~</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>year8594, <span class="dt">data=</span>melanoma0, <span class="dt">df=</span><span class="dv">4</span>)</a>
+<a class="sourceLine" id="cb12-3" title="3"><span class="kw">anova</span>(fpmf, fpmf2)</a></code></pre></div>
 <p>Fit a flexible parametric survival model that adjusts for calendar period, sex and age group, with four degrees of freedom for the baseline. How do you interpret the fitted parameters?</p>
 <p>Use a likelihod ratio test to assess whether age group contributes significantly to the model fit. How do you interpret the test?</p>
 <p>##(g)##</p>
 <p>Fit a similar model and undertake a similar test using Cox regression. Are the results similar? If so, can you suggest why?</p>
 <p>##(h)## Now allow for time-varying effects for the age groups, using 0–44 years as the reference group, with two degrees of freedom for each age-group:time interaction. Using a likelihood ratio test, assess whether the time-varying effects are significant.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1"><span class="co">## (h) Change to time-varying effect of agegrp2:4</span></a>
-<a class="sourceLine" id="cb10-2" title="2"><span class="co">## NB: including main effect of agegrp</span></a>
-<a class="sourceLine" id="cb10-3" title="3">fpmh &lt;-<span class="st"> </span><span class="kw">stpm2</span>(<span class="kw">Surv</span>(time,event) <span class="op">~</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>year8594 <span class="op">+</span><span class="st"> </span>agegrp2 <span class="op">+</span><span class="st"> </span>agegrp3 <span class="op">+</span><span class="st"> </span>agegrp4,</a>
-<a class="sourceLine" id="cb10-4" title="4">              <span class="dt">data=</span>melanoma0, <span class="dt">tvc=</span><span class="kw">list</span>(<span class="dt">agegrp2 =</span> <span class="dv">2</span>, <span class="dt">agegrp3 =</span> <span class="dv">2</span>, <span class="dt">agegrp4 =</span> <span class="dv">2</span>),</a>
-<a class="sourceLine" id="cb10-5" title="5">              <span class="dt">df=</span><span class="dv">4</span>)</a>
-<a class="sourceLine" id="cb10-6" title="6"><span class="kw">summary</span>(fpmh)</a>
-<a class="sourceLine" id="cb10-7" title="7"></a>
-<a class="sourceLine" id="cb10-8" title="8"><span class="co">## LR test comparing fpmh (non-PH for agegrp2:4) with fpmf(PH for agegrp2:4)</span></a>
-<a class="sourceLine" id="cb10-9" title="9"><span class="kw">anova</span>(fpmh, fpmf)</a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1"><span class="co">## (h) Change to time-varying effect of agegrp2:4</span></a>
+<a class="sourceLine" id="cb13-2" title="2"><span class="co">## NB: including main effect of agegrp</span></a>
+<a class="sourceLine" id="cb13-3" title="3">fpmh &lt;-<span class="st"> </span><span class="kw">stpm2</span>(<span class="kw">Surv</span>(time,event) <span class="op">~</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>year8594 <span class="op">+</span><span class="st"> </span>agegrp2 <span class="op">+</span><span class="st"> </span>agegrp3 <span class="op">+</span><span class="st"> </span>agegrp4,</a>
+<a class="sourceLine" id="cb13-4" title="4">              <span class="dt">data=</span>melanoma0, <span class="dt">tvc=</span><span class="kw">list</span>(<span class="dt">agegrp2 =</span> <span class="dv">2</span>, <span class="dt">agegrp3 =</span> <span class="dv">2</span>, <span class="dt">agegrp4 =</span> <span class="dv">2</span>),</a>
+<a class="sourceLine" id="cb13-5" title="5">              <span class="dt">df=</span><span class="dv">4</span>)</a>
+<a class="sourceLine" id="cb13-6" title="6"><span class="kw">summary</span>(fpmh)</a>
+<a class="sourceLine" id="cb13-7" title="7"></a>
+<a class="sourceLine" id="cb13-8" title="8"><span class="co">## LR test comparing fpmh (non-PH for agegrp2:4) with fpmf(PH for agegrp2:4)</span></a>
+<a class="sourceLine" id="cb13-9" title="9"><span class="kw">anova</span>(fpmh, fpmf)</a></code></pre></div>
 <p>##(i)## Plot of baseline hazard with time-varying effects.</p>
 <p>Plot the hazard for the youngest age group for males diagnosed in 1975–1984.</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1"><span class="co">## Plot of baseline hazard with fpmh</span></a>
-<a class="sourceLine" id="cb11-2" title="2">sexes &lt;-<span class="st"> </span><span class="kw">levels</span>(melanoma<span class="op">$</span>sex)</a>
-<a class="sourceLine" id="cb11-3" title="3">years &lt;-<span class="st"> </span><span class="kw">levels</span>(melanoma<span class="op">$</span>year8594)</a>
-<a class="sourceLine" id="cb11-4" title="4">agegrps &lt;-<span class="st"> </span><span class="kw">levels</span>(melanoma<span class="op">$</span>agegrp)</a>
-<a class="sourceLine" id="cb11-5" title="5">newdata1 &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">sex=</span>sexes[<span class="dv">1</span>],<span class="dt">year8594=</span>years[<span class="dv">1</span>],<span class="dt">agegrp2=</span><span class="dv">0</span>, <span class="dt">agegrp3=</span><span class="dv">0</span>, <span class="dt">agegrp4=</span><span class="dv">0</span>)</a>
-<a class="sourceLine" id="cb11-6" title="6"><span class="kw">plot</span>(fpmh, <span class="dt">newdata=</span>newdata1, <span class="dt">xlab=</span><span class="st">&quot;Time since diagnosis (years)&quot;</span>, </a>
-<a class="sourceLine" id="cb11-7" title="7">     <span class="dt">type=</span><span class="st">&quot;haz&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1"><span class="co">## Plot of baseline hazard with fpmh</span></a>
+<a class="sourceLine" id="cb14-2" title="2">sexes &lt;-<span class="st"> </span><span class="kw">levels</span>(melanoma<span class="op">$</span>sex)</a>
+<a class="sourceLine" id="cb14-3" title="3">years &lt;-<span class="st"> </span><span class="kw">levels</span>(melanoma<span class="op">$</span>year8594)</a>
+<a class="sourceLine" id="cb14-4" title="4">agegrps &lt;-<span class="st"> </span><span class="kw">levels</span>(melanoma<span class="op">$</span>agegrp)</a>
+<a class="sourceLine" id="cb14-5" title="5">newdata1 &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">sex=</span>sexes[<span class="dv">1</span>],<span class="dt">year8594=</span>years[<span class="dv">1</span>],<span class="dt">agegrp2=</span><span class="dv">0</span>, <span class="dt">agegrp3=</span><span class="dv">0</span>, <span class="dt">agegrp4=</span><span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb14-6" title="6"><span class="kw">plot</span>(fpmh, <span class="dt">newdata=</span>newdata1, <span class="dt">xlab=</span><span class="st">&quot;Time since diagnosis (years)&quot;</span>, </a>
+<a class="sourceLine" id="cb14-7" title="7">     <span class="dt">type=</span><span class="st">&quot;haz&quot;</span>)</a></code></pre></div>
 <p>##(j) Hazard ratios between age groups ##</p>
 <p>Now plot the hazard ratios for each of the older age groups compared with cases diagnosed aged 0-44 years. For ease of comparison, initially plot the hazard ratios without confidence intervals. Describe the form of the hazard ratios.</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1"><span class="kw">plot</span>(fpmh, <span class="dt">newdata=</span>newdata1, <span class="dt">xlab=</span><span class="st">&quot;Time since diagnosis (years)&quot;</span>,</a>
-<a class="sourceLine" id="cb12-2" title="2">     <span class="dt">type=</span><span class="st">&quot;hr&quot;</span>,<span class="dt">var=</span><span class="st">&quot;agegrp2&quot;</span>, <span class="dt">ci=</span><span class="ot">FALSE</span>, <span class="dt">ylim=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">6</span>))</a>
-<a class="sourceLine" id="cb12-3" title="3"><span class="kw">lines</span>(fpmh, <span class="dt">newdata=</span>newdata1, <span class="dt">type=</span><span class="st">&quot;hr&quot;</span>, <span class="dt">var=</span><span class="st">&quot;agegrp3&quot;</span>, <span class="dt">lty=</span><span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb12-4" title="4"><span class="kw">lines</span>(fpmh, <span class="dt">newdata=</span>newdata1, <span class="dt">type=</span><span class="st">&quot;hr&quot;</span>, <span class="dt">var=</span><span class="st">&quot;agegrp4&quot;</span>, <span class="dt">lty=</span><span class="dv">3</span>)</a>
-<a class="sourceLine" id="cb12-5" title="5"><span class="kw">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="dt">legend=</span><span class="kw">paste0</span>(agegrps[<span class="op">-</span><span class="dv">1</span>],<span class="st">&quot; vs 0-44&quot;</span>), <span class="dt">lty=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" title="1"><span class="kw">plot</span>(fpmh, <span class="dt">newdata=</span>newdata1, <span class="dt">xlab=</span><span class="st">&quot;Time since diagnosis (years)&quot;</span>,</a>
+<a class="sourceLine" id="cb15-2" title="2">     <span class="dt">type=</span><span class="st">&quot;hr&quot;</span>,<span class="dt">var=</span><span class="st">&quot;agegrp2&quot;</span>, <span class="dt">ci=</span><span class="ot">FALSE</span>, <span class="dt">ylim=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">6</span>))</a>
+<a class="sourceLine" id="cb15-3" title="3"><span class="kw">lines</span>(fpmh, <span class="dt">newdata=</span>newdata1, <span class="dt">type=</span><span class="st">&quot;hr&quot;</span>, <span class="dt">var=</span><span class="st">&quot;agegrp3&quot;</span>, <span class="dt">lty=</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb15-4" title="4"><span class="kw">lines</span>(fpmh, <span class="dt">newdata=</span>newdata1, <span class="dt">type=</span><span class="st">&quot;hr&quot;</span>, <span class="dt">var=</span><span class="st">&quot;agegrp4&quot;</span>, <span class="dt">lty=</span><span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb15-5" title="5"><span class="kw">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="dt">legend=</span><span class="kw">paste0</span>(agegrps[<span class="op">-</span><span class="dv">1</span>],<span class="st">&quot; vs 0-44&quot;</span>), <span class="dt">lty=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>)</a></code></pre></div>
 <p>For the hazard ratio comparing those diagnosed aged 75 years and over with those aged 0–44 years, plot the hazard ratio and 95% confidence intervals.</p>
 <!-- ```{r j_oldest} -->
 <!-- ``` -->

@@ -139,19 +139,36 @@ a.sourceLine {
 <a class="sourceLine" id="cb1-2" title="2"><span class="kw">library</span>(dplyr)    <span class="co"># for data manipulation</span></a></code></pre></div>
 <div id="a" class="section level2">
 <h2>(a)</h2>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">data</span>(melanoma)</a>
-<a class="sourceLine" id="cb2-2" title="2">scale &lt;-<span class="st"> </span><span class="fl">365.24</span></a>
-<a class="sourceLine" id="cb2-3" title="3">mel &lt;-<span class="st"> </span><span class="kw">mutate</span>(melanoma,</a>
-<a class="sourceLine" id="cb2-4" title="4">              <span class="dt">ydx=</span>biostat3<span class="op">::</span><span class="kw">year</span>(dx),</a>
-<a class="sourceLine" id="cb2-5" title="5">              <span class="dt">adx=</span>age<span class="fl">+0.5</span>, <span class="co"># mid-point approximation</span></a>
-<a class="sourceLine" id="cb2-6" title="6">              <span class="dt">dead=</span>(status <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Dead: cancer&quot;</span>,<span class="st">&quot;Dead: other&quot;</span>) <span class="op">&amp;</span><span class="st"> </span>surv_mm<span class="op">&lt;</span><span class="dv">110</span>)<span class="op">+</span><span class="dv">0</span>,</a>
-<a class="sourceLine" id="cb2-7" title="7">              <span class="dt">surv_mm=</span><span class="kw">pmin</span>(<span class="dv">110</span>,surv_mm),</a>
-<a class="sourceLine" id="cb2-8" title="8">              <span class="dt">astart=</span>adx, </a>
-<a class="sourceLine" id="cb2-9" title="9">              <span class="dt">astop=</span>adx<span class="op">+</span>surv_mm<span class="op">/</span><span class="dv">12</span>)</a>
-<a class="sourceLine" id="cb2-10" title="10">mel.split &lt;-<span class="st"> </span><span class="kw">survSplit</span>(mel,</a>
-<a class="sourceLine" id="cb2-11" title="11">                       <span class="dt">cut=</span><span class="dv">1</span><span class="op">:</span><span class="dv">110</span>,</a>
-<a class="sourceLine" id="cb2-12" title="12">                       <span class="dt">event=</span><span class="st">&quot;dead&quot;</span>,<span class="dt">start=</span><span class="st">&quot;astart&quot;</span>, <span class="dt">end=</span><span class="st">&quot;astop&quot;</span>)</a>
-<a class="sourceLine" id="cb2-13" title="13"><span class="kw">subset</span>(mel.split, id<span class="op">&lt;=</span><span class="dv">2</span>, <span class="dt">select=</span><span class="kw">c</span>(id,astart,astop,dead))</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">data</span>(melanoma) </a>
+<a class="sourceLine" id="cb2-2" title="2">mel &lt;-<span class="st"> </span><span class="kw">filter</span>(melanoma, stage <span class="op">==</span><span class="st"> &quot;Localised&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb2-3" title="3"><span class="st">        </span><span class="kw">mutate</span>( <span class="dt">dead =</span> (status <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Dead: cancer&quot;</span>,<span class="st">&quot;Dead: other&quot;</span>) <span class="op">&amp;</span><span class="st"> </span>surv_mm <span class="op">&lt;=</span><span class="st"> </span><span class="dv">120</span>)<span class="op">+</span><span class="dv">0</span>, </a>
+<a class="sourceLine" id="cb2-4" title="4">                <span class="dt">surv_mm =</span> <span class="kw">pmin</span>(<span class="dv">120</span>, surv_mm)</a>
+<a class="sourceLine" id="cb2-5" title="5">              ) </a>
+<a class="sourceLine" id="cb2-6" title="6"><span class="kw">head</span>(mel) </a></code></pre></div>
+<pre><code>##      sex age     stage mmdx yydx surv_mm surv_yy       status       subsite
+## 1 Female  81 Localised    2 1981    26.5     2.5  Dead: other Head and Neck
+## 2 Female  75 Localised    9 1975    55.5     4.5  Dead: other Head and Neck
+## 3 Female  78 Localised    2 1978   120.0    14.5  Dead: other         Limbs
+## 4 Female  75 Localised    9 1975    19.5     1.5 Dead: cancer         Trunk
+## 5 Female  75 Localised   10 1975    65.5     5.5  Dead: other Head and Neck
+## 6 Female  80 Localised    6 1980    50.5     4.5  Dead: other Head and Neck
+##          year8594         dx       exit agegrp id      ydx    yexit dead
+## 1 Diagnosed 75-84 1981-02-02 1983-04-20    75+  1 1981.088 1983.298    1
+## 2 Diagnosed 75-84 1975-09-21 1980-05-07    75+  2 1975.720 1980.348    1
+## 3 Diagnosed 75-84 1978-02-21 1992-12-07    75+  3 1978.140 1992.934    0
+## 4 Diagnosed 75-84 1975-09-03 1977-04-19    75+  6 1975.671 1977.296    1
+## 5 Diagnosed 75-84 1975-10-14 1981-03-30    75+  7 1975.783 1981.241    1
+## 6 Diagnosed 75-84 1980-06-11 1984-08-27    75+  8 1980.444 1984.654    1</code></pre>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"><span class="co">## Define the age at start and end of follow-up </span></a>
+<a class="sourceLine" id="cb4-2" title="2">mel &lt;-<span class="st"> </span><span class="kw">mutate</span>( mel, <span class="dt">adx =</span> age<span class="fl">+0.5</span>,   <span class="co"># age at diagnosis  (mid-point approximation) </span></a>
+<a class="sourceLine" id="cb4-3" title="3">               <span class="dt">astart =</span> adx, </a>
+<a class="sourceLine" id="cb4-4" title="4">               <span class="dt">astop  =</span> adx<span class="op">+</span>surv_mm<span class="op">/</span><span class="dv">12</span> </a>
+<a class="sourceLine" id="cb4-5" title="5">              )</a>
+<a class="sourceLine" id="cb4-6" title="6"><span class="co">## Split by age </span></a>
+<a class="sourceLine" id="cb4-7" title="7">mel.split &lt;-<span class="st"> </span><span class="kw">survSplit</span>(mel, <span class="dt">cut =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">105</span>, <span class="dt">event =</span> <span class="st">&quot;dead&quot;</span>, </a>
+<a class="sourceLine" id="cb4-8" title="8">                       <span class="dt">start =</span> <span class="st">&quot;astart&quot;</span>, <span class="dt">end =</span> <span class="st">&quot;astop&quot;</span>)</a>
+<a class="sourceLine" id="cb4-9" title="9"><span class="co">## Quick check: the first two ids </span></a>
+<a class="sourceLine" id="cb4-10" title="10"><span class="kw">subset</span>(mel.split, id<span class="op">&lt;=</span><span class="dv">2</span>, <span class="dt">select =</span> <span class="kw">c</span>(id, astart, astop, dead)) </a></code></pre></div>
 <pre><code>##   id astart    astop dead
 ## 1  1   81.5 82.00000    0
 ## 2  1   82.0 83.00000    0
@@ -165,18 +182,34 @@ a.sourceLine {
 </div>
 <div id="b" class="section level2">
 <h2>(b)</h2>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1">mel.split &lt;-<span class="st"> </span><span class="kw">mutate</span>(mel.split,</a>
-<a class="sourceLine" id="cb4-2" title="2">                    <span class="dt">ystart=</span><span class="kw">year</span>(dx)<span class="op">+</span>astart<span class="op">-</span>adx,</a>
-<a class="sourceLine" id="cb4-3" title="3">                    <span class="dt">ystop=</span><span class="kw">year</span>(dx)<span class="op">+</span>astop<span class="op">-</span>adx)</a>
-<a class="sourceLine" id="cb4-4" title="4">mel.split2 &lt;-<span class="st"> </span><span class="kw">survSplit</span>(mel.split,</a>
-<a class="sourceLine" id="cb4-5" title="5">                       <span class="dt">cut=</span><span class="dv">1970</span><span class="op">:</span><span class="dv">2000</span>,<span class="dt">event=</span><span class="st">&quot;dead&quot;</span>,</a>
-<a class="sourceLine" id="cb4-6" title="6">                       <span class="dt">start=</span><span class="st">&quot;ystart&quot;</span>, <span class="dt">end=</span><span class="st">&quot;ystop&quot;</span>) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-7" title="7"><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">astart=</span>adx<span class="op">+</span>ystart<span class="op">-</span>ydx,</a>
-<a class="sourceLine" id="cb4-8" title="8">           <span class="dt">astop=</span>adx<span class="op">+</span>ystop<span class="op">-</span>ydx,</a>
-<a class="sourceLine" id="cb4-9" title="9">           <span class="dt">age=</span><span class="kw">floor</span>(astop),</a>
-<a class="sourceLine" id="cb4-10" title="10">           <span class="dt">year=</span><span class="kw">floor</span>(ystop),</a>
-<a class="sourceLine" id="cb4-11" title="11">           <span class="dt">pt =</span> ystop <span class="op">-</span><span class="st"> </span>ystart)</a>
-<a class="sourceLine" id="cb4-12" title="12"><span class="kw">subset</span>(mel.split2, id<span class="op">&lt;=</span><span class="dv">2</span>, <span class="dt">select=</span><span class="kw">c</span>(id,ystart,ystop,astart,astop,dead))</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1"><span class="co"># For each age time band from (a), we calculate the start and stop in calendar time </span></a>
+<a class="sourceLine" id="cb6-2" title="2"><span class="co"># We calculate the time since diagnosis as difference between age at start/stop and </span></a>
+<a class="sourceLine" id="cb6-3" title="3"><span class="co"># age at diagnosis, and add that interval to year at diagnosis</span></a>
+<a class="sourceLine" id="cb6-4" title="4">mel.split2 &lt;-<span class="st"> </span><span class="kw">mutate</span>(mel.split, </a>
+<a class="sourceLine" id="cb6-5" title="5">                    <span class="dt">ystart =</span> ydx <span class="op">+</span><span class="st"> </span>astart <span class="op">-</span><span class="st"> </span>adx, </a>
+<a class="sourceLine" id="cb6-6" title="6">                    <span class="dt">ystop  =</span> ydx <span class="op">+</span><span class="st"> </span>astop <span class="op">-</span><span class="st"> </span>adx</a>
+<a class="sourceLine" id="cb6-7" title="7">                  )</a>
+<a class="sourceLine" id="cb6-8" title="8"><span class="kw">subset</span>(mel.split2, id<span class="op">&lt;=</span><span class="dv">2</span>, <span class="dt">select =</span> <span class="kw">c</span>(id, adx, astart,astop,dead, ydx, ystart, ystop))</a></code></pre></div>
+<pre><code>##   id  adx astart    astop dead      ydx   ystart    ystop
+## 1  1 81.5   81.5 82.00000    0 1981.088 1981.088 1981.588
+## 2  1 81.5   82.0 83.00000    0 1981.088 1981.588 1982.588
+## 3  1 81.5   83.0 83.70833    1 1981.088 1982.588 1983.296
+## 4  2 75.5   75.5 76.00000    0 1975.720 1975.720 1976.220
+## 5  2 75.5   76.0 77.00000    0 1975.720 1976.220 1977.220
+## 6  2 75.5   77.0 78.00000    0 1975.720 1977.220 1978.220
+## 7  2 75.5   78.0 79.00000    0 1975.720 1978.220 1979.220
+## 8  2 75.5   79.0 80.00000    0 1975.720 1979.220 1980.220
+## 9  2 75.5   80.0 80.12500    1 1975.720 1980.220 1980.345</code></pre>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1"><span class="co">## Now we can split along the calendar time </span></a>
+<a class="sourceLine" id="cb8-2" title="2"><span class="co">## For each of the new age-calendar time bands, we now have to adjust the age at </span></a>
+<a class="sourceLine" id="cb8-3" title="3"><span class="co">## start and end in the same way as above </span></a>
+<a class="sourceLine" id="cb8-4" title="4">mel.split2 &lt;-<span class="st"> </span><span class="kw">survSplit</span>( mel.split2, <span class="dt">cut =</span> <span class="dv">1970</span><span class="op">:</span><span class="dv">2000</span>, <span class="dt">event =</span> <span class="st">&quot;dead&quot;</span>, </a>
+<a class="sourceLine" id="cb8-5" title="5">                         <span class="dt">start =</span> <span class="st">&quot;ystart&quot;</span>, <span class="dt">end =</span> <span class="st">&quot;ystop&quot;</span> ) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb8-6" title="6"><span class="st">              </span><span class="kw">mutate</span>( <span class="dt">astart =</span> adx <span class="op">+</span><span class="st"> </span>ystart <span class="op">-</span><span class="st"> </span>ydx, </a>
+<a class="sourceLine" id="cb8-7" title="7">                      <span class="dt">astop  =</span> adx <span class="op">+</span><span class="st"> </span>ystop <span class="op">-</span><span class="st"> </span>ydx</a>
+<a class="sourceLine" id="cb8-8" title="8">                    )</a>
+<a class="sourceLine" id="cb8-9" title="9"><span class="co">## Quick check: this seems ok </span></a>
+<a class="sourceLine" id="cb8-10" title="10"><span class="kw">subset</span>(mel.split2, id<span class="op">&lt;=</span><span class="dv">2</span>, <span class="dt">select =</span> <span class="kw">c</span>(id, ystart, ystop, astart, astop, dead)) </a></code></pre></div>
 <pre><code>##    id   ystart    ystop   astart    astop dead
 ## 1   1 1981.088 1981.588 81.50000 82.00000    0
 ## 2   1 1981.588 1982.000 82.00000 82.41239    0
@@ -197,192 +230,350 @@ a.sourceLine {
 </div>
 <div id="c" class="section level2">
 <h2>(c)</h2>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1"><span class="kw">xtabs</span>(pt <span class="op">~</span><span class="st"> </span>age<span class="op">+</span>year, <span class="dt">data=</span>mel.split2, <span class="dt">subset =</span> age<span class="op">&gt;=</span><span class="dv">50</span> <span class="op">&amp;</span><span class="st"> </span>age<span class="op">&lt;</span><span class="dv">60</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1"><span class="co">## We calculate the total person time at risk for each time band</span></a>
+<a class="sourceLine" id="cb10-2" title="2">mel.split2 &lt;-<span class="st"> </span><span class="kw">mutate</span>( mel.split2, </a>
+<a class="sourceLine" id="cb10-3" title="3">                      <span class="dt">age  =</span> <span class="kw">floor</span>(astart),  <span class="co"># Age at which person time was observed </span></a>
+<a class="sourceLine" id="cb10-4" title="4">                      <span class="dt">year =</span> <span class="kw">floor</span>(ystart),  <span class="co"># Calendar year during which person time was observed </span></a>
+<a class="sourceLine" id="cb10-5" title="5">                      <span class="dt">pt  =</span>  ystop <span class="op">-</span><span class="st"> </span>ystart  <span class="co"># ... or astop - astart, works the same</span></a>
+<a class="sourceLine" id="cb10-6" title="6">                    ) </a>
+<a class="sourceLine" id="cb10-7" title="7"><span class="kw">subset</span>(mel.split2, id<span class="op">&lt;=</span><span class="dv">2</span>, <span class="dt">select =</span> <span class="kw">c</span>(id, ystart, ystop, astart, astop, dead, age, year, pt))</a></code></pre></div>
+<pre><code>##    id   ystart    ystop   astart    astop dead age year        pt
+## 1   1 1981.088 1981.588 81.50000 82.00000    0  81 1981 0.5000000
+## 2   1 1981.588 1982.000 82.00000 82.41239    0  82 1981 0.4123864
+## 3   1 1982.000 1982.588 82.41239 83.00000    0  82 1982 0.5876136
+## 4   1 1982.588 1983.000 83.00000 83.41239    0  83 1982 0.4123864
+## 5   1 1983.000 1983.296 83.41239 83.70833    1  83 1983 0.2959470
+## 6   2 1975.720 1976.000 75.50000 75.77993    0  75 1975 0.2799255
+## 7   2 1976.000 1976.220 75.77993 76.00000    0  75 1976 0.2200745
+## 8   2 1976.220 1977.000 76.00000 76.77993    0  75 1976 0.7799255
+## 9   2 1977.000 1977.220 76.77993 77.00000    0  76 1977 0.2200745
+## 10  2 1977.220 1978.000 77.00000 77.77993    0  76 1977 0.7799255
+## 11  2 1978.000 1978.220 77.77993 78.00000    0  77 1978 0.2200745
+## 12  2 1978.220 1979.000 78.00000 78.77993    0  77 1978 0.7799255
+## 13  2 1979.000 1979.220 78.77993 79.00000    0  78 1979 0.2200745
+## 14  2 1979.220 1980.000 79.00000 79.77993    0  78 1979 0.7799255
+## 15  2 1980.000 1980.220 79.77993 80.00000    0  79 1980 0.2200745
+## 16  2 1980.220 1980.345 80.00000 80.12500    1  79 1980 0.1250000</code></pre>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1"><span class="co">## Now tabulate: sum of person time across all combinations of age &amp; year </span></a>
+<a class="sourceLine" id="cb12-2" title="2"><span class="co">## (for some years, ages) </span></a>
+<a class="sourceLine" id="cb12-3" title="3"><span class="kw">xtabs</span>(pt <span class="op">~</span><span class="st"> </span>age <span class="op">+</span><span class="st"> </span>year, <span class="dt">data=</span>mel.split2, <span class="dt">subset =</span> age<span class="op">&gt;=</span><span class="dv">50</span> <span class="op">&amp;</span><span class="st"> </span>age<span class="op">&lt;</span><span class="dv">60</span> <span class="op">&amp;</span><span class="st"> </span>year<span class="op">&gt;=</span><span class="dv">1980</span> <span class="op">&amp;</span><span class="st"> </span>year<span class="op">&lt;</span><span class="dv">1990</span>)</a></code></pre></div>
 <pre><code>##     year
-## age        1975       1976       1977       1978       1979       1980       1981
-##   50   0.500000   3.391583  10.455536  11.071077  17.058537  20.845348  19.947418
-##   51   0.500000   4.160055   8.842373  16.240531  17.518148  23.517609  19.940423
-##   52   1.500000   3.910246   6.733632  11.936466  19.925036  25.802427  30.111260
-##   53   1.000000   7.045983  10.874580  10.581481  17.022456  27.066751  30.618963
-##   54   1.875000   4.757639  10.654592  12.756598  14.672380  17.616143  30.583931
-##   55   0.000000   6.127642  10.360640  15.301459  18.499498  20.090183  20.650312
-##   56   0.500000   2.908622  12.657759  14.500370  17.375516  23.279159  25.041439
-##   57   2.000000   1.993100   8.593664  18.546198  18.109540  22.739062  27.832891
-##   58   0.000000   6.516811   7.950142  15.678732  23.196364  21.831385  26.717647
-##   59   0.500000   1.922298   9.598447  11.604698  20.346284  29.369415  25.724642
+## age      1980     1981     1982     1983     1984     1985     1986     1987     1988
+##   50 17.75739 16.10950 22.14116 21.53778 28.80944 35.87093 32.43368 36.35429 43.11127
+##   51 17.84611 21.10601 19.73652 25.74929 25.34206 33.81678 36.15502 36.99009 39.73722
+##   52 22.66005 23.20135 26.14500 23.00520 27.86951 26.86491 34.68995 38.43219 37.43768
+##   53 17.68110 27.56296 28.56208 30.58475 27.26166 31.79285 26.89462 36.09376 42.05711
+##   54 16.85111 19.77104 32.88876 33.04496 35.43436 30.98549 33.83041 28.67146 42.20236
+##   55 15.34311 23.06560 24.02609 35.78792 38.21690 37.88843 33.36533 37.75103 33.63208
+##   56 19.62087 17.07697 29.49875 29.69993 40.84652 40.83995 40.13706 38.25580 45.57863
+##   57 20.87159 23.91900 21.89273 33.33116 35.31722 44.38920 43.96677 41.94074 42.72208
+##   58 22.71497 23.32395 30.11496 28.08525 36.47228 38.15391 45.32161 47.98965 45.11685
+##   59 22.12377 29.11800 29.50430 35.09614 31.73203 40.31984 37.83583 46.55349 54.18740
 ##     year
-## age        1982       1983       1984       1985       1986       1987       1988
-##   50  20.862771  28.025079  31.574034  39.306730  45.639370  39.791963  46.949700
-##   51  25.161944  26.373759  35.363076  33.629632  43.994451  49.729817  48.248302
-##   52  25.672106  31.738318  31.025946  35.101157  34.834077  46.453013  49.612314
-##   53  36.036834  30.358490  37.623444  30.902165  40.248563  40.123330  47.163199
-##   54  35.842542  40.954934  35.896032  40.450631  35.519599  46.522725  45.090018
-##   55  38.193110  41.300624  47.759943  42.162532  46.188182  40.018545  49.124174
-##   56  26.071966  44.267322  47.063908  50.410552  44.187306  56.168528  45.649819
-##   57  30.374676  31.886504  47.675871  51.853699  53.748047  48.856318  66.145598
-##   58  27.308094  34.913199  39.439350  51.287824  55.960610  50.455851  44.663491
-##   59  34.894129  33.081695  38.381156  42.671431  52.687215  61.395069  56.948189
-##     year
-## age        1989       1990       1991       1992       1993       1994       1995
-##   50  51.070958  56.247467  59.958151  52.591200  53.407705  71.462226 113.789677
-##   51  58.699211  59.021698  55.214074  62.615121  51.655884  52.860238 111.303294
-##   52  49.796390  56.512435  64.619880  52.176555  59.741722  59.259911  86.191874
-##   53  53.276001  53.391870  64.324522  67.734526  54.199138  60.466533  74.454304
-##   54  56.756169  62.248097  59.957211  65.653803  70.343149  58.783608  89.101591
-##   55  56.936768  61.472297  64.446638  64.973647  67.846818  68.582854  82.324700
-##   56  55.914476  59.685011  63.949344  70.918268  75.597908  72.752998  92.335172
-##   57  57.070419  60.333666  60.419144  67.747134  71.863797  75.714672 103.586560
-##   58  73.223433  56.813880  61.988473  59.681050  74.026654  77.016797 117.916607
-##   59  58.177313  75.040959  58.712207  68.097155  67.515638  73.857108 119.728147</code></pre>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1"><span class="kw">xtabs</span>(dead <span class="op">~</span><span class="st"> </span>age<span class="op">+</span>year, <span class="dt">data=</span>mel.split2, <span class="dt">subset =</span> age<span class="op">&gt;=</span><span class="dv">50</span> <span class="op">&amp;</span><span class="st"> </span>age<span class="op">&lt;</span><span class="dv">60</span>)</a></code></pre></div>
+## age      1989
+##   50 46.04857
+##   51 47.18098
+##   52 40.44656
+##   53 40.60234
+##   54 49.13991
+##   55 48.03838
+##   56 38.02925
+##   57 54.65228
+##   58 49.34837
+##   59 52.15563</code></pre>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1"><span class="co">## Same: sum up 0/1 alive/dead for total count of deaths </span></a>
+<a class="sourceLine" id="cb14-2" title="2"><span class="kw">xtabs</span>(dead <span class="op">~</span><span class="st"> </span>age <span class="op">+</span><span class="st"> </span>year, <span class="dt">data=</span>mel.split2, <span class="dt">subset =</span> age<span class="op">&gt;=</span><span class="dv">50</span> <span class="op">&amp;</span><span class="st"> </span>age<span class="op">&lt;</span><span class="dv">60</span> <span class="op">&amp;</span><span class="st"> </span>year<span class="op">&gt;=</span><span class="dv">1980</span> <span class="op">&amp;</span><span class="st"> </span>year<span class="op">&lt;</span><span class="dv">1990</span>) </a></code></pre></div>
 <pre><code>##     year
-## age  1975 1976 1977 1978 1979 1980 1981 1982 1983 1984 1985 1986 1987 1988 1989 1990 1991
-##   50    0    1    0    0    2    3    1    3    0    0    2    1    4    1    2    3    3
-##   51    0    1    1    1    1    3    0    1    1    2    2    0    3    2    2    3    3
-##   52    0    1    1    1    0    1    2    0    2    2    0    1    1    1    0    1    3
-##   53    0    0    3    0    1    4    2    2    1    2    2    1    5    0    0    0    3
-##   54    1    0    2    0    0    0    1    2    2    4    1    1    2    1    2    3    3
-##   55    0    0    0    3    4    1    0    3    2    1    2    3    4    0    3    3    6
-##   56    0    1    0    1    2    2    3    1    2    3    2    3    2    0    4    4    1
-##   57    0    0    2    2    1    1    5    2    2    1    3    2    3    5    0    3    5
-##   58    0    0    2    2    0    1    2    3    2    3    5    2    1    2    4    1    4
-##   59    0    0    2    0    4    1    1    3    3    2    2    1    5    4    3    0    0
-##     year
-## age  1992 1993 1994 1995
-##   50    2    2    4    5
-##   51    2    1    0    2
-##   52    1    0    2    7
-##   53    3    2    2    1
-##   54    3    1    1    3
-##   55    1    3    1    2
-##   56    1    4    3    2
-##   57    2    4    2    1
-##   58    2    5    3    0
-##   59    1    3    4    3</code></pre>
+## age  1980 1981 1982 1983 1984 1985 1986 1987 1988 1989
+##   50    1    1    3    0    0    2    1    1    1    1
+##   51    1    0    1    1    1    1    0    0    1    0
+##   52    1    1    0    0    0    0    1    1    0    0
+##   53    2    1    2    1    1    2    1    2    0    0
+##   54    0    1    2    0    3    0    0    1    1    0
+##   55    1    0    1    2    0    1    2    1    0    2
+##   56    1    2    1    1    3    2    0    1    0    1
+##   57    0    3    0    1    0    3    1    2    2    0
+##   58    1    1    2    1    2    3    1    0    0    0
+##   59    1    0    3    2    2    2    0    3    2    3</code></pre>
 </div>
 <div id="d" class="section level2">
 <h2>(d)</h2>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1">mel.split2 &lt;-<span class="st"> </span><span class="kw">mutate</span>(mel.split2,</a>
-<a class="sourceLine" id="cb10-2" title="2">                     <span class="dt">age10=</span><span class="kw">cut</span>(age,<span class="kw">seq</span>(<span class="dv">0</span>,<span class="dv">110</span>,<span class="dt">by=</span><span class="dv">10</span>),<span class="dt">right=</span><span class="ot">FALSE</span>),</a>
-<a class="sourceLine" id="cb10-3" title="3">                     <span class="dt">year10=</span><span class="kw">cut</span>(year,<span class="kw">seq</span>(<span class="dv">1970</span>,<span class="dv">2000</span>,<span class="dt">by=</span><span class="dv">5</span>),<span class="dt">right=</span><span class="ot">FALSE</span>))</a>
-<a class="sourceLine" id="cb10-4" title="4"><span class="kw">head</span>(<span class="kw">survRate</span>(<span class="kw">Surv</span>(pt,dead)<span class="op">~</span>sex<span class="op">+</span>age10<span class="op">+</span>year10, <span class="dt">data=</span>mel.split2))</a></code></pre></div>
-<pre><code>##                                                sex   age10      year10      tstop event
-## sex=Male, age10=[0,10)   , year10=[1980,1985) Male  [0,10) [1980,1985) 10.1303800     0
-## sex=Male, age10=[0,10)   , year10=[1985,1990) Male  [0,10) [1985,1990)  9.3849113     1
-## sex=Male, age10=[0,10)   , year10=[1990,1995) Male  [0,10) [1990,1995)  0.6666667     0
-## sex=Male, age10=[10,20)  , year10=[1975,1980) Male [10,20) [1975,1980)  3.9120624     1
-## sex=Male, age10=[10,20)  , year10=[1980,1985) Male [10,20) [1980,1985) 13.8037774     1
-## sex=Male, age10=[10,20)  , year10=[1985,1990) Male [10,20) [1985,1990) 22.8439017     0
-##                                                     rate       lower     upper
-## sex=Male, age10=[0,10)   , year10=[1980,1985) 0.00000000 0.000000000 0.3641403
-## sex=Male, age10=[0,10)   , year10=[1985,1990) 0.10655402 0.002697714 0.5936810
-## sex=Male, age10=[0,10)   , year10=[1990,1995) 0.00000000 0.000000000 5.5333192
-## sex=Male, age10=[10,20)  , year10=[1975,1980) 0.25561965 0.006471729 1.4242215
-## sex=Male, age10=[10,20)  , year10=[1980,1985) 0.07244394 0.001834122 0.4036318
-## sex=Male, age10=[10,20)  , year10=[1985,1990) 0.00000000 0.000000000 0.1614820</code></pre>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" title="1">mel.split2 &lt;-<span class="st"> </span><span class="kw">mutate</span>(mel.split2, </a>
+<a class="sourceLine" id="cb16-2" title="2">                     <span class="dt">age10  =</span> <span class="kw">cut</span>(age, <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">110</span> ,<span class="dt">by=</span><span class="dv">10</span>), <span class="dt">right=</span><span class="ot">FALSE</span>), </a>
+<a class="sourceLine" id="cb16-3" title="3">                     <span class="dt">year10 =</span> <span class="kw">cut</span>(year, <span class="kw">seq</span>(<span class="dv">1970</span>, <span class="dv">2000</span>, <span class="dt">by=</span><span class="dv">5</span>), <span class="dt">right=</span><span class="ot">FALSE</span>) </a>
+<a class="sourceLine" id="cb16-4" title="4">                    ) </a>
+<a class="sourceLine" id="cb16-5" title="5">sr &lt;-<span class="st"> </span><span class="kw">survRate</span>(<span class="kw">Surv</span>(pt, dead) <span class="op">~</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>age10 <span class="op">+</span><span class="st"> </span>year10, <span class="dt">data=</span>mel.split2) </a>
+<a class="sourceLine" id="cb16-6" title="6"><span class="kw">rownames</span>(sr) &lt;-<span class="dv">1</span><span class="op">:</span><span class="kw">nrow</span>(sr) <span class="co">## Simple rownames for display </span></a>
+<a class="sourceLine" id="cb16-7" title="7"><span class="kw">head</span>(sr, <span class="dt">n =</span> <span class="dv">20</span>) </a></code></pre></div>
+<pre><code>##     sex   age10      year10      tstop event        rate        lower      upper
+## 1  Male  [0,10) [1980,1985)   6.509911     0 0.000000000 0.0000000000 0.56665587
+## 2  Male  [0,10) [1985,1990)   4.490089     0 0.000000000 0.0000000000 0.82156048
+## 3  Male [10,20) [1975,1980)   4.458333     1 0.224299065 0.0056787607 1.24971441
+## 4  Male [10,20) [1980,1985)   6.842898     0 0.000000000 0.0000000000 0.53908148
+## 5  Male [10,20) [1985,1990)  19.640948     0 0.000000000 0.0000000000 0.18781575
+## 6  Male [10,20) [1990,1995)  24.219691     0 0.000000000 0.0000000000 0.15230910
+## 7  Male [10,20) [1995,2000)   4.171463     0 0.000000000 0.0000000000 0.88431320
+## 8  Male [20,30) [1975,1980)  26.398108     1 0.037881503 0.0009590766 0.21106222
+## 9  Male [20,30) [1980,1985)  57.999389     4 0.068966244 0.0187909804 0.17658098
+## 10 Male [20,30) [1985,1990) 143.213782     1 0.006982568 0.0001767833 0.03890438
+## 11 Male [20,30) [1990,1995) 180.307318     3 0.016638260 0.0034312092 0.04862406
+## 12 Male [20,30) [1995,2000)  27.414736     1 0.036476732 0.0009235109 0.20323534
+## 13 Male [30,40) [1975,1980)  84.052956     6 0.071383569 0.0261965118 0.15537198
+## 14 Male [30,40) [1980,1985) 292.510103     8 0.027349483 0.0118075654 0.05388938
+## 15 Male [30,40) [1985,1990) 412.675104    15 0.036348207 0.0203438154 0.05995084
+## 16 Male [30,40) [1990,1995) 434.040225     9 0.020735405 0.0094815477 0.03936226
+## 17 Male [30,40) [1995,2000)  70.554946     3 0.042520053 0.0087686571 0.12426164
+## 18 Male [40,50) [1975,1980) 160.375465    11 0.068589045 0.0342394041 0.12272475
+## 19 Male [40,50) [1980,1985) 470.379381    15 0.031889153 0.0178481168 0.05259631
+## 20 Male [40,50) [1985,1990) 846.907111    26 0.030699943 0.0200542220 0.04498253</code></pre>
 </div>
 <div id="e" class="section level2">
 <h2>(e)</h2>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1">pt &lt;-<span class="st"> </span><span class="kw">mutate</span>(mel.split2,<span class="dt">sex=</span><span class="kw">unclass</span>(sex)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb12-2" title="2"><span class="st">    </span><span class="kw">group_by</span>(sex, age, year) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb12-3" title="3"><span class="st">    </span><span class="kw">summarise</span>(<span class="dt">pt=</span><span class="kw">sum</span>(pt))</a></code></pre></div>
-<pre><code>## `summarise()` has grouped output by &#39;sex&#39;, &#39;age&#39;. You can override using the `.groups` argument.</code></pre>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1">expected &lt;-<span class="st"> </span><span class="kw">inner_join</span>(popmort, pt) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb14-2" title="2"><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">pt=</span><span class="kw">ifelse</span>(<span class="kw">is.na</span>(pt),<span class="dv">0</span>,pt)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb14-3" title="3"><span class="st">    </span><span class="kw">group_by</span>(sex,year) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb14-4" title="4"><span class="st">    </span><span class="kw">summarise</span>(<span class="dt">E=</span><span class="kw">sum</span>(rate<span class="op">*</span>pt)) <span class="op">%&gt;%</span><span class="st"> </span>ungroup</a></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" title="1">pt &lt;-<span class="st"> </span><span class="kw">mutate</span>(mel.split2, <span class="dt">sex =</span> <span class="kw">unclass</span>(sex)) <span class="op">%&gt;%</span><span class="st">    </span><span class="co"># make sex integer to be in line with popmort </span></a>
+<a class="sourceLine" id="cb18-2" title="2"><span class="st">      </span><span class="kw">group_by</span>(sex, age, year)               <span class="op">%&gt;%</span><span class="st">    </span><span class="co"># aggregate by sex, age, year </span></a>
+<a class="sourceLine" id="cb18-3" title="3"><span class="st">      </span><span class="kw">summarise</span>(<span class="dt">pt =</span> <span class="kw">sum</span>(pt), <span class="dt">observed =</span> <span class="kw">sum</span>(dead)) <span class="co"># sum the person time, deaths </span></a></code></pre></div>
+<pre><code>## `summarise()` has grouped output by &#39;sex&#39;, &#39;age&#39;. You can override using the `.groups`
+## argument.</code></pre>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" title="1">pt &lt;-<span class="st"> </span><span class="kw">ungroup</span>(pt)  <span class="co"># For convenience</span></a>
+<a class="sourceLine" id="cb20-2" title="2"><span class="kw">head</span>(pt) </a></code></pre></div>
+<pre><code>## # A tibble: 6 × 5
+##     sex   age  year    pt observed
+##   &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;
+## 1     1     4  1980 0.5          0
+## 2     1     4  1983 0.5          0
+## 3     1     5  1980 0.213        0
+## 4     1     5  1981 0.787        0
+## 5     1     5  1983 0.297        0
+## 6     1     5  1984 0.703        0</code></pre>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" title="1"><span class="kw">head</span>(rstpm2<span class="op">::</span>popmort)</a></code></pre></div>
+<pre><code>##   sex    prob        rate age year
+## 1   1 0.96429 0.036363177   0 1951
+## 2   1 0.99639 0.003616547   1 1951
+## 3   1 0.99783 0.002172384   2 1951
+## 4   1 0.99842 0.001581249   3 1951
+## 5   1 0.99882 0.001180690   4 1951
+## 6   1 0.99893 0.001070595   5 1951</code></pre>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" title="1"><span class="kw">summary</span>(rstpm2<span class="op">::</span>popmort) </a></code></pre></div>
+<pre><code>##       sex           prob             rate               age             year     
+##  Min.   :1.0   Min.   :0.5238   Min.   :0.000090   Min.   :  0.0   Min.   :1951  
+##  1st Qu.:1.0   1st Qu.:0.9055   1st Qu.:0.001181   1st Qu.: 26.0   1st Qu.:1963  
+##  Median :1.5   Median :0.9926   Median :0.007468   Median : 52.5   Median :1976  
+##  Mean   :1.5   Mean   :0.9278   Mean   :0.084049   Mean   : 52.5   Mean   :1976  
+##  3rd Qu.:2.0   3rd Qu.:0.9988   3rd Qu.:0.099218   3rd Qu.: 79.0   3rd Qu.:1988  
+##  Max.   :2.0   Max.   :0.9999   Max.   :0.646626   Max.   :105.0   Max.   :2000</code></pre>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" title="1">joint &lt;-<span class="st"> </span><span class="kw">left_join</span>(pt, rstpm2<span class="op">::</span>popmort)</a></code></pre></div>
 <pre><code>## Joining, by = c(&quot;sex&quot;, &quot;age&quot;, &quot;year&quot;)</code></pre>
-<pre><code>## `summarise()` has grouped output by &#39;sex&#39;. You can override using the `.groups` argument.</code></pre>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" title="1">observed &lt;-<span class="st"> </span><span class="kw">mutate</span>(mel.split2, <span class="dt">sex=</span><span class="kw">as.numeric</span>(<span class="kw">unclass</span>(sex))) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb17-2" title="2"><span class="st">    </span><span class="kw">group_by</span>(sex, year) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb17-3" title="3"><span class="st">    </span><span class="kw">summarise</span>(<span class="dt">O=</span><span class="kw">sum</span>(dead)) <span class="op">%&gt;%</span><span class="st"> </span>ungroup</a></code></pre></div>
-<pre><code>## `summarise()` has grouped output by &#39;sex&#39;. You can override using the `.groups` argument.</code></pre>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" title="1">joint &lt;-<span class="st"> </span><span class="kw">inner_join</span>(observed,expected) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb19-2" title="2"><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">SMR =</span> O<span class="op">/</span>E)</a></code></pre></div>
-<pre><code>## Joining, by = c(&quot;sex&quot;, &quot;year&quot;)</code></pre>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" title="1"><span class="kw">head</span>(joint) </a></code></pre></div>
+<pre><code>## # A tibble: 6 × 7
+##     sex   age  year    pt observed  prob     rate
+##   &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;
+## 1     1     4  1980 0.5          0  1.00 0.000410
+## 2     1     4  1983 0.5          0  1.00 0.000280
+## 3     1     5  1980 0.213        0  1.00 0.000350
+## 4     1     5  1981 0.787        0  1.00 0.000250
+## 5     1     5  1983 0.297        0  1.00 0.000250
+## 6     1     5  1984 0.703        0  1.00 0.000250</code></pre>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" title="1">joint &lt;-<span class="st"> </span><span class="kw">mutate</span>(joint, <span class="dt">expected =</span> pt <span class="op">*</span><span class="st"> </span>rate) </a>
+<a class="sourceLine" id="cb30-2" title="2"><span class="kw">head</span>(joint) </a></code></pre></div>
+<pre><code>## # A tibble: 6 × 8
+##     sex   age  year    pt observed  prob     rate  expected
+##   &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+## 1     1     4  1980 0.5          0  1.00 0.000410 0.000205 
+## 2     1     4  1983 0.5          0  1.00 0.000280 0.000140 
+## 3     1     5  1980 0.213        0  1.00 0.000350 0.0000744
+## 4     1     5  1981 0.787        0  1.00 0.000250 0.000197 
+## 5     1     5  1983 0.297        0  1.00 0.000250 0.0000744
+## 6     1     5  1984 0.703        0  1.00 0.000250 0.000176</code></pre>
 </div>
 <div id="f" class="section level2">
 <h2>(f)</h2>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" title="1"><span class="co">## overall SMRs</span></a>
-<a class="sourceLine" id="cb21-2" title="2"><span class="kw">by</span>(joint, joint<span class="op">$</span>sex, <span class="cf">function</span>(data) <span class="kw">poisson.test</span>(<span class="kw">sum</span>(data<span class="op">$</span>O), <span class="kw">sum</span>(data<span class="op">$</span>E)))</a></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb32-1" title="1">SMR_all &lt;-<span class="st"> </span><span class="kw">summarise</span>(joint, <span class="dt">SMR =</span> <span class="kw">sum</span>(observed) <span class="op">/</span><span class="st"> </span><span class="kw">sum</span>(expected) ) </a>
+<a class="sourceLine" id="cb32-2" title="2">SMR_all </a></code></pre></div>
+<pre><code>## # A tibble: 1 × 1
+##     SMR
+##   &lt;dbl&gt;
+## 1  2.04</code></pre>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb34-1" title="1">SMR_bySex &lt;-<span class="st"> </span><span class="kw">group_by</span>(joint, sex) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>( <span class="dt">SMR =</span> <span class="kw">sum</span>(observed) <span class="op">/</span><span class="st"> </span><span class="kw">sum</span>(expected) ) </a>
+<a class="sourceLine" id="cb34-2" title="2">SMR_bySex </a></code></pre></div>
+<pre><code>## # A tibble: 2 × 2
+##     sex   SMR
+##   &lt;int&gt; &lt;dbl&gt;
+## 1     1  2.08
+## 2     2  2.00</code></pre>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb36-1" title="1">SMR_byYear &lt;-<span class="st"> </span><span class="kw">group_by</span>(joint, year) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>( <span class="dt">SMR =</span> <span class="kw">sum</span>(observed) <span class="op">/</span><span class="st"> </span><span class="kw">sum</span>(expected) ) </a>
+<a class="sourceLine" id="cb36-2" title="2">SMR_byYear </a></code></pre></div>
+<pre><code>## # A tibble: 21 × 2
+##     year   SMR
+##    &lt;dbl&gt; &lt;dbl&gt;
+##  1  1975  1.07
+##  2  1976  2.91
+##  3  1977  4.43
+##  4  1978  3.15
+##  5  1979  2.85
+##  6  1980  2.72
+##  7  1981  2.52
+##  8  1982  3.00
+##  9  1983  2.39
+## 10  1984  2.28
+## # … with 11 more rows</code></pre>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb38-1" title="1"><span class="kw">plot</span>( SMR_byYear, <span class="dt">type =</span> <span class="st">&quot;o&quot;</span>)  <span class="co"># quick &amp; dirty plot </span></a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb39-1" title="1">joint &lt;-<span class="st"> </span><span class="kw">mutate</span>(joint, <span class="dt">age_group =</span> <span class="kw">cut</span>(age, <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">110</span>, <span class="dt">by=</span><span class="dv">10</span>), <span class="dt">right =</span> <span class="ot">FALSE</span>))</a>
+<a class="sourceLine" id="cb39-2" title="2">SMR_byAge &lt;-<span class="st"> </span><span class="kw">group_by</span>(joint, age_group) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>( <span class="dt">SMR =</span> <span class="kw">sum</span>(observed) <span class="op">/</span><span class="st"> </span><span class="kw">sum</span>(expected) ) </a>
+<a class="sourceLine" id="cb39-3" title="3">SMR_byAge </a></code></pre></div>
+<pre><code>## # A tibble: 11 × 2
+##    age_group   SMR
+##    &lt;fct&gt;     &lt;dbl&gt;
+##  1 [0,10)     0   
+##  2 [10,20)   29.0 
+##  3 [20,30)   16.2 
+##  4 [30,40)   14.9 
+##  5 [40,50)    7.51
+##  6 [50,60)    4.15
+##  7 [60,70)    2.50
+##  8 [70,80)    1.51
+##  9 [80,90)    1.36
+## 10 [90,100)   1.23
+## 11 [100,110)  1.25</code></pre>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb41-1" title="1"><span class="kw">plot</span>( SMR_byAge)           <span class="co"># quick &amp; dirty plot </span></a>
+<a class="sourceLine" id="cb41-2" title="2"><span class="kw">abline</span>( <span class="dt">h =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>, <span class="dt">lty =</span> <span class="dv">2</span>)  <span class="co"># two reference lines at 1 &amp; 2</span></a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb42-1" title="1"><span class="kw">by</span>(joint, joint<span class="op">$</span>sex, <span class="cf">function</span>(data) <span class="kw">poisson.test</span>(<span class="kw">sum</span>(data<span class="op">$</span>observed), <span class="kw">sum</span>(data<span class="op">$</span>expected)))</a></code></pre></div>
 <pre><code>## joint$sex: 1
 ## 
 ##  Exact Poisson test
 ## 
-## data:  sum(data$O) time base: sum(data$E)
-## number of events = 1461, time base = 554.57, p-value &lt; 2.2e-16
+## data:  sum(data$observed) time base: sum(data$expected)
+## number of events = 818, time base = 394.2, p-value &lt; 2.2e-16
 ## alternative hypothesis: true event rate is not equal to 1
 ## 95 percent confidence interval:
-##  2.501094 2.773102
+##  1.935316 2.222317
 ## sample estimates:
 ## event rate 
-##   2.634465 
+##   2.075102 
 ## 
 ## ------------------------------------------------------------------- 
 ## joint$sex: 2
 ## 
 ##  Exact Poisson test
 ## 
-## data:  sum(data$O) time base: sum(data$E)
-## number of events = 1259, time base = 527.39, p-value &lt; 2.2e-16
+## data:  sum(data$observed) time base: sum(data$expected)
+## number of events = 762, time base = 381.47, p-value &lt; 2.2e-16
 ## alternative hypothesis: true event rate is not equal to 1
 ## 95 percent confidence interval:
-##  2.257152 2.522810
+##  1.858221 2.144564
 ## sample estimates:
 ## event rate 
-##   2.387211</code></pre>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" title="1"><span class="co">## utility function to draw a confidence interval</span></a>
-<a class="sourceLine" id="cb23-2" title="2">polygon.ci &lt;-<span class="st"> </span><span class="cf">function</span>(time, interval, <span class="dt">col=</span><span class="st">&quot;lightgrey&quot;</span>) </a>
-<a class="sourceLine" id="cb23-3" title="3">    <span class="kw">polygon</span>(<span class="kw">c</span>(time,<span class="kw">rev</span>(time)), <span class="kw">c</span>(interval[,<span class="dv">1</span>],<span class="kw">rev</span>(interval[,<span class="dv">2</span>])), <span class="dt">col=</span>col, <span class="dt">border=</span>col)</a>
-<a class="sourceLine" id="cb23-4" title="4"></a>
-<a class="sourceLine" id="cb23-5" title="5"><span class="co">## modelling by calendar period</span></a>
-<a class="sourceLine" id="cb23-6" title="6"><span class="kw">summary</span>(fit &lt;-<span class="st"> </span><span class="kw">glm</span>(O <span class="op">~</span><span class="st"> </span>sex<span class="op">*</span><span class="kw">ns</span>(year,<span class="dt">df=</span><span class="dv">3</span>)<span class="op">+</span><span class="kw">offset</span>(<span class="kw">log</span>(E)), <span class="dt">data=</span>joint, <span class="dt">family=</span>poisson))</a></code></pre></div>
+##   1.997553</code></pre>
+</div>
+<div id="g" class="section level2">
+<h2>(g)</h2>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb44-1" title="1">joint2 &lt;-<span class="st"> </span><span class="kw">transform</span>(joint,</a>
+<a class="sourceLine" id="cb44-2" title="2">                    <span class="dt">sex  =</span> <span class="kw">factor</span>(sex, <span class="dt">levels =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>, <span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">&quot;m&quot;</span>, <span class="st">&quot;f&quot;</span>)),</a>
+<a class="sourceLine" id="cb44-3" title="3">                    <span class="dt">year =</span>  <span class="kw">factor</span>(year) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">relevel</span>(<span class="dt">ref =</span> <span class="st">&quot;1985&quot;</span>),  <span class="co"># mid-study</span></a>
+<a class="sourceLine" id="cb44-4" title="4">                    <span class="dt">age_group =</span> <span class="kw">relevel</span>(age_group, <span class="dt">ref =</span> <span class="st">&quot;[70,80)&quot;</span>)  <span class="co"># Close to one already</span></a>
+<a class="sourceLine" id="cb44-5" title="5">                   )</a>
+<a class="sourceLine" id="cb44-6" title="6"><span class="co">## Model &amp; parameters</span></a>
+<a class="sourceLine" id="cb44-7" title="7"><span class="kw">summary</span>(fit &lt;-<span class="st"> </span><span class="kw">glm</span>(observed <span class="op">~</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>year <span class="op">+</span><span class="st"> </span>age_group <span class="op">+</span><span class="st"> </span><span class="kw">offset</span>(<span class="kw">log</span>(expected)), <span class="dt">data=</span>joint2, <span class="dt">family=</span>poisson)) </a></code></pre></div>
 <pre><code>## 
 ## Call:
-## glm(formula = O ~ sex * ns(year, df = 3) + offset(log(E)), family = poisson, 
-##     data = joint)
+## glm(formula = observed ~ sex + year + age_group + offset(log(expected)), 
+##     family = poisson, data = joint2)
 ## 
 ## Deviance Residuals: 
 ##     Min       1Q   Median       3Q      Max  
-## -1.7132  -0.6997  -0.1196   0.6188   2.2989  
+## -2.3618  -0.7668  -0.3192   0.2020   3.7834  
 ## 
 ## Coefficients:
-##                       Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept)             1.7205     0.3366   5.111 3.21e-07 ***
-## sex                     0.2409     0.2251   1.070   0.2845    
-## ns(year, df = 3)1      -0.6225     0.2646  -2.353   0.0186 *  
-## ns(year, df = 3)2      -1.1852     0.7613  -1.557   0.1195    
-## ns(year, df = 3)3      -0.7224     0.1831  -3.944 8.01e-05 ***
-## sex:ns(year, df = 3)1  -0.1950     0.1730  -1.127   0.2596    
-## sex:ns(year, df = 3)2  -0.6906     0.5072  -1.361   0.1734    
-## sex:ns(year, df = 3)3  -0.1486     0.1206  -1.232   0.2180    
+##                     Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)          0.24931    0.12399   2.011 0.044354 *  
+## sexf                 0.19732    0.05232   3.771 0.000162 ***
+## year1975            -0.73554    0.71610  -1.027 0.304348    
+## year1976             0.29944    0.29010   1.032 0.301975    
+## year1977             0.69624    0.21205   3.283 0.001026 ** 
+## year1978             0.39484    0.20517   1.925 0.054291 .  
+## year1979             0.32616    0.18814   1.734 0.082996 .  
+## year1980             0.28623    0.17860   1.603 0.109023    
+## year1981             0.22373    0.17758   1.260 0.207711    
+## year1982             0.40014    0.15913   2.515 0.011917 *  
+## year1983             0.17359    0.16124   1.077 0.281660    
+## year1984             0.13835    0.15719   0.880 0.378769    
+## year1986            -0.04542    0.15913  -0.285 0.775291    
+## year1987            -0.07071    0.15586  -0.454 0.650058    
+## year1988             0.07989    0.14809   0.539 0.589558    
+## year1989            -0.05832    0.15090  -0.386 0.699130    
+## year1990            -0.05248    0.14929  -0.352 0.725201    
+## year1991            -0.04901    0.15068  -0.325 0.744989    
+## year1992            -0.03529    0.14910  -0.237 0.812920    
+## year1993             0.10860    0.14366   0.756 0.449680    
+## year1994            -0.22877    0.15316  -1.494 0.135246    
+## year1995             0.16654    0.14207   1.172 0.241115    
+## age_group[0,10)     -7.66192  317.84697  -0.024 0.980768    
+## age_group[10,20)     2.95588    0.70911   4.168 3.07e-05 ***
+## age_group[20,30)     2.38059    0.25515   9.330  &lt; 2e-16 ***
+## age_group[30,40)     2.29433    0.12768  17.969  &lt; 2e-16 ***
+## age_group[40,50)     1.63236    0.09788  16.677  &lt; 2e-16 ***
+## age_group[50,60)     1.03105    0.08554  12.053  &lt; 2e-16 ***
+## age_group[60,70)     0.52924    0.07571   6.990 2.74e-12 ***
+## age_group[80,90)    -0.11656    0.07472  -1.560 0.118759    
+## age_group[90,100)   -0.21350    0.12769  -1.672 0.094519 .  
+## age_group[100,110)  -0.18214    1.00359  -0.181 0.855982    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## (Dispersion parameter for poisson family taken to be 1)
 ## 
-##     Null deviance: 295.251  on 41  degrees of freedom
-## Residual deviance:  39.335  on 34  degrees of freedom
-## AIC: 301.19
+##     Null deviance: 3205.1  on 3268  degrees of freedom
+## Residual deviance: 2540.6  on 3237  degrees of freedom
+## AIC: 5037.3
 ## 
-## Number of Fisher Scoring iterations: 4</code></pre>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" title="1"><span class="co">##</span></a>
-<a class="sourceLine" id="cb25-2" title="2">pred &lt;-<span class="st"> </span><span class="kw">predict</span>(fit,<span class="dt">type=</span><span class="st">&quot;response&quot;</span>,<span class="dt">newdata=</span><span class="kw">mutate</span>(joint,<span class="dt">E=</span><span class="dv">1</span>),<span class="dt">se.fit=</span><span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb25-3" title="3">full &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="kw">mutate</span>(joint,<span class="dt">fit=</span>pred<span class="op">$</span>fit), <span class="kw">confint.predictnl</span>(pred))</a>
-<a class="sourceLine" id="cb25-4" title="4">ci.cols &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;lightgrey&quot;</span>, <span class="st">&quot;grey&quot;</span>)</a>
-<a class="sourceLine" id="cb25-5" title="5"><span class="kw">matplot</span>(full<span class="op">$</span>year, full[,<span class="kw">c</span>(<span class="st">&quot;2.5 %&quot;</span>, <span class="st">&quot;97.5 %&quot;</span>)], <span class="dt">type=</span><span class="st">&quot;n&quot;</span>, <span class="dt">ylab=</span><span class="st">&quot;SMR&quot;</span>, <span class="dt">xlab=</span><span class="st">&quot;Calendar year&quot;</span>)</a>
-<a class="sourceLine" id="cb25-6" title="6"><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>) {</a>
-<a class="sourceLine" id="cb25-7" title="7">    <span class="kw">with</span>(<span class="kw">subset</span>(full, sex<span class="op">==</span>i), {</a>
-<a class="sourceLine" id="cb25-8" title="8">        <span class="kw">polygon.ci</span>(year, <span class="kw">cbind</span>(<span class="st">`</span><span class="dt">2.5 %</span><span class="st">`</span>, <span class="st">`</span><span class="dt">97.5 %</span><span class="st">`</span>), <span class="dt">col=</span>ci.cols[i])</a>
-<a class="sourceLine" id="cb25-9" title="9">    })</a>
-<a class="sourceLine" id="cb25-10" title="10">}</a>
-<a class="sourceLine" id="cb25-11" title="11"><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>) {</a>
-<a class="sourceLine" id="cb25-12" title="12">    <span class="kw">with</span>(<span class="kw">subset</span>(full, sex<span class="op">==</span>i), {</a>
-<a class="sourceLine" id="cb25-13" title="13">        <span class="kw">lines</span>(year,fit,<span class="dt">col=</span>i)</a>
-<a class="sourceLine" id="cb25-14" title="14">    })</a>
-<a class="sourceLine" id="cb25-15" title="15">}</a>
-<a class="sourceLine" id="cb25-16" title="16"><span class="kw">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="dt">legend=</span><span class="kw">levels</span>(mel.split2<span class="op">$</span>sex), <span class="dt">lty=</span><span class="dv">1</span>, <span class="dt">col=</span><span class="dv">1</span><span class="op">:</span><span class="dv">2</span>, <span class="dt">bty=</span><span class="st">&quot;n&quot;</span>)</a></code></pre></div>
-<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAqAAAAHgCAIAAAD17khjAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAgAElEQVR4nOzdaXxTZd4//nOy702aJmlKW+gKpYVKWasCAsqAFrfK+GcUxxFUcBzFZUQEZXCBuccFQRFHxgXxVlRQEFRuGERQNmXfl0JXmjZbs28ny//BGfPrlBba5KRJ08/7ga8mJ73OhQ7zyfU910KGQiECAAAAkgsr3h0AAAAA5iHgAQAAkhACHgAAIAkh4AEAAJIQAh4AACAJIeABAACSEAIeAAAgCSHgAQAAkhACHgAAIAkh4AEAAJIQAh4AACAJIeABAACSEAIeAAAgCSHgAQAAkhACHgAAIAkh4AEAAJIQAh4AACAJIeABAACSEAIeAAAgCSHgAQAAkhACHgAAIAkh4AEAAJIQAh4AACAJIeABAACSEAIeAAAgCSHgAQAAkhACHgAAIAkh4AEAAJIQAh4AACAJIeABAACSEAIeAAAgCSHgAQAAkhACHgAAIAkh4AEAAJIQAh4AACAJIeABAACSEAIeAAAgCSHgAQAAkhACHgAAIAkh4AEAAJIQAh4AACAJIeABAACSEAIeAAAgCSHgAQAAkhACHgAAIAkh4AEAAJIQAh4AACAJIeABAACSEAIeAAAgCSHgAQAAkhACHgAAIAkh4AEAAJIQAh4AACAJIeABAACSEAIeAAAgCSHgAQAAkhACHgAAIAkh4AEAAJIQAh4AACAJIeABAACSEAIeAAAgCSHgAQAAkhACHgAAIAkh4AEAAJIQAh4AACAJIeABAACSEAIeAAAgCSHgAQAAkhACHgAAIAkh4AEAAJIQAh4AACAJIeABAACSEAIeAAAgCSHgAQAAkhACHgAAIAkh4AEAAJIQAh4AACAJceLdge7z1FNP7dy5M969AACAXkQoFK5bt06j0XT/rXtRwO/Zs+fRRx8dNGhQvDsCAAC9xbRp05qbmxHwMTdgwIChQ4fGuxcAANBbCIXCeN0az+ABAACSEAIeAAAgCSHgAQAAklACBXwgEKiurvZ4PG3e93g8zc3NcekSAABAD5UQAe/3+1944QWpVJqbm5uamjp37txAIBC++vnnn6enp8exewAAAD1OQsyiX7p06ZIlSx5//PHy8vLdu3e/8cYbBoPhgw8+iHe/AAAAeqqECPh//etff/3rXxcvXkwQRGVl5dChQ++9997bb7/91ltvjXfXAAAAeqSEKNFfunTp+uuvD7+855577r333jlz5lz+PB4AAAA6IyECfuDAgdu3b2/9zuuvv+50Op9++ul4dakNr9drMBji3QsAAIDOSogS/fTp0x977DG/319RUTFmzBg+n69Wqz/88MNbb73Vbrdrtdp4d5Cw2+1nz55VKpUsVkJ8JQIAALiyhAj4v/zlL1ar9dVXX12+fHlVVVVeXh5BEDfffPOGDRsefvjhxsbGeHeQIAiCoiij0ahWq+PdEQAAgKtLiIAnCGLBggXPPPNMQ0NDnz59wm9WVFTU1tbu2rXr/PnznWnk119/fe655zq6euTIkbNnz44aNSriTup0OgQ8AEAcDRky5MiRI++8887s2bNbv282mzUajd/vP3HiRHFx8RVaUKlUf/vb3/785z/HuKfxlygBTxAEj8fLzc1t8yaHwxk/fvz48eM700JRUdHcuXM7urp7926fzxdND81ms9vtjuPJAQAAQBDEl19+2Sbgv/nmG7/fH6/+JKYECvjoSSSSG2+8saOrbDabJMkob9HU1JSTkxNlIwAAELHS0tJdu3bp9frWJdX169eXlpYePXo0jh1LNJgy1jU6nS4UCsW7FwAAvdfIkSMzMjK++uqr8Dt2u33btm133XVX63fmzJlTUFAgFArz8vJefvnljv6ve/Xq1cOGDROLxSUlJR9++GHMe9+NEmIE/8033/z0009X/syrr77aPZ25Mq/XazablUplvDsCANBLsVisysrKL7/8ctasWfQ7mzdvlslko0ePDn/m/vvv37Fjx/z58wsLC7dv3/7888/n5eVNmzatTVNvvfXWU089NW/evJdeemnr1q0zZszweDxtiv89V0IEvEgk2rVr1y+//CIQCDIzM9v9TIIEPEEQOp0OAQ8AvY3ZbH7++edj8Zz77rvv7uREq7CpU6e+9dZbBoNBpVIRBLF+/fo77riDw/l/iUaS5JIlSx5++GGCIKZMmbJly5YjR460CXin07lo0aIXXnhhwYIFBEFMnjzZ6XT+7W9/Q8Az6cYbbxw3bty4ceNCodBVh/JxZzAYfD4fj8eLd0cAALqPQCC45pprYvGMkg7pLikvL09PT//6668feught9v9/ffff/31160/sG7dOoIgHA5HVVXVwYMHL168GAwG2zRy8uRJk8k0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hndisfSTRmm//MGnlDnzM6Nvjy7UX3PNNdE3BQAAPUjbgH/ppZfi0o/EV1FRkZ2d/dJLL915553Tpk2L3Y0CAp5+8qj0b372KaSUMiX6BltaWhobGzMyMqJvCgAAeoq2AX/y5Mmr/k5xcXFsOpPoBg8evGLFioULF1ZXVz/11FN8Pj9GN/Klyc3Xl6Z/t/fS1HFBAQN3qa6uTk1NFQgE0TcFAAA9QtuALykpuervhJjbc63HUavVy5Yte+ONNx577LEXX3xRo9HE6EaOwiyeoUWz9RddxfUEK9rtgVGoBwDobdoGPIfD8fv9paWld9111+jRozmcth8AHo/37LPPbt68+dFHH50/f37sUrPlusHqzbtT950wXzuIgdZQqAcA6E3a5ndzc/M333yzfv36l19+WSaT3XHHHZWVlePGjeNyuXHpX8KqqKjQaDQvvvji1KlTY/RIPkQQhpuG9/lyB5Uqsw9gYDPBixcvKhSK3rkOAgCgt2m7TC41NfX+++/ftGmTwWBYtmyZyWS64447NBrNn/70p2+//RY7o7U2fPjwt99+e/v27UuWLInRv5kgn9d0y7WKPcf5+pboW8NhsgAAvUeHG91IpdJp06atW7fOYDD861//8vl8f/jDH9RqNX0ODdAyMjLeeustn8/3+OOPx2iVPKWQGseVqb/by3EysJy9paXl0qVL0bcDAAAJ7uo72YlEojvvvHPZsmWvvPIKh8P53//9327oVg8iFApfeOGFsWPH/uUvfzl16lQsbuHKyXAM7Kfaso8MMjC9sbq62u12R98OAAAksqsEvMFgeO+992666ab09PQlS5b84Q9/2LlzZ/f0rAchSXLatGlPPfXU888//+2338biFi3Di4ISYepPR6JviqKo06dP9+alEAAAvUH7Aa/X6999990JEyZotdoXX3xx4MCBP/74Y319/VtvvTVmzJhu7mJPMWLEiOXLl69fv/6NN97w+/0Mt06S+nFlgkaj9GR19I1ZrVYU6gEAklvbgF+5cuX48eMzMjIWL148ePDgXbt21dfXL1u27Prrr2excDLNVfTp02fFihVWq/XJJ580m83MNh7icZsnlyv2nxQ0GqNvrba2FoV6AIAkRrYp1ZIkSRBEaWnpyJEjO0r0lStXdkfXmCaVSpcuXTpz5swIfre+vr6qqqqTHw6FQmvXrt24cePChQuL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" /><!-- --></p>
+## Number of Fisher Scoring iterations: 14</code></pre>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb46-1" title="1"><span class="kw">eform</span>(fit)</a></code></pre></div>
+<pre><code>##                       exp(beta)         2.5 %        97.5 %
+## (Intercept)        1.283137e+00  1.006314e+00  1.636109e+00
+## sexf               1.218128e+00  1.099401e+00  1.349677e+00
+## year1975           4.792457e-01  1.177646e-01  1.950300e+00
+## year1976           1.349103e+00  7.640366e-01  2.382189e+00
+## year1977           2.006194e+00  1.323953e+00  3.039998e+00
+## year1978           1.484151e+00  9.927525e-01  2.218786e+00
+## year1979           1.385637e+00  9.582975e-01  2.003542e+00
+## year1980           1.331396e+00  9.381684e-01  1.889442e+00
+## year1981           1.250729e+00  8.830989e-01  1.771403e+00
+## year1982           1.492038e+00  1.092268e+00  2.038124e+00
+## year1983           1.189572e+00  8.672427e-01  1.631702e+00
+## year1984           1.148381e+00  8.438903e-01  1.562737e+00
+## year1986           9.555917e-01  6.995579e-01  1.305332e+00
+## year1987           9.317305e-01  6.864679e-01  1.264621e+00
+## year1988           1.083166e+00  8.102976e-01  1.447924e+00
+## year1989           9.433463e-01  7.018197e-01  1.267993e+00
+## year1990           9.488769e-01  7.081704e-01  1.271399e+00
+## year1991           9.521713e-01  7.086851e-01  1.279313e+00
+## year1992           9.653299e-01  7.207160e-01  1.292967e+00
+## year1993           1.114719e+00  8.411598e-01  1.477245e+00
+## year1994           7.955094e-01  5.892228e-01  1.074017e+00
+## year1995           1.181209e+00  8.941165e-01  1.560483e+00
+## age_group[0,10)    4.704029e-04 1.320197e-274 1.676105e+267
+## age_group[10,20)   1.921857e+01  4.787698e+00  7.714632e+01
+## age_group[20,30)   1.081125e+01  6.556804e+00  1.782625e+01
+## age_group[30,40)   9.917758e+00  7.722012e+00  1.273786e+01
+## age_group[40,50)   5.115943e+00  4.222904e+00  6.197837e+00
+## age_group[50,60)   2.804008e+00  2.371198e+00  3.315818e+00
+## age_group[60,70)   1.697641e+00  1.463531e+00  1.969199e+00
+## age_group[80,90)   8.899779e-01  7.687412e-01  1.030335e+00
+## age_group[90,100)  8.077550e-01  6.289151e-01  1.037450e+00
+## age_group[100,110) 8.334822e-01  1.165831e-01  5.958774e+00</code></pre>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb48-1" title="1"><span class="kw">drop1</span>(fit, <span class="dt">test =</span> <span class="st">&quot;Chisq&quot;</span>)</a></code></pre></div>
+<pre><code>## Single term deletions
+## 
+## Model:
+## observed ~ sex + year + age_group + offset(log(expected))
+##           Df Deviance    AIC    LRT  Pr(&gt;Chi)    
+## &lt;none&gt;         2540.6 5037.3                     
+## sex        1   2554.8 5049.5  14.17 0.0001673 ***
+## year      20   2590.8 5047.5  50.19 0.0002079 ***
+## age_group 10   3135.6 5612.3 594.95 &lt; 2.2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 </div>
 </div>
 </section>
