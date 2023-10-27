@@ -31,7 +31,7 @@ You may have to install the required packages the first time you use them. You c
 ```{r loadPreprocess, results='hide'}
 ```
 
-## (a) ##  
+## (a) ##
 
 ```{r 9.a}
 ```
@@ -53,7 +53,7 @@ h(t|\text{year8594}) &= h_0(t) \exp(\beta_1 I(\text{year8594}="\text{Diagnosed 8
 where $h(t|\text{year8594})$ is the hazard at time $t$ given covariate $\text{year8594}$, with baseline hazard $h_0(t)$ and regression coefficient $\beta_1$ for the log hazard ratio for the calendar period 1985--1994 compared with the reference calendar period 1974--1984.
 
 
-## (b) ##  
+## (b) ##
 
 ```{r 9.b}
 ```
@@ -72,16 +72,14 @@ The three test statistics are
 
         :   14.78 (from the output above)
 
-The three test statistics are very similar. We would expect each
-of these test statistics to be similar since they each test the
-same null hypothesis that survival is independent of
-calendar period. The null hypothesis in each case is that
-survival depends on calendar period in such a way that the
-hazard ratio between the two periods is constant over follow-up
-time (i.e. proportional hazards).
+The three test statistics are very similar. We would expect each of
+these test statistics to be similar since they each test the same null
+hypothesis that survival is independent of calendar period. The null
+hypothesis in each case is that survival is not associated with
+calendar period.
 
 
-## (c) ##  
+## (c) ##
 
 ```{r  9.c}
 ```
@@ -125,9 +123,9 @@ where $h(t|\text{year8594},\text{sex},\text{agegrp})$ is the hazard at time $t$ 
 ```
 
 Age (modelled as a categorical variable with 4 levels) is highly
-        significant in the model. The Wald test is an approximation to
-        the LR test and we would expect the two to be similar (which
-        they are).
+significant in the model. The Wald test is an approximation to
+the LR test and we would expect the two to be similar (which
+they are).
 
 ## (e) ##
 
@@ -156,12 +154,12 @@ Age (modelled as a categorical variable with 4 levels) is highly
             of the other covariates. We can, of course, relax this
             assumption by fitting interaction terms.
 
-## (f) ##  
+## (f) ##
 
 ```{r 9.f}
 ```
 
-## (g) ##  
+## (g) ##
 
 ```{r 9.g}
 ```

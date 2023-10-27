@@ -18,7 +18,6 @@ library(biostat3)
 library(dplyr)    # for data manipulation
 library(car)      # for car::linearHypothesis -> biostat3::lincom
 
-
 ## @knitr loadPreprocess
 ## Read melanoma data
 

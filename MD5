@@ -1,4 +1,4 @@
-89dbdf99c1c07609227ce0842477d7fc *DESCRIPTION
+59fad715360c2743018fed0b61c39b2a *DESCRIPTION
 89a8661e0f05a52faaee9bc391bfd310 *NAMESPACE
 b5ddd0ef0b55f3ee60639345902a81d5 *R/addIndicators.R
 9d61c23aaccb8e83a27a6e38a90e8783 *R/biostat3-internal.R
@@ -11,7 +11,7 @@ fe4bd1467481e05f42da7c09f7977cd4 *R/muhaz2.R
 ce1f1446e22ee8252a03726609e4e99a *R/smoothHaz.R
 4be457eb081457eaf86a6f92d85833ae *R/survPHplot.R
 4ea0794286eb340e74dc7929b1da47f7 *R/survrate.R
-0d6120e5ef25b559217f2dbbb8e4d8d9 *build/partial.rdb
+97fef93b69444326c903a503e731261f *build/partial.rdb
 7dedc414b9d3de1fbe9329e292bfc8df *data/brv.rda
 bb771706d46d7b7ce1029d36d899893d *data/colon.RData
 5244ced8fa48ad640b839e4f20ede7eb *data/colon.rda
@@ -54,7 +54,7 @@ b77e100d5d7370464b48ab13dd6ce507 *inst/doc/labs/q13.html
 1a9b36f116baa403d9cbd1b5fb750095 *inst/doc/labs/q14.html
 c236b71befd62b621ef89ad408f0274b *inst/doc/labs/q2.Rmd
 b1a867bf7696e9e5b7d6fb3f9ad38718 *inst/doc/labs/q2.html
-37c562b6d9b3e81a20fa4584a59a12eb *inst/doc/labs/q22.Rmd
+08824e0058a396b8bfc092c85f849248 *inst/doc/labs/q22.Rmd
 ed14c6683df737bade45e00a596f31ac *inst/doc/labs/q22.html
 3510282a31d80eacb374ab48c4a25fb9 *inst/doc/labs/q23.Rmd
 3fbc2ac875d645c9e76c6370d0e1a2bc *inst/doc/labs/q23.html
@@ -93,7 +93,7 @@ c5f24bc8f80c90b5f4b887f70608e4ca *inst/doc/q25.R
 49081edb7aa0ba146da6239583f7cf01 *inst/doc/q3.R
 ed710853cec5ec4ec66de8226a572a43 *inst/doc/q4.R
 fba4ee7ed26020b0c7c04f2d8d9ca56e *inst/doc/q6.R
-976a1062d497f05cc4c6b67d52adf58b *inst/doc/q7.R
+5888ac77d4e8515ee5792c8e877926af *inst/doc/q7.R
 a44495fda36162f595f81c9b2311f931 *inst/doc/q8.R
 b185eb1517f94541453e430d61634ec3 *inst/doc/q9.R
 2c70428d4e89202ed89b7b769b19fb0b *inst/doc/solutions/exercise1-blank.xls
@@ -126,11 +126,11 @@ b3c316d47716f92cb643d873e48d67f4 *inst/doc/solutions/q3.html
 3e0ec624ca521d7542ea81d4d4bbd925 *inst/doc/solutions/q4.html
 13c5a40fcb8a3875dbf56da64eb74322 *inst/doc/solutions/q6.Rmd
 df03ab8c16f2f92a4891750238e0ff32 *inst/doc/solutions/q6.html
-7e7cb63f03a39ba9eafc48bb5b616dea *inst/doc/solutions/q7.Rmd
-ef1038fc6678968efd555d7785fd4b32 *inst/doc/solutions/q7.html
+477a8919f451318bd916dd4ff68a0eac *inst/doc/solutions/q7.Rmd
+17087cdd838f558f4b0d7e4cbdd95721 *inst/doc/solutions/q7.html
 69b4c96b99852d8ddbfb289e0467b0c7 *inst/doc/solutions/q8.Rmd
 801bdaa1e41addd95ca819893a83ed50 *inst/doc/solutions/q8.html
-1abd9b5593696b8b63b55d3eeb6d7207 *inst/doc/solutions/q9.Rmd
+cc3a45199552fb3f6ceb416966827352 *inst/doc/solutions/q9.Rmd
 71fb3175212e9374c923bb7b67152105 *inst/doc/solutions/q9.html
 a85c3499eb809c0e85c87484fd62c0b2 *man/addIndicators.Rd
 a90b3bc4838f0bcf44e109abf3f66ef2 *man/biostat3-package.Rd
