@@ -9,12 +9,13 @@ importFrom(graphics, lines, plot, matlines, matplot, plot.default,
            points)
 importFrom(stats, model.extract, terms, qnorm, approx,
            profile, fitted, qt, spline, coef, confint,
-           predict)
+           predict, qgamma)
 importFrom("utils", "modifyList")
 
 ## importFrom(KMsurv,lifetab)
 ## importFrom(MASS, confint, profile)
 
+S3method(as.data.frame,bshazard)
 S3method(as.data.frame,muhaz)
 S3method(as.data.frame,muhazList)
 ## S3method(confint,glm)

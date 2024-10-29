@@ -1,0 +1,159 @@
+---
+title: "Biostatistics III in R"
+author:
+- Code by Bénédicte Delcoigne and Mark Clements
+format:
+  html:
+    minimal: true
+filters:
+  - webr
+execute:
+  echo: true
+  message: false
+  cache: false
+  fig-width: 7
+  fig-height: 6
+---
+
+
+# Exercise 25. Localised melanoma : generating and analysing a nested case-control (NCC) study #
+
+-----------
+
+You may have to install the required packages the first time you use them. You can install a package by `install.packages("package_of_interest")` for each package you require.
+
+```{webr-r}
+#| autorun: true
+library(biostat3)
+library(Epi) # ccwc
+```
+Load the melanoma data. Restrict the data to the localised status of the melanoma and to the 10 firts years of follow-up. Use the time-on-study as the timescale. define the event as death from cancer.
+
+```{webr-r}
+mel <- subset(biostat3::melanoma, stage=="Localised") |>
+    transform(dc = (mel$status=="Dead: cancer" & surv_mm<120)+0,
+              surv_10y = pmin(120, surv_mm))
+with(mel,table(dc, status))
+```
+
+The Cox proportional hazard analysis is done thanks to the "coxph" command in the "survival" package. It is often a good idea to check first the structure of the variables.
+
+```{webr-r}
+str(subset(mel, select=c(sex,year8594,agegrp))) # Check structure of risk factors/confounders
+out_coh <- coxph(Surv(surv_10y,dc) ~ sex + year8594 + agegrp, data = mel)
+summary(out_coh)
+```
+
+## (a) ## 
+How many individuals are in the study?
+
+```{webr-r}
+print(n_ind <- length(mel$id))
+```
+
+## (b) ## 
+How many experience the event?
+
+```{webr-r}
+table(mel$dc, useNA="always")
+print(ncase <-  table (mel$dc, useNA="always")[2])
+```
+
+## (c1) ## 
+Generate  a nested case-control study with 1 control per case. Cases and controls are matched on time since entry. This is done by using the function "cwcc" in the Epi package. Note that in the codes provided here, the variables "dc" and "id" are not necessary. They permit however to understand how the data are handled as for eample: how many individuals are sampled several times or how many cases happened to be sampled as controls before their failure time.
+
+```{webr-r}
+set.seed(12345)
+nccdata <- ccwc(entry=0, exit=surv_10y , fail=dc, origin=0, controls=1,
+                include=list(sex,year8594,agegrp,dc,id), data=mel)
+tail(nccdata, 8) |> kable("html")
+```
+
+## (c2) ## 
+Analyse the nested case-control data (with the survival package or the Epi package) and function "clogit". As the ncc data was generated with the Epi package, we use the syntax of this package.
+
+```{webr-r}
+out_ncc <- clogit(Fail ~ sex + year8594 + agegrp + strata(Set), data=nccdata)
+summary(out_ncc)
+```
+
+## (d) ## 
+How many unique individuals are in our study?
+
+```{webr-r}
+print(n_uni <- length(unique(nccdata$id)))
+``
+
+## (e) ## 
+Compare the estimated parameters and standard errors between the full cohort anal-
+ysis and the nested case-control study. What is the relative efficiency (ratio of vari-
+ances) of the nested case-control compared to the full cohort design?
+
+```{webr-r}
+library(broom)
+print(tidy_coh <- tidy(out_coh, conf.int=TRUE, exponentiate=TRUE))
+print(tidy_ncc <- tidy(out_ncc, conf.int=TRUE, exponentiate=TRUE))
+tibble(term = tidy_coh$term, variance.ratio = (tidy_ncc$std.error/tidy_coh$std.error)^2)
+
+tidy_coh <- tidy(out_coh)
+tidy_ncc <- tidy(out_ncc)
+f <- function(x,mu,sigma) {
+    mu=as.numeric(mu)
+    sigma=as.numeric(sigma)
+    xp=exp(mu+x*sigma)
+    cbind(x=xp,y=dlnorm(xp,mu,sigma))
+}
+x <- seq(-4,4,length=301)
+par(mfrow=c(2,3))
+for (i in 1:5) {
+    f_coh = f(x,tidy_coh[i,"estimate"], tidy_coh[i,"std.error"])
+    f_ncc = f(x,tidy_ncc[i,"estimate"], tidy_ncc[i,"std.error"])
+    plot(rbind(f_coh,f_ncc), type="n", xlab="Hazard ratio", ylab="Density",
+         main=as.character(tidy_coh$term[i]))
+    polygon(f_coh,
+            col=alpha("green",0.2), border=alpha("green",0.2))
+    polygon(f_ncc,
+            col=alpha("blue",0.2), border=alpha("blue",0.2))
+}
+legend("topright", c("Cohort","NCC"), col=c(alpha("green",0.2),alpha("blue",0.2)), lwd=5,
+       bty="n")
+```
+
+## (f) ## 
+
+Generate several nested case-control study and analyse them. A loop is generated with M=20 sampling of NCC with 1 control per case. The codes provide the summary hazard ratios for each loop. The density for each HR is then plotted for each parameter, where the green density is for the full cohort study and the blue densites are for the nested case control studies. What do you observe?
+
+```{webr-r}
+set.seed(54321)
+M <- 20
+tidys <- lapply(1:M, function(i)
+    ccwc(entry=0, exit=surv_10y , fail=dc, origin=0, controls=1,
+         include=list(sex,year8594,agegrp), data=mel, silent=TRUE) |>
+    clogit(formula = Fail ~ sex + year8594 + agegrp + strata(Set)) |> 
+    suppressWarnings() |> tidy())
+tidy_coh <- tidy(out_coh)
+f <- function(x,mu,sigma) {
+    mu=as.numeric(mu)
+    sigma=as.numeric(sigma)
+    xp=exp(mu+x*sigma)
+    cbind(x=xp,y=dlnorm(xp,mu,sigma))
+}
+x <- seq(-4,4,length=301)
+par(mfrow=c(2,3))
+for (i in 1:5) {
+    f_coh = f(x,tidy_coh[i,"estimate"], tidy_coh[i,"std.error"])
+    f_ncc = lapply(tidys_ncc, function(object) 
+        f(x,object[i,"estimate"], object[i,"std.error"]))
+    plot(do.call(what=rbind,c(list(f_coh),f_ncc)), type="n", xlab="Hazard ratio", ylab="Density",
+         main=as.character(tidy_coh$term[i]))
+    for (j in 1:length(tidys_ncc))
+        polygon(f_ncc[[j]],
+                col=alpha("blue",0.02), border=alpha("blue",0.02))
+    polygon(f_coh,
+            col=alpha("green",0.2), border=alpha("green",0.2))
+}
+plot(0:1,0:1,type="n",axes=FALSE, xlab="",ylab="")
+legend("center", c("Cohort","NCC"), col=c(alpha("green",0.2),alpha("blue",0.2)), lwd=5,
+       bty="n")
+```
+

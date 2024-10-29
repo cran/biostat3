@@ -46,7 +46,7 @@ There are 5318 individuals in the study that we would need to
 
 ## (c1) ## 
 
-```{r gen_ncc,  message=FALSE, warning=FALSE}
+```{r gen_ncc,  message=FALSE, warning=FALSE, results='asis'}
 ```
 
 ## (c2) ## 
@@ -84,5 +84,3 @@ We see that there is sampling variation in
 ```{r loop_ncc,  message=FALSE, warning=FALSE, results='hide'}
 ```
 
-```{r output,  message=FALSE, warning=FALSE}
-```

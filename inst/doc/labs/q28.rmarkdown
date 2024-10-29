@@ -1,0 +1,390 @@
+---
+title: "Biostatistics III in R"
+author:
+- Code by Xing-Rong Liu and Mark Clements
+format:
+  html:
+    minimal: true
+filters:
+  - webr
+execute:
+  echo: true
+  message: false
+  cache: false
+  fig-width: 7
+  fig-height: 6
+---
+
+
+
+## Exercise 28. Flexible parametric survival models in R ##
+
+Flexible parametric survival models use a smooth function to model for a transformation of survival. These models are also called Royston-Parmar models. For our model extensions, we also use the term _generalized survival models_.
+
+Note that there are some differences in the Stata implementation (`stpm2`) and our implementation in R (`rstpm2::stpm2` and `rstpm::pstpm2`). For the parametric models, Stata uses restricted cubic splines using truncated power basis, while we use B-splines. Moreover, we allow for most smooth functions to be used for the baseline function.
+
+
+You may have to install the required packages the first time you use
+them. You can install a package by
+`install.packages("package_of_interest")` for each package you
+require.
+
+
+
+```{r}
+#| autorun: true
+library(biostat3)  
+library(rstpm2)  # for the flexible parametric model
+library(dplyr)   # for data manipulation
+library(tinyplot) # plt()
+library(knitr)   # kable()
+```
+
+
+
+We start by reading the melanoma data, restrict to localised cancer, define cause-specific death through to at most 120 months as the event, express the time in years, and then define 1/0 varibles for age groups.
+
+
+
+```{r}
+#| autorun: true
+melanoma0 <- biostat3::melanoma |> subset(stage=="Localised") |>
+    transform(event = ifelse(status=="Dead: cancer" & surv_mm<120, 1, 0),
+              time = pmin(120, surv_mm)/12,
+              agegrp1 = (agegrp=="0-44")+0,  # used by time-dependent effect
+              agegrp2 = (agegrp=="45-59")+0, # used by time-dependent effect
+              agegrp3 = (agegrp=="60-74")+0, # used by time-dependent effect
+              agegrp4 = (agegrp=="75+")+0)   # used by time-dependent effect
+newdata1 <- data.frame(sex="Male",year8594="Diagnosed 75-84",
+                       agegrp2=0, agegrp3=0, agegrp4=0)
+```
+
+
+
+##(a)## 
+First, fit a flexible parametric model adjusting for calendar period of diagnosis (`year8594`) with four degrees of freedom for the baseline log cumulative hazard function, and use the `summary` method. How do you interpret the period effect?
+
+
+
+```{r}
+fpma <- stpm2(Surv(time,event) ~ year8594, data=melanoma0, df=4)
+summary(fpma)
+eform(fpma)["year8594Diagnosed 85-94",]
+```
+
+
+
+Also fit a similar Cox model. How similar are the points estimates and standard errors for the parameters that are in both models? 
+
+
+
+```{r}
+ coxph(Surv(time, event) ~ year8594, data=melanoma0) |> summary()
+```
+
+
+
+For those parameters in the stpm2 model that are not in the Cox model, what do those parameters represent?
+
+
+##(b)## 
+Using the fitted model, present plots for survival and hazards by
+calendar period. What do you observe?
+
+Example `ggplot2` code for survival is below:
+
+
+```{r}
+library(ggplot2)
+years <- levels(melanoma0$year8594)
+predict(fpma,newdata=data.frame(year8594=years),grid=TRUE,full=TRUE,se.fit=TRUE,
+        type="surv") |>
+    ggplot(aes(x=time,y=Estimate,fill=year8594,ymin=lower,ymax=upper)) +
+    xlab("Time since diagnosis (years)") +
+    ylab("Survival") +
+    geom_ribbon(alpha=0.6) +
+    geom_line()
+```
+
+
+
+Example code using `base` graphics through `tinyplot` is below:
+
+
+```{r}
+predict(fpma,newdata=data.frame(year8594=years),grid=TRUE,full=TRUE,se.fit=TRUE,
+        type="hazard") |>
+    with(plt(Estimate~time|year8594, ymin=lower,ymax=upper,
+             xlab="Time since diagnosis (years)",
+             ylab="Survival",
+             type="ribbon"))
+```
+
+
+
+##(c)## 
+Plotting the hazards on the log scale. Is there evidence that the difference in predictions is similar by time? Does the plot suggest that the model assumes proportionality?
+
+
+
+```{r}
+predict(fpma,newdata=data.frame(year8594=years),grid=TRUE,full=TRUE,se.fit=TRUE,
+        type="hazard") |>
+    with(plt(Estimate~time|year8594, ymin=lower,ymax=upper,
+             xlab="Time since diagnosis (years)",
+             log="y",
+             ylab="Survival",
+             type="ribbon"))
+```
+
+
+
+##(d)## 
+Investigate varying the degrees of freedom for the baseline using the AIC and BIC criteria.
+
+Re-fit the model with degrees of freedom varying between 1 and 6 degrees of freedom. Calculate the AIC and BIC and extract the beta and standard error for the period term. Which model has the smallest AIC and which has the smallest BIC?
+
+
+
+```{r}
+#| results: 'asis'
+lapply(1:6, function(i) {
+    fitaic <- stpm2(Surv(time, event) ~ year8594, data=melanoma0, df=i)
+    data.frame(
+        i,
+        AIC=AIC(fitaic),
+        BIC=BIC(fitaic),
+        beta=as.numeric(coef(fitaic)[2]),
+        se=coef(summary(fitaic))[2,2])
+}) |> do.call(what=rbind) |> kable("html")
+```
+
+
+
+Finally, is it clear why we use the AIC and BIC criteria rather than using likelihood ratio tests?
+
+##(e)## 
+Plots of predicted baseline survivals and hazards with varying degrees of freedom.
+
+We first plot survival by varying the degrees of freedom:
+
+
+
+```{r}
+## Baseline survival
+fitaic0 <- stpm2(Surv(time, event) ~ year8594, data=melanoma0, df=6)
+plot(fitaic0,newdata=data.frame(year8594=years[1]), lty=6, ci=FALSE,
+     xlab="Time since diagnosis (years)")
+for (i in 1:5 ) {
+  fitaic <- stpm2(Surv(time, event) ~ year8594, data=melanoma0, df=i)
+  lines(fitaic,newdata=data.frame(year8594=years[1]), lty=i)
+}
+legend("topright", legend=paste0("df=",1:6), lty=1:6)
+```
+
+
+
+Adapt the above code to work with hazards.
+
+##(f) Adjust for sex and age (in categories) ##
+
+Fit a flexible parametric survival model that adjusts for calendar period, sex and age group, with four degrees of freedom for the baseline. How do you interpret the fitted parameters?
+
+Use a likelihod ratio test to assess whether age group contributes significantly to the model fit. How do you interpret the test?
+
+
+
+```{r}
+fpmf <- stpm2(Surv(time, event) ~ sex + year8594 + agegrp,
+              data=melanoma0, df=4)
+summary(fpmf)
+eform(fpmf)[2:6,] |> suppressWarnings()
+
+## To test the overall effect of age with LR test
+fpmf2 <- stpm2(Surv(time,event) ~ sex + year8594, data=melanoma0, df=4)
+anova(fpmf, fpmf2)
+```
+
+
+
+##(g)## 
+
+Fit a similar model and undertake a similar test using Cox regression. Are the results similar? If so, can you suggest why?
+
+
+
+```{r}
+summary(fit <- coxph(Surv(time, event) ~ sex + year8594 + agegrp,
+                     data=melanoma0))
+anova(fit)
+```
+
+
+
+
+##(h)## 
+Now allow for time-varying effects for the age groups, using 0--44 years as the reference group, with two degrees of freedom for each age-group:time interaction. Using a likelihood ratio test, assess whether the time-varying effects are significant.
+
+
+
+```{r}
+#| autorun: true
+fpmf <- stpm2(Surv(time, event) ~ sex + year8594 + agegrp,
+              data=melanoma0, df=4)
+fpmh <- stpm2(Surv(time,event) ~ sex + year8594 + agegrp2 + agegrp3 + agegrp4,
+              data=melanoma0, tvc=list(agegrp2 = 2, agegrp3 = 2, agegrp4 = 2),
+              df=4)
+summary(fpmh)
+
+## LR test comparing fpmh (non-PH for agegrp2:4) with fpmf(PH for agegrp2:4)
+anova(fpmh, fpmf)
+```
+
+
+
+We could also investigate the non-proportional effect of age with penalized models, where sp is the optimal smoothing parameters estimated from models without sp argument:
+
+
+
+```{r}
+pfit0 <- pstpm2(Surv(time,event) ~ sex + year8594 + agegrp,
+                data=melanoma0, sp=0.1359685)
+
+## The time-dependent effects including linear forms of age groups
+pfit1 <- pstpm2(Surv(time,event) ~ sex + year8594 + agegrp2 + agegrp3 + agegrp4,
+                tvc=list(agegrp2=7,agegrp3=7,agegrp4=7),
+                data=melanoma0, sp=c( 0.1429949, 1.6133966, 1.3183117, 1.9958815))
+anova(pfit1, pfit0) # the results also suggest there is strong evidence for tvc
+```
+
+
+
+
+##(i)## 
+Plot of baseline hazard with time-varying effects. 
+
+Plot the hazard for the youngest age group for males diagnosed in 1975--1984.
+
+
+
+```{r}
+plot(fpmh, newdata=newdata1, xlab="Time since diagnosis (years)", 
+     type="haz")
+```
+
+
+
+##(j) Hazard ratios between age groups ##
+
+Now plot the hazard ratios for each of the older age groups compared with cases diagnosed aged 0-44 years. For ease of comparison, initially plot the hazard ratios without confidence intervals. Describe the form of the hazard ratios.
+
+
+
+```{r}
+plot(fpmh, newdata=newdata1, xlab="Time since diagnosis (years)",
+     type="hr",var="agegrp2", ci=FALSE, ylim=c(0,6))
+lines(fpmh, newdata=newdata1, type="hr", var="agegrp3", lty=2)
+lines(fpmh, newdata=newdata1, type="hr", var="agegrp4", lty=3)
+legend("topright", legend=paste0(agegrps[-1]," vs 0-44"), lty=1:3)
+```
+
+
+
+For the hazard ratio comparing those diagnosed aged 75 years and over with those aged 0--44 years, plot the hazard ratio and 95% confidence intervals. 
+
+
+
+```{r}
+plot(fpmh, newdata=newdata1,
+     type="hr", log="y",
+     exposed=function(data) transform(data,agegrp4=agegrp4+1), # same as var="agegrp4"
+     xlab="Time since diagnosis (years)")
+```
+
+
+
+Finally, as an extension, use `ggplot` to plot the hazard ratios with confidence intervals using `alpha` transparency. How do you interpret the hazard ratios?
+
+
+
+```{r}
+library(ggplot2)
+lapply(2:4, function(i)
+    predict(fpmh, newdata=newdata1, type="hr",var=paste0("agegrp",i),
+            grid=TRUE, se.fit=TRUE, full=TRUE) |>
+    transform(ageGroup=paste0(agegrps[i]," vs 0-44"))) |>
+    do.call(what=rbind) |>
+    ggplot(aes(x=time,y=Estimate,fill=ageGroup,ymin=lower,ymax=upper)) +
+    geom_ribbon(alpha=0.3) +
+    geom_line() +
+    ylim(0,8) +
+    xlab("Time since diagnosis (years)") +
+    ylab("Hazard ratio") +
+    labs(fill="Age group")
+```
+
+
+
+##(k) The hazard difference for the oldest group ##
+
+There are a number of other target parameters that we can estimate. One is the difference in hazards between groups. Plot the hazard for those aged 75 years and over minus the hazard for those aged 0--44 years. Describe the general pattern.
+
+
+
+```{r}
+plot(fpmh,newdata=newdata1,
+     type="hdiff", var="agegrp4",
+     xlab="Time since diagnosis (years)")
+```
+
+
+
+##(l) The survival difference for the oldest group ##
+
+Similarly, plot the survival difference between those aged 75 years and over and those aged 0--44 years at diagnosis. How will the survival difference be related to the risk difference?
+
+
+
+```{r}
+plot(fpmh,newdata=newdata1,
+     type="sdiff", var="agegrp4",
+     xlab="Time since diagnosis (years)")
+```
+
+
+
+##(m) Fit models with 1, 2 and 3 df for time-dependent effect of age ##
+
+Adapting code from (e), fit models with a varying degrees of freedom for the time-dependent effects for age groups. Also plot the time-varying hazard ratios comparing the hazards for those aged 75 years and over with the hazard for those diagnosed aged 0--44 years.
+
+
+
+```{r}
+lapply(1:3, function(i) {
+    fitdf <- stpm2(Surv(time,event) ~ sex + year8594 + agegrp2 + agegrp3 + agegrp4,
+                   data=melanoma0, tvc=list(agegrp2 = i, agegrp3 = i, agegrp4 = i),
+                   df=4)
+    data.frame(i,
+               aic=AIC(fitdf),
+               bic=BIC(fitdf))
+}) |> do.call(what=rbind)
+
+## Plots with different df
+fitdf1 <- stpm2(Surv(time,event) ~ sex + year8594 + agegrp2 + agegrp3 + agegrp4,
+                data=melanoma0,
+                tvc = list(agegrp2 = 1, agegrp3 = 1, agegrp4 = 1), df=4)
+
+plot(fitdf1, newdata = newdata1,
+     type="hr", ci=FALSE, log="y", var="agegrp4",
+     xlab="Time since diagnosis (years)")
+for (i in 2:3 ) {
+    fitdf <- stpm2(Surv(time,event) ~ sex + year8594 + agegrp2 + agegrp3 + agegrp4,
+                   data=melanoma0, tvc=list(agegrp2 = i, agegrp3 = i, agegrp4 = i),
+                   df=4)
+    lines(fitdf, newdata=newdata1,
+          type="hr", lty=i,
+          var="agegrp4")
+}
+legend("topright", legend=c("1 df", "2 df", "3 df"), lty=1:3)
+```
+
