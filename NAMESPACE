@@ -35,5 +35,6 @@ S3method(print,coxphHaz)
 S3method(summary,muhazList)
 S3method(plot,lifetab2)
 S3method(lines,lifetab2)
+S3method(points,lifetab2)
 
 ## S3method(ggplot,muhazList)

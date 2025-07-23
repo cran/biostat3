@@ -4,6 +4,7 @@ author:
 - Code by Annika Tillander, Andreas Karlsson and Mark Clements
 output:
   prettydoc::html_pretty:
+    mathjax: https://biostat3.net/js/mathjax/tex-chtml.js
     theme: cayman
     highlight: github
 ---
@@ -33,15 +34,14 @@ Load melanoma data and explore it.
 ## (a) ## 
 
 If we look at the hazard curves, at their peak the ratio is
-approximately $0.038/0.048\approx0.79$. The ratio is similar at
-other follow-up times.
+approximately $0.04/0.065\approx0.62$. The ratio seems to vary with respect to time.
 
 ```{r 10.a, message=FALSE}
 ```
 
 ## (b) ## 
-There is no strong evidence against an assumption of
-proportional hazards since we see (close to) parallel curves
+There is some evidence against the assumption of
+proportional hazards since we see non-parallel curves
 when plotting the instantaneous cause-specific hazard on the
 log scale.
 

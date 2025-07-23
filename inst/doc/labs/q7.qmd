@@ -436,13 +436,13 @@ melanoma.spl3 <- survSplit(Surv(surv_mm/12,status=="Dead: cancer")~.,
                            subset=stage=="Localised") |>
     transform(mid=(tstop+tstart)/2, risk_time=tstop-tstart) |>
     group_by(sex, agegrp, stage, year8594, timeband) |>
-    summarise(risk_time=sum(risk_time), # sequential - do not replace risk_time
+    summarise(risk_times=sum(risk_time), # sequential - do not replace risk_time
               event=sum(event),
               mid=sum(risk_time*mid)/sum(risk_time),
               .groups="keep")
 poisson7n <- glm(event ~ ns(mid,df=4) + agegrp + year8594 +
                      ifelse(year8594=="Diagnosed 85-94",1,0):ns(mid,df=3) +
-                     offset(log(risk_time)),
+                     offset(log(risk_times)),
                  family=poisson,
                  data=melanoma.spl3)
 ```
@@ -451,7 +451,7 @@ poisson7n <- glm(event ~ ns(mid,df=4) + agegrp + year8594 +
 library(rstpm2)
 library(tinyplot)
 df <- data.frame(agegrp="0-44", year8594="Diagnosed 75-84",
-                 mid=time.cut[-1], risk_time=1)
+                 mid=time.cut[-1], risk_times=1)
 ## get log(RR) confidence interval using predictnl (delta method)
 predictnl(poisson7n, function(object)
     predict(object, newdata=transform(df, year8594="Diagnosed 85-94"), type="link") -
@@ -469,8 +469,7 @@ predictnl(poisson7n,
           function(object)
               predict(object, newdata=transform(df, year8594="Diagnosed 85-94"),
                       type="response") -
-              predict(object, newdata=df, type="response"),
-          conf.int=TRUE) |>
+              predict(object, newdata=df, type="response")) |>
     cbind(df) |>
     transform(conf.low=fit-1.96*se.fit,
               conf.high=fit+1.96*se.fit) |>
@@ -530,10 +529,10 @@ out0 = oneState(poisson7n, newdata=df2)
 out = predictnl(poisson7n,
                 function(object, newdata)
                     log(-log(as.vector(oneState(object, newdata)$y))),
-                newdata=df2, conf.int=TRUE) |> # slow!
+                newdata=df2) |> # slow!
     transform(fit=exp(-exp(fit)),
-              conf.low=exp(-exp(conf.low)),
-              conf.high=exp(-exp(conf.high))) |>
+              conf.low=exp(-exp(fit-1.96*se.fit)),
+              conf.high=exp(-exp(fit+1.96*se.fit))) |>
     cbind(with(biostat3::melanoma,
                expand.grid(mid=out0$t,
                            agegrp=levels(agegrp),

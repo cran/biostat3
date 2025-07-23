@@ -2,6 +2,7 @@
 \alias{lifetab2}
 \alias{plot.lifetab2}
 \alias{lines.lifetab2}
+\alias{points.lifetab2}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 Formula wrapper for \code{\link{lifetab}} from the
@@ -13,8 +14,9 @@ data-frame with optional breaks.
 }
 \usage{
 lifetab2(formula, data, subset, breaks = NULL)
-\method{plot}{lifetab2}(x, y=NULL, ...)
-\method{lines}{lifetab2}(x, y=NULL, ...)
+\method{plot}{lifetab2}(x, y=NULL, type="s", ...)
+\method{lines}{lifetab2}(x, y=NULL, type="s", ...)
+\method{points}{lifetab2}(x, y=NULL, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -35,6 +37,7 @@ lifetab2(formula, data, subset, breaks = NULL)
   }
   \item{x}{\code{lifetab2} object}
   \item{y}{unused argument (part of the generic function)}
+  \item{type}{line type}
   \item{\dots}{other arguments}
 }
 \details{

@@ -175,8 +175,3 @@ with(logcumhaz, plt(surv~mid, ymin=lower.ci, ymax=upper.ci, type="ribbon",
                     ylab="Survival", main="Males aged 45-59 years diagnosed 1985-94"))
 
 
-## @knitr 9.g
-coxfit9e <- coxph(Surv(surv_mm/12, death_cancer) ~ year8594 + sex + agegrp,
-                  data = melanoma.l2)
-plot(survfit(coxfit9e, newdata=newdata[1,]),
-     xlab="Time from diagnosis (years)", ylab="Survival")

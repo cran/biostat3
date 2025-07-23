@@ -24,7 +24,8 @@ poisson.ci <-
                        two.sided = {
                            alpha <- (1 - conf.level)/2
                            cbind(p.L(x, alpha), p.U(x, alpha))
-                       }) / cbind(T,T) |> as.data.frame()
+                       }) / cbind(T,T)
+        CINT = as.data.frame(CINT)
         names(CINT) <- format_perc(switch(alternative,
                                           less = c(0, conf.level),
                                           greater = c(1-conf.level, 1),

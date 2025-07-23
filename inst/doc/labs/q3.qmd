@@ -27,6 +27,8 @@ melanoma = biostat3::melanoma |>
     transform(death_cancer = ifelse( status == "Dead: cancer", 1, 0),
               death_all = ifelse( status == "Dead: cancer" |
                                status == "Dead: other", 1, 0))
+as.data.frame.bshazard <- function(x, ...)
+    with(x, data.frame(time,hazard,lower.ci,upper.ci))
 ```
 
 

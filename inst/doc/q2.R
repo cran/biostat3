@@ -12,6 +12,7 @@ library(biostat3) # loads the survival and muhaz packages
 library(dplyr)    # for data manipulation
 library(bshazard) # for smoothed hazards
 library(knitr)    # for html tables
+library(tinyplot) # plt() for nicer base graphics
 ## utility function
 as.data.frame.bshazard <- function(x, ...)
     with(x, data.frame(time,hazard,lower.ci,upper.ci))

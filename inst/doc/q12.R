@@ -33,11 +33,25 @@ coxph(Surv(surv_mm, death_cancer) ~ sex + agegrp + stage + subsite +
           year8594, data=melanoma.l) |>
     summary()
 
+survfit(Surv(surv_mm/12, status == "Dead: cancer") ~ year8594, data=subset(biostat3::colon, stage=="Localised")) |>
+    plot(col=1:2)
+legend("topright",legend=levels(colon$year8594), lty=1, col=1:2, bty="n")
+
+library(bshazard)
+par(mfrow=c(1,1))
+bshazard(Surv(surv_mm/12, status=="Dead: cancer") ~ 1, data=subset(colon, year8594=="Diagnosed 75-84"), v=F) |> plot(ylim=c(0,0.4))
+bshazard(Surv(surv_mm/12, status == "Dead: cancer") ~ 1, data=subset(colon, year8594=="Diagnosed 85-94"), v=F) |> lines(col=2)
+
+
+coxph(Surv(surv_mm, death_cancer) ~ agegrp + agegrp : sex, data=melanoma.l) |> summary()
+
+
 
 ## @knitr 12.c
-coxph(Surv(surv_mm, death_cancer) ~ agegrp + agegrp * sex, data=melanoma.l) |>
-    summary()
-
+coxph(Surv(surv_mm, death_cancer) ~ agegrp + agegrp : sex, data=melanoma.l) |> summary()
+coxph(Surv(surv_mm, death_cancer) ~ agegrp * sex, data=melanoma.l) |> anova()
+coxph(Surv(surv_mm, death_cancer) ~ stage + subsite + year8594 + agegrp * sex,
+      data=melanoma.l) |> anova()
 
 ## @knitr 12.d.i
 cox4 <- coxph(Surv(surv_mm, death_cancer) ~ sex + year8594 + agegrp + subsite +
@@ -45,6 +59,7 @@ cox4 <- coxph(Surv(surv_mm, death_cancer) ~ sex + year8594 + agegrp + subsite +
 summary(cox4)
 
 ## Test proportional hazards assumption
+cox.zph(cox4) 
 cox.zph(cox4, transform="log") 
 cox.zph(cox4, transform="identity") # Stata default
 
@@ -55,6 +70,7 @@ cox5 <- coxph(Surv(surv_mm, death_cancer) ~ sex + year8594 + agegrp + subsite +
 summary(cox5)
 
 ## Test proportional hazards assumption
+cox.zph(cox5) 
 cox.zph(cox5, transform="log") 
 cox.zph(cox5, transform="identity") 
 

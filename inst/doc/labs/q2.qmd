@@ -150,8 +150,7 @@ To get all-cause survival, specify all deaths (both cancer
 and other) as events.
 
 Now plot the survivor proportion for all-cause survival
-by stage. We name the graph to be able to separate them in the
-graph window. Is the survivor proportion different compared to
+by stage. Is the survivor proportion different compared to
 the cause-specific survival you estimated above? Why?
 
 ```{webr-r}
@@ -196,7 +195,7 @@ Now estimate both cancer-specific and all-cause survival for
         each age group.
 
 
-```{r}
+```{web-r}
 par(mfrow=c(1, 2))
 survfit(Surv(surv_mm/12, death_cancer) ~ agegrp, data = melanoma) |>
 	plot(col=1:4,

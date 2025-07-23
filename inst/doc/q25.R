@@ -14,7 +14,7 @@ library(Epi)      # sample a nested case-control study from a cohort
 ## @knitr loadPreprocess
 ## Get the data for exercise 25 and have a look at it
 mel <- subset(biostat3::melanoma, stage=="Localised") |>
-    transform(dc = (mel$status=="Dead: cancer" & surv_mm<120)+0,
+    transform(dc = (status=="Dead: cancer" & surv_mm<120)+0,
               surv_10y = pmin(120, surv_mm))
 with(mel,table(dc, status))
 
@@ -81,7 +81,7 @@ legend("topright", c("Cohort","NCC"), col=c(alpha("green",0.2),alpha("blue",0.2)
 ## @knitr loop_ncc
 set.seed(54321)
 M <- 20
-tidys <- lapply(1:M, function(i)
+tidys_ncc <- lapply(1:M, function(i)
     ccwc(entry=0, exit=surv_10y , fail=dc, origin=0, controls=1,
          include=list(sex,year8594,agegrp), data=mel, silent=TRUE) |>
     clogit(formula = Fail ~ sex + year8594 + agegrp + strata(Set)) |> 

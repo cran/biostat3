@@ -67,7 +67,7 @@ survfit(Surv(surv_yy, death_cancer) ~ 1, data = localised) |>
 Kaplan-Meier estimates, using survival time in completed months. Only showing 20 months around the 10th year.
 
 ```{webr-r}
-survfit(Surv(surv_mm, death_cancer) ~ 1, data = localised) |>
+survfit(Surv(surv_mm/12, death_cancer) ~ 1, data = localised) |>
     summary(times=(110:130)/12)
 ```
 

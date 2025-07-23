@@ -359,10 +359,13 @@ poisson7n <- glm(event ~ ns(mid,df=4) + agegrp + year8594 +
 library(rstpm2)
 library(tinyplot)
 ## get log(RR) confidence interval using predictnl (delta method)
+df <- data.frame(agegrp="0-44", year8594="Diagnosed 75-84",
+                 mid=time.cut[-1], risk_time=1)
 predictnl(poisson7n, function(object)
     predict(object, newdata=transform(df, year8594="Diagnosed 85-94"), type="link") -
     predict(object, newdata=df, type="link")) |>
     cbind(df) |>
+    as.data.frame() |>
     transform(fit = exp(fit),
               conf.low=exp(fit-1.96*se.fit),
               conf.high=exp(fit+1.96*se.fit)) |>
@@ -374,8 +377,7 @@ predictnl(poisson7n,
           function(object)
               predict(object, newdata=transform(df, year8594="Diagnosed 85-94"),
                       type="response") -
-              predict(object, newdata=df, type="response"),
-          conf.int=TRUE) |>
+              predict(object, newdata=df, type="response")) |>
     cbind(df) |>
     transform(conf.low=fit-1.96*se.fit,
               conf.high=fit+1.96*se.fit) |>

@@ -5,6 +5,7 @@ author:
 format:
   html:
     minimal: true
+    mathjax: local
 filters:
   - webr
 execute:

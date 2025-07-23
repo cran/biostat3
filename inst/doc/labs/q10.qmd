@@ -112,7 +112,7 @@ summary(cox2)
 
 cox2.phtest <- cox.zph(cox2, terms=FALSE) # for separate plots
 print(cox2.phtest)
-plot(cox2.phtest,var=5,resid=TRUE, se=TRUE, main="Schoenfeld residuals", ylim=c(-4,4))
+plot(cox2.phtest,var=2,resid=TRUE, se=TRUE, main="Schoenfeld residuals", ylim=c(-4,4))
 ```
 
 What do you conclude?
